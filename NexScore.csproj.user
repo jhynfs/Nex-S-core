@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupContestantControl\AddContestantControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupContestants.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupCriteria.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupCriteriaControls\CriteriaControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupCriteriaControls\SegmentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupJudges.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupJudgesControl\AddJudgeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\OpenEventControl\EventListItemControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\OpenEventForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageContestants.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageCriteria.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageDashboard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageEvents.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageJudges.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageLiveControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="LogInForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupDetails.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageLogs.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\PageResults.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainFormPages\DashboardForms\CreateEventPages\SetupCriteriaControls\PhaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
