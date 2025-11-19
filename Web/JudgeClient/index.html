@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Judge Scoring Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --bg: #1e1f2f;
+            --panel: #2c2e58;
+            --panel2: #3a3d74;
+            --text: #f7f6ed;
+            --muted: #c8c7bd;
+            --ok: #4ade80;
+            --err: #f87171;
+            --accent: #4e6af2;
+            --border: #2c2e58;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        h2, h3 {
+            margin: 8px 0 12px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        select, input[type="number"], input[type="text"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            min-width: 160px;
+        }
+
+        input[readonly] {
+            opacity: .9;
+        }
+
+        button {
+            padding: 8px 14px;
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+            button:disabled {
+                opacity: .6;
+                cursor: not-allowed;
+            }
+
+        .panel {
+            background: var(--panel2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--panel);
+        }
+
+        .status {
+            min-height: 22px;
+            margin-top: 6px;
+        }
+
+        .ok {
+            color: var(--ok);
+        }
+
+        .err {
+            color: var(--err);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .inline {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .criteria-grid {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .criteria-row {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 10px;
+            align-items: center;
+            padding: 6px 0;
+        }
+
+            .criteria-row + .criteria-row {
+                border-top: 1px solid var(--border);
+            }
+
+        .nowrap {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Judge Scoring Panel</h2>
+
+        <div class="panel">
+            <div class="row">
+                <div class="inline">
+                    <span class="muted">EventId:</span>
+                    <input id="eventId" type="text" placeholder="ObjectId" readonly style="min-width: 280px;">
+                </div>
+                <label>
+                    Judge
+                    <select id="judge"></select>
+                </label>
+                <label>
+                    Contestant
+                    <select id="contestant"></select>
+                </label>
+                <button id="btnReload">Reload Data</button>
+            </div>
+
+            <div class="row">
+                <label>
+                    Phase
+                    <select id="phase"></select>
+                </label>
+                <label>
+                    Segment
+                    <select id="segment"></select>
+                </label>
+            </div>
+
+            <div id="structureStatus" class="status muted">Load an event to view phases, segments, and criteria.</div>
+        </div>
+
+        <div class="panel">
+            <h3>Criteria Inputs</h3>
+            <div id="criteriaArea" class="criteria-grid"></div>
+            <div class="row">
+                <button id="btnSubmitAll" disabled>Submit All Criteria Scores</button>
+                <div id="submitStatus" class="status"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Leaderboard</h3>
+            <table>
+                <thead><tr><th class="nowrap">Rank</th><th>Contestant</th><th>Score</th></tr></thead>
+                <tbody id="board"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="judge.js"></script>
+</body>
+</html>

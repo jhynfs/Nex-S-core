@@ -71,14 +71,14 @@ namespace NexScore
         {
             if (isCollapsed)
             {
-                pnlSidebar.Width = 250; // expand instantly
+                pnlSidebar.Width = 380; // expand instantly
                 btnMenu.Text = "☰  Menu";
                 ShowSidebarButtonText();
                 isCollapsed = false;
             }
             else
             {
-                pnlSidebar.Width = 55; // collapse instantly
+                pnlSidebar.Width = 60; // collapse instantly
                 btnMenu.Text = "›";
                 HideSidebarButtonText();
                 isCollapsed = true;
@@ -102,7 +102,7 @@ namespace NexScore
         // ---------------- Sidebar Setup ----------------
         private void InitializeSidebar()
         {
-            pnlSidebar.Width = isCollapsed ? 55 : 250;
+            pnlSidebar.Width = isCollapsed ? 60 : 380;
             btnMenu.Text = isCollapsed ? "›" : "☰  Menu";
             ShowSidebarButtonText();
         }
@@ -212,6 +212,10 @@ namespace NexScore
         {
             SetActiveButton((Button)sender);
             LoadPage(logsPage);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
         }
     }
 }

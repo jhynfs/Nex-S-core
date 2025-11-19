@@ -32,5 +32,7 @@ namespace NexScore
         // Add other collections used by pages
         public static IMongoCollection<ContestantModel> Contestants => GetCollection<ContestantModel>("Contestants");
         public static IMongoCollection<EventStructureModel> EventStructures => GetCollection<EventStructureModel>("EventStructures");
+        public static IMongoCollection<ScoreEntry> Scores => GetCollection<ScoreEntry>("Scores");
+        public static IMongoCollection<AggregatedScore> AggregatedScores => GetCollection<AggregatedScore>("AggregatedScores");
     }
 }
