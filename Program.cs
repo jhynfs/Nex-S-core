@@ -23,7 +23,7 @@ namespace NexScoreAdmin
             );
             server.Start(5100);// LAN port.
 
-            Application.Run(new NexScore.LogInForm());
+            Application.Run(new NexScore.MainForm());
         }
     }
 }

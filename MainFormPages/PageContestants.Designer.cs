@@ -37,7 +37,7 @@
             pnlMainContestants.Dock = DockStyle.Fill;
             pnlMainContestants.Location = new Point(0, 0);
             pnlMainContestants.Name = "pnlMainContestants";
-            pnlMainContestants.Padding = new Padding(350, 100, 350, 100);
+            pnlMainContestants.Padding = new Padding(200, 100, 200, 100);
             pnlMainContestants.Size = new Size(1524, 1041);
             pnlMainContestants.TabIndex = 0;
             // 
@@ -45,6 +45,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
             BackColor = Color.FromArgb(15, 23, 42);
             Controls.Add(pnlMainContestants);
             Name = "PageContestants";

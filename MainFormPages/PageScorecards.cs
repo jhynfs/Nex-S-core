@@ -228,30 +228,30 @@ namespace NexScore.MainFormPages
 <style>
 :root{ --bg:#1e1f2f; --panel:#23264A; --panel2:#2C2E58; --header:#3A3D74; --border:#44496F; --accent:#4E6AF2; --accent-h:#3957D9; --text:#F7F6ED; --danger:#f87171; }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:15px;}
+html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:19px;}
 .page{padding:14px 18px 80px 18px;}
 .controls-bar{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 18px 0;}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px;padding:8px 14px;transition:.15s background;}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:19px;padding:8px 14px;transition:.15s background;}
 .btn:hover{background:var(--accent-h);}
-.btn-small{background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;padding:6px 10px;transition:.15s background;}
+.btn-small{background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:16px;padding:6px 10px;transition:.15s background;}
 .btn-small:hover{background:var(--accent-h);}
 .scorecards{min-width:520px;}
 .scorecard{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:28px;page-break-inside:avoid;}
-.scorecard h3{margin:0 0 12px;font-size:20px;font-weight:600;letter-spacing:.4px;display:flex;align-items:center;gap:10px;}
-.badge{background:var(--header);padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600;}
+.scorecard h3{margin:0 0 12px;font-size:24px;font-weight:600;letter-spacing:.4px;display:flex;align-items:center;gap:10px;}
+.badge{background:var(--header);padding:4px 8px;border-radius:6px;font-size:16px;font-weight:600;}
 .sc-table{width:100%;border-collapse:collapse;margin-top:4px;}
-.sc-table th,.sc-table td{padding:6px 8px;font-size:13px;border-bottom:1px solid var(--border);text-align:left;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.sc-table th,.sc-table td{padding:6px 8px;font-size:17px;border-bottom:1px solid var(--border);text-align:left;font-variant-numeric:tabular-nums;white-space:nowrap;}
 .sc-table th{background:var(--header);font-weight:600;}
 .sc-table td.rank{text-align:center;font-weight:600;}
 .sc-table td.pct{text-align:right;}
-.toggle-crit{cursor:pointer;color:var(--accent);text-decoration:underline;font-size:12px;}
+.toggle-crit{cursor:pointer;color:var(--accent);text-decoration:underline;font-size:16px;}
 .toggle-crit:hover{color:var(--accent-h);}
 .crit-details{display:none;margin-top:8px;background:#2b2e56;padding:10px 12px;border-radius:8px;}
 .crit-details.show{display:block;}
-.crit-row{display:grid;grid-template-columns:150px 130px 1fr 70px;gap:6px;padding:4px 0;border-bottom:1px solid #3a3d74;font-size:12px;}
+.crit-row{display:grid;grid-template-columns:150px 130px 1fr 70px;gap:6px;padding:4px 0;border-bottom:1px solid #3a3d74;font-size:16px;}
 .crit-row:last-child{border-bottom:none;}
 .crit-head{font-weight:600;opacity:.85;}
-.muted{opacity:.75;font-size:13px;padding:4px 2px;}
+.muted{opacity:.75;font-size:17px;padding:4px 2px;}
 @media print{body,html{background:#fff;color:#000;} .controls-bar{display:none!important;} .scorecard h3{color:#000;} .crit-details{background:#eee;color:#000;}}
 </style>
 </head>
@@ -262,7 +262,7 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif
     <button class="btn" id="btnPrint">Print to PDF</button>
   </div>
   <div class="scorecards" id="scorecardsHost">
-    <div style="opacity:.7;font-size:14px;">Waiting for initialization...</div>
+    <div style="opacity:.7;font-size:18px;">Waiting for initialization...</div>
   </div>
   <div class="muted">Printing: choose 'Microsoft Print to PDF'.</div>
 </div>
@@ -290,7 +290,7 @@ async function buildScorecard(j){
       </tr></thead>
       <tbody></tbody>
     </table>
-    <div class='muted'>Link: <span style='font-size:12px;'>${escapeHtml(link)}</span></div>`;
+    <div class='muted'>Link: <span style='font-size:16px;'>${escapeHtml(link)}</span></div>`;
   const tbody=card.querySelector('tbody');
   const enriched=contestants.map(c=>({ contestant:c, fraction:typeof map[c.id]==='number'?map[c.id]:null }))
     .sort((a,b)=>{
@@ -317,11 +317,11 @@ async function buildScorecard(j){
 }
 async function loadAll(){
   const host=document.getElementById('scorecardsHost');
-  host.innerHTML='<div style="opacity:.7;font-size:14px;">Loading scorecards...</div>';
+  host.innerHTML='<div style="opacity:.7;font-size:18px;">Loading scorecards...</div>';
   try{
     if(!initData) throw new Error('Init data missing');
     await loadContestants(); host.innerHTML='';
-    if(!initData.judges || !initData.judges.length){ host.innerHTML='<div style="opacity:.7;font-size:14px;">No judges defined for this event.</div>'; return; }
+    if(!initData.judges || !initData.judges.length){ host.innerHTML='<div style="opacity:.7;font-size:18px;">No judges defined for this event.</div>'; return; }
     for(const j of initData.judges){ await buildScorecard(j); }
   }catch(e){
     host.innerHTML='<div style="color:var(--danger);">Failed to load scorecards.<br>'+escapeHtml(e.message)+'</div>';
@@ -336,10 +336,10 @@ document.addEventListener('click', async e=>{
     const jid=t.dataset.jid, cid=t.dataset.cid; if(!jid||!cid) return;
     let details=t.parentElement.querySelector('.crit-details');
     if(details){ const show=!details.classList.contains('show'); details.classList.toggle('show',show); t.textContent=show?'Hide Criteria':'View Criteria'; return; }
-    details=document.createElement('div'); details.className='crit-details'; details.innerHTML='<div style="font-size:12px;opacity:.7;">Loading...</div>'; t.parentElement.appendChild(details);
+    details=document.createElement('div'); details.className='crit-details'; details.innerHTML='<div style="font-size:16px;opacity:.7;">Loading...</div>'; t.parentElement.appendChild(details);
     try{
       const rows=await fetchJson(initData.baseUrl + '/api/judge-scores?eventId=' + encodeURIComponent(initData.eventId) + '&judgeId=' + encodeURIComponent(jid) + '&contestantId=' + encodeURIComponent(cid));
-      if(!Array.isArray(rows) || rows.length===0){ details.innerHTML='<div style="font-size:12px;opacity:.7;">No criteria scores.</div>'; }
+      if(!Array.isArray(rows) || rows.length===0){ details.innerHTML='<div style="font-size:16px;opacity:.7;">No criteria scores.</div>'; }
       else{
         const wrap=document.createElement('div'); wrap.innerHTML='<div class="crit-row crit-head"><div>Phase</div><div>Segment</div><div>Criteria</div><div style="text-align:right;">Score</div></div>';
         rows.forEach(r=>{
@@ -354,7 +354,7 @@ document.addEventListener('click', async e=>{
       }
       details.classList.add('show'); t.textContent='Hide Criteria';
     }catch(err){
-      details.innerHTML='<div style="color:var(--danger);font-size:12px;">Failed to load.<br>'+escapeHtml(err.message)+'</div>';
+      details.innerHTML='<div style="color:var(--danger);font-size:16px;">Failed to load.<br>'+escapeHtml(err.message)+'</div>';
       details.classList.add('show'); t.textContent='Hide Criteria';
       window.chrome?.webview?.postMessage({type:'scorecards-error', error:err.message});
     }

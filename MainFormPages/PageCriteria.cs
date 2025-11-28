@@ -176,12 +176,12 @@ namespace NexScore.MainFormPages
   --right-gutter: 18px; /* adjust this to add space from the far right edge */
 }}
 
-html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}}
+html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:20px;}}
 .page{{padding:10px 14px 40px 14px;}}
 
 .phase{{margin:14px 0 8px 0;background:{colorPhase};border-radius:2px;}}
 .line{{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
-.phase .title{{font-weight:700;font-size:17px;}}
+.phase .title{{font-weight:700;font-size:21px;}}
 .phase .weight,.segment .weight{{font-weight:700;}}
 
 /* Phase: mirror right gutter only */

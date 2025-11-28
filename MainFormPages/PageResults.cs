@@ -497,10 +497,10 @@ namespace NexScore.MainFormPages
             }
 
             var css = @"
-html,body{margin:0;padding:0;background:transparent;color:#F7F6ED;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}
+html,body{margin:0;padding:0;background:transparent;color:#F7F6ED;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:20px;}
 .page{padding:12px 16px 70px 16px;}
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px 0;}
-.pill{background:#2C2E58;border:1px solid #4c4f8a;color:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:14px;user-select:none;}
+.pill{background:#2C2E58;border:1px solid #4c4f8a;color:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:18px;user-select:none;}
 .pill.active{background:#4E6AF2;border-color:#4E6AF2;}
 .nav{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
 .nav .arrow{cursor:pointer;background:#3A3D74;border-radius:6px;padding:8px 12px;user-select:none;font-weight:600;}
@@ -510,24 +510,24 @@ html,body{margin:0;padding:0;background:transparent;color:#F7F6ED;font-family:'L
 .thead{display:grid;grid-template-columns:80px 80px 1fr 140px 110px 120px 36px;background:#3A3D74;font-weight:700;}
 .th{padding:8px 12px;}
 .th.center{text-align:center;}
-.row{display:grid;grid-template-columns:80px 80px 1fr 140px 110px 120px 36px;background:#2C2E58;margin-top:1px;min-height:34px;align-items:center;font-size:15px;}
+.row{display:grid;grid-template-columns:80px 80px 1fr 140px 110px 120px 36px;background:#2C2E58;margin-top:1px;min-height:34px;align-items:center;font-size:19px;}
 .cell{padding:6px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rank,.no,.score,.status{text-align:center;}
-.toggle{text-align:center;cursor:pointer;user-select:none;opacity:.9;font-size:18px;line-height:1;}
+.toggle{text-align:center;cursor:pointer;user-select:none;opacity:.9;font-size:22px;line-height:1;}
 .toggle.hidden{visibility:hidden;}
 .breakdown{display:none;background:#2A2C54;}
 .breakdown.show{display:block;}
 .inner{padding:10px 16px;}
-.kv{display:grid;grid-template-columns:1fr auto;gap:6px;margin:2px 0;font-size:14px;}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px;margin:2px 0;font-size:18px;}
 .kv .k{color:#C8C7BD;}
 .kv .v{text-align:right;font-variant-numeric:tabular-nums;}
 .muted{opacity:.85;padding:10px;font-size:15px;}
 .view{display:none;} .view.active{display:block;}
 .elim{opacity:.55;filter:grayscale(.4);}
 .name-del{text-decoration:line-through;}
-.btn{background:#4E6AF2;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;padding:6px 10px;}
+.btn{background:#4E6AF2;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:16px;padding:6px 10px;}
 .btn:hover{background:#3957D9;}
-.note{font-size:13px;opacity:.85;margin-bottom:6px;}
+.note{font-size:17px;opacity:.85;margin-bottom:6px;}
 ";
 
             var sb = new StringBuilder();

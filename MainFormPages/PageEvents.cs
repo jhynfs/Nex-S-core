@@ -68,15 +68,15 @@ namespace NexScore
             try
             {
                 HideCaret(c.Handle);
-                
-                if (pnlCurrentEvtDetails != null && pnlCurrentEvtDetails.CanFocus)
-                    pnlCurrentEvtDetails.Focus();
+
+                if (pnlMainEvents != null && pnlMainEvents.CanFocus)
+                    pnlMainEvents.Focus();
                 else
                     this.Focus();
             }
             catch
             {
-               
+
             }
         }
         #endregion

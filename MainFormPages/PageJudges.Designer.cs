@@ -34,10 +34,11 @@
             // pnlMainJudges
             // 
             pnlMainJudges.AutoScroll = true;
+            pnlMainJudges.BackColor = Color.FromArgb(15, 23, 42);
             pnlMainJudges.Dock = DockStyle.Fill;
             pnlMainJudges.Location = new Point(0, 0);
             pnlMainJudges.Name = "pnlMainJudges";
-            pnlMainJudges.Padding = new Padding(400, 150, 400, 150);
+            pnlMainJudges.Padding = new Padding(200, 150, 200, 150);
             pnlMainJudges.Size = new Size(1524, 1041);
             pnlMainJudges.TabIndex = 0;
             // 
@@ -45,6 +46,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
             BackColor = Color.FromArgb(15, 23, 42);
             Controls.Add(pnlMainJudges);
             Name = "PageJudges";

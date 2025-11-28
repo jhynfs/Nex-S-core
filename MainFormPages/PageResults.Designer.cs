@@ -33,10 +33,11 @@
             // 
             // pnlMainResults
             // 
+            pnlMainResults.BackColor = Color.FromArgb(15, 23, 42);
             pnlMainResults.Dock = DockStyle.Fill;
             pnlMainResults.Location = new Point(0, 0);
             pnlMainResults.Name = "pnlMainResults";
-            pnlMainResults.Padding = new Padding(400, 150, 400, 150);
+            pnlMainResults.Padding = new Padding(200, 150, 200, 150);
             pnlMainResults.Size = new Size(1524, 1041);
             pnlMainResults.TabIndex = 0;
             // 
@@ -44,6 +45,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
             BackColor = Color.FromArgb(15, 23, 42);
             Controls.Add(pnlMainResults);
             Name = "PageResults";

@@ -23,11 +23,12 @@ namespace NexScore.MainFormPages
             // pnlMainPhasesCri
             // 
             pnlMainPhasesCri.AutoScroll = true;
+            pnlMainPhasesCri.AutoSize = true;
             pnlMainPhasesCri.BackColor = Color.Transparent;
             pnlMainPhasesCri.Dock = DockStyle.Fill;
             pnlMainPhasesCri.Location = new Point(0, 0);
             pnlMainPhasesCri.Name = "pnlMainPhasesCri";
-            pnlMainPhasesCri.Padding = new Padding(400, 150, 400, 150);
+            pnlMainPhasesCri.Padding = new Padding(200, 150, 200, 150);
             pnlMainPhasesCri.Size = new Size(1524, 1041);
             pnlMainPhasesCri.TabIndex = 0;
             // 
@@ -35,12 +36,14 @@ namespace NexScore.MainFormPages
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
             BackColor = Color.FromArgb(15, 23, 42);
             BackgroundImageLayout = ImageLayout.Stretch;
             Controls.Add(pnlMainPhasesCri);
             Name = "PageCriteria";
             Size = new Size(1524, 1041);
             ResumeLayout(false);
+            PerformLayout();
         }
     }
 }

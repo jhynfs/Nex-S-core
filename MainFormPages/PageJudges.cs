@@ -140,7 +140,7 @@ namespace NexScore.MainFormPages
             string bg = "transparent";
 
             var css = $@"
-html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}}
+html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:20px;}}
 .page{{padding:10px 14px 40px 14px;}}
 .table{{width:100%; border-radius:2px; overflow:hidden;}}
 .thead{{display:grid; grid-template-columns:160px 1fr 140px; background:{colorHeader}; font-weight:700;}}
@@ -150,7 +150,7 @@ html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lex
 .no{{font-weight:600;}}
 .btn-copy{{
   display:inline-block; padding:6px 10px; background:{colorBtn}; color:#fff; border:none;
-  border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;
+  border-radius:6px; cursor:pointer; font-size:17px; font-weight:600;
 }}
 .btn-copy:hover{{ background:{colorBtnHover}; }}
 .muted{{opacity:.85; padding:10px;}}

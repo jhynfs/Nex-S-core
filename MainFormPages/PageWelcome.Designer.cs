@@ -53,13 +53,13 @@
             btnOpenEvent.Anchor = AnchorStyles.None;
             btnOpenEvent.BackColor = Color.FromArgb(53, 55, 102);
             btnOpenEvent.FlatStyle = FlatStyle.Popup;
-            btnOpenEvent.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
+            btnOpenEvent.Font = new Font("Lexend Deca Medium", 16F, FontStyle.Bold);
             btnOpenEvent.ForeColor = Color.FromArgb(247, 246, 237);
             btnOpenEvent.Image = Properties.Resources.file;
             btnOpenEvent.ImageAlign = ContentAlignment.MiddleLeft;
-            btnOpenEvent.Location = new Point(622, 521);
+            btnOpenEvent.Location = new Point(594, 520);
             btnOpenEvent.Name = "btnOpenEvent";
-            btnOpenEvent.Size = new Size(237, 45);
+            btnOpenEvent.Size = new Size(355, 60);
             btnOpenEvent.TabIndex = 1;
             btnOpenEvent.Text = "Open Event";
             btnOpenEvent.UseVisualStyleBackColor = false;
@@ -70,13 +70,13 @@
             btnNewEvent.Anchor = AnchorStyles.None;
             btnNewEvent.BackColor = Color.FromArgb(53, 55, 102);
             btnNewEvent.FlatStyle = FlatStyle.Popup;
-            btnNewEvent.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
+            btnNewEvent.Font = new Font("Lexend Deca Medium", 16F, FontStyle.Bold);
             btnNewEvent.ForeColor = Color.FromArgb(247, 246, 237);
             btnNewEvent.Image = Properties.Resources.plus;
             btnNewEvent.ImageAlign = ContentAlignment.MiddleLeft;
-            btnNewEvent.Location = new Point(622, 455);
+            btnNewEvent.Location = new Point(594, 451);
             btnNewEvent.Name = "btnNewEvent";
-            btnNewEvent.Size = new Size(237, 45);
+            btnNewEvent.Size = new Size(355, 60);
             btnNewEvent.TabIndex = 0;
             btnNewEvent.Text = "New Event";
             btnNewEvent.UseVisualStyleBackColor = false;
@@ -92,14 +92,14 @@
             _pnlEvent.Size = new Size(1524, 1041);
             _pnlEvent.TabIndex = 2;
             // 
-            // PageDashboard
+            // PageWelcome
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             Controls.Add(_pnlNoEvent);
             Controls.Add(_pnlEvent);
-            Name = "PageDashboard";
+            Name = "PageWelcome";
             Size = new Size(1524, 1041);
             _pnlNoEvent.ResumeLayout(false);
             ResumeLayout(false);

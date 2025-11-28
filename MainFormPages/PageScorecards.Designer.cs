@@ -33,10 +33,11 @@
             // 
             // pnlMainScorecards
             // 
+            pnlMainScorecards.BackColor = Color.FromArgb(15, 23, 42);
             pnlMainScorecards.Dock = DockStyle.Fill;
             pnlMainScorecards.Location = new Point(0, 0);
             pnlMainScorecards.Name = "pnlMainScorecards";
-            pnlMainScorecards.Padding = new Padding(400, 150, 400, 150);
+            pnlMainScorecards.Padding = new Padding(200, 150, 200, 150);
             pnlMainScorecards.Size = new Size(1524, 1041);
             pnlMainScorecards.TabIndex = 0;
             // 
@@ -44,7 +45,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(15, 23, 42);
+            AutoSize = true;
+            BackColor = Color.FromArgb(247, 246, 237);
             Controls.Add(pnlMainScorecards);
             Name = "PageScorecards";
             Size = new Size(1524, 1041);

@@ -162,11 +162,11 @@ namespace NexScore.MainFormPages
             string bg = "transparent";
 
             var css = $@"
-html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}}
+html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:20px;}}
 .page{{padding:10px 14px 40px 14px;}}
 .actions{{margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}}
 .filter-select{{padding:6px 10px;border-radius:6px;background:#272a4d;color:{colorText};border:1px solid #444;font-family:'Lexend Deca';}}
-.note{{font-size:12px;opacity:.8;margin-top:4px;}}
+.note{{font-size:16px;opacity:.8;margin-top:4px;}}
 .table{{width:100%;border-radius:2px;overflow:hidden;}}
 .thead{{display:grid;grid-template-columns:84px 90px 1fr 1fr 120px 80px 140px;background:{colorHeader};font-weight:700;}}
 .thead .th{{padding:8px 12px;}}
@@ -176,7 +176,7 @@ html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lex
 .cell{{padding:6px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
 .no,.gender,.age,.status{{text-align:center;}}
 .photo{{padding:6px;}}
-.photo .phobox{{width:64px;height:80px;border-radius:4px;background:#1E2040;display:flex;align-items:center;justify-content:center;color:{colorMuted};font-size:12px;}}
+.photo .phobox{{width:64px;height:80px;border-radius:4px;background:#1E2040;display:flex;align-items:center;justify-content:center;color:{colorMuted};font-size:16px;}}
 .photo img{{width:64px;height:80px;border-radius:4px;object-fit:cover;display:block;background:#111;}}
 .muted{{opacity:.85;padding:10px;}}
 @media (max-width:900px){{.thead,.row{{grid-template-columns:84px 80px 1fr 1fr 110px 70px 130px;}}}}

@@ -56,6 +56,7 @@
             // pnlMainContent
             // 
             pnlMainContent.AutoSize = true;
+            pnlMainContent.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             pnlMainContent.BackColor = Color.FromArgb(15, 23, 42);
             pnlMainContent.BackgroundImageLayout = ImageLayout.Stretch;
             pnlMainContent.Dock = DockStyle.Fill;
@@ -111,17 +112,19 @@
             // 
             // btnDashboard
             // 
+            btnDashboard.AutoSize = true;
+            btnDashboard.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnDashboard.BackColor = Color.FromArgb(53, 55, 102);
             btnDashboard.Dock = DockStyle.Top;
             btnDashboard.FlatAppearance.BorderSize = 0;
             btnDashboard.FlatStyle = FlatStyle.Flat;
-            btnDashboard.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnDashboard.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnDashboard.ForeColor = Color.FromArgb(247, 246, 237);
             btnDashboard.Image = Properties.Resources.material_symbols_dashboard_rounded;
             btnDashboard.ImageAlign = ContentAlignment.MiddleLeft;
             btnDashboard.Location = new Point(5, 87);
             btnDashboard.Name = "btnDashboard";
-            btnDashboard.Size = new Size(370, 45);
+            btnDashboard.Size = new Size(370, 53);
             btnDashboard.TabIndex = 11;
             btnDashboard.Tag = "Welcome";
             btnDashboard.Text = "Welcome";
@@ -132,7 +135,7 @@
             // 
             Separator2.BackColor = Color.FromArgb(23, 23, 23);
             Separator2.Dock = DockStyle.Top;
-            Separator2.Location = new Point(5, 132);
+            Separator2.Location = new Point(5, 140);
             Separator2.Name = "Separator2";
             Separator2.Size = new Size(370, 5);
             Separator2.TabIndex = 12;
@@ -165,17 +168,19 @@
             // 
             // btnScorecards
             // 
+            btnScorecards.AutoSize = true;
+            btnScorecards.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnScorecards.BackColor = Color.FromArgb(55, 53, 105);
             btnScorecards.Dock = DockStyle.Top;
             btnScorecards.FlatAppearance.BorderSize = 0;
             btnScorecards.FlatStyle = FlatStyle.Flat;
-            btnScorecards.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnScorecards.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnScorecards.ForeColor = Color.FromArgb(247, 246, 237);
             btnScorecards.Image = Properties.Resources.tabler_logs;
             btnScorecards.ImageAlign = ContentAlignment.MiddleLeft;
-            btnScorecards.Location = new Point(5, 387);
+            btnScorecards.Location = new Point(5, 435);
             btnScorecards.Name = "btnScorecards";
-            btnScorecards.Size = new Size(370, 45);
+            btnScorecards.Size = new Size(370, 53);
             btnScorecards.TabIndex = 26;
             btnScorecards.Tag = "Scorecards";
             btnScorecards.Text = "Scorecards";
@@ -186,24 +191,26 @@
             // 
             Separator8.BackColor = Color.FromArgb(23, 23, 23);
             Separator8.Dock = DockStyle.Top;
-            Separator8.Location = new Point(5, 382);
+            Separator8.Location = new Point(5, 430);
             Separator8.Name = "Separator8";
             Separator8.Size = new Size(370, 5);
             Separator8.TabIndex = 24;
             // 
             // btnResults
             // 
+            btnResults.AutoSize = true;
+            btnResults.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnResults.BackColor = Color.FromArgb(55, 53, 105);
             btnResults.Dock = DockStyle.Top;
             btnResults.FlatAppearance.BorderSize = 0;
             btnResults.FlatStyle = FlatStyle.Flat;
-            btnResults.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnResults.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnResults.ForeColor = Color.FromArgb(247, 246, 237);
             btnResults.Image = Properties.Resources.counter;
             btnResults.ImageAlign = ContentAlignment.MiddleLeft;
-            btnResults.Location = new Point(5, 337);
+            btnResults.Location = new Point(5, 377);
             btnResults.Name = "btnResults";
-            btnResults.Size = new Size(370, 45);
+            btnResults.Size = new Size(370, 53);
             btnResults.TabIndex = 23;
             btnResults.Tag = "Results";
             btnResults.Text = "Results";
@@ -214,24 +221,26 @@
             // 
             Separator7.BackColor = Color.FromArgb(23, 23, 23);
             Separator7.Dock = DockStyle.Top;
-            Separator7.Location = new Point(5, 332);
+            Separator7.Location = new Point(5, 372);
             Separator7.Name = "Separator7";
             Separator7.Size = new Size(370, 5);
             Separator7.TabIndex = 22;
             // 
             // btnJudges
             // 
+            btnJudges.AutoSize = true;
+            btnJudges.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnJudges.BackColor = Color.FromArgb(55, 53, 105);
             btnJudges.Dock = DockStyle.Top;
             btnJudges.FlatAppearance.BorderSize = 0;
             btnJudges.FlatStyle = FlatStyle.Flat;
-            btnJudges.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnJudges.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnJudges.ForeColor = Color.FromArgb(247, 246, 237);
             btnJudges.Image = Properties.Resources.people;
             btnJudges.ImageAlign = ContentAlignment.MiddleLeft;
-            btnJudges.Location = new Point(5, 287);
+            btnJudges.Location = new Point(5, 319);
             btnJudges.Name = "btnJudges";
-            btnJudges.Size = new Size(370, 45);
+            btnJudges.Size = new Size(370, 53);
             btnJudges.TabIndex = 21;
             btnJudges.Tag = "Judges";
             btnJudges.Text = "Judges";
@@ -242,24 +251,26 @@
             // 
             Separator6.BackColor = Color.FromArgb(23, 23, 23);
             Separator6.Dock = DockStyle.Top;
-            Separator6.Location = new Point(5, 282);
+            Separator6.Location = new Point(5, 314);
             Separator6.Name = "Separator6";
             Separator6.Size = new Size(370, 5);
             Separator6.TabIndex = 20;
             // 
             // btnCriteria
             // 
+            btnCriteria.AutoSize = true;
+            btnCriteria.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnCriteria.BackColor = Color.FromArgb(55, 53, 105);
             btnCriteria.Dock = DockStyle.Top;
             btnCriteria.FlatAppearance.BorderSize = 0;
             btnCriteria.FlatStyle = FlatStyle.Flat;
-            btnCriteria.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnCriteria.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnCriteria.ForeColor = Color.FromArgb(247, 246, 237);
             btnCriteria.Image = Properties.Resources.checklist;
             btnCriteria.ImageAlign = ContentAlignment.MiddleLeft;
-            btnCriteria.Location = new Point(5, 237);
+            btnCriteria.Location = new Point(5, 261);
             btnCriteria.Name = "btnCriteria";
-            btnCriteria.Size = new Size(370, 45);
+            btnCriteria.Size = new Size(370, 53);
             btnCriteria.TabIndex = 19;
             btnCriteria.Tag = "Phases && Criteria";
             btnCriteria.Text = "Phases && Criteria";
@@ -270,24 +281,26 @@
             // 
             Separator5.BackColor = Color.FromArgb(23, 23, 23);
             Separator5.Dock = DockStyle.Top;
-            Separator5.Location = new Point(5, 232);
+            Separator5.Location = new Point(5, 256);
             Separator5.Name = "Separator5";
             Separator5.Size = new Size(370, 5);
             Separator5.TabIndex = 18;
             // 
             // btnContestants
             // 
+            btnContestants.AutoSize = true;
+            btnContestants.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnContestants.BackColor = Color.FromArgb(55, 53, 105);
             btnContestants.Dock = DockStyle.Top;
             btnContestants.FlatAppearance.BorderSize = 0;
             btnContestants.FlatStyle = FlatStyle.Flat;
-            btnContestants.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnContestants.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnContestants.ForeColor = Color.FromArgb(247, 246, 237);
             btnContestants.Image = Properties.Resources.crown;
             btnContestants.ImageAlign = ContentAlignment.MiddleLeft;
-            btnContestants.Location = new Point(5, 187);
+            btnContestants.Location = new Point(5, 203);
             btnContestants.Name = "btnContestants";
-            btnContestants.Size = new Size(370, 45);
+            btnContestants.Size = new Size(370, 53);
             btnContestants.TabIndex = 17;
             btnContestants.Tag = "Contestants";
             btnContestants.Text = "Contestants";
@@ -298,24 +311,26 @@
             // 
             Separator4.BackColor = Color.FromArgb(23, 23, 23);
             Separator4.Dock = DockStyle.Top;
-            Separator4.Location = new Point(5, 182);
+            Separator4.Location = new Point(5, 198);
             Separator4.Name = "Separator4";
             Separator4.Size = new Size(370, 5);
             Separator4.TabIndex = 16;
             // 
             // btnEvents
             // 
+            btnEvents.AutoSize = true;
+            btnEvents.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnEvents.BackColor = Color.FromArgb(55, 53, 105);
             btnEvents.Dock = DockStyle.Top;
             btnEvents.FlatAppearance.BorderSize = 0;
             btnEvents.FlatStyle = FlatStyle.Flat;
-            btnEvents.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnEvents.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
             btnEvents.ForeColor = Color.FromArgb(247, 246, 237);
             btnEvents.Image = Properties.Resources._event;
             btnEvents.ImageAlign = ContentAlignment.MiddleLeft;
-            btnEvents.Location = new Point(5, 137);
+            btnEvents.Location = new Point(5, 145);
             btnEvents.Name = "btnEvents";
-            btnEvents.Size = new Size(370, 45);
+            btnEvents.Size = new Size(370, 53);
             btnEvents.TabIndex = 15;
             btnEvents.Tag = "Event Details";
             btnEvents.Text = "Event Details";
@@ -327,6 +342,7 @@
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScroll = true;
+            AutoSize = true;
             ClientSize = new Size(1904, 1041);
             Controls.Add(pnlMainContent);
             Controls.Add(pnlSidebar);
@@ -337,6 +353,7 @@
             pnlHeading.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             pnlSidebar.ResumeLayout(false);
+            pnlSidebar.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
