@@ -87,12 +87,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources.bg_dark;
+            BackColor = Color.FromArgb(15, 23, 42);
             ClientSize = new Size(716, 811);
             Controls.Add(pnlListContainer);
             Controls.Add(pnlBottom);
             Name = "OpenEventForm";
             Padding = new Padding(25, 15, 25, 15);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "NexScore";
             pnlListContainer.ResumeLayout(false);
             pnlListContainer.PerformLayout();

@@ -298,7 +298,8 @@ namespace NexScore
 
         #endregion
 
-        private void btnDone_Click(object sender, EventArgs e)
+        // CHANGED: make async and set AppSession.CurrentEvent so other pages auto-refresh
+        private async void btnDone_Click(object sender, EventArgs e)
         {
             // Basic guard: ensure we have an event ID
             if (string.IsNullOrWhiteSpace(CurrentEventId))
@@ -316,6 +317,23 @@ namespace NexScore
                 // Minimal JSON payload; expand if you need more metadata.
                 string json = $"{{\"eventId\":\"{CurrentEventId}\"}}";
                 File.WriteAllText(currentEventFile, json);
+
+                // NEW: publish current event so Pages (Criteria, Judges, Contestants, Results) refresh immediately
+                try
+                {
+                    var evt = await Database.Events
+                        .Find(e => e.Id == CurrentEventId)
+                        .FirstOrDefaultAsync();
+
+                    if (evt != null)
+                    {
+                        AppSession.SetCurrentEvent(evt);
+                    }
+                }
+                catch
+                {
+                    // Swallow to not block finalization if DB fetch fails; selection can still happen manually.
+                }
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();

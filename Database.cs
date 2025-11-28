@@ -28,8 +28,6 @@ namespace NexScore
         public static IMongoCollection<AdminModel> Admins => GetCollection<AdminModel>("Admins");
         public static IMongoCollection<EventModel> Events => GetCollection<EventModel>("Events");
         public static IMongoCollection<JudgeModel> Judges => GetCollection<JudgeModel>("Judges");
-
-        // Add other collections used by pages
         public static IMongoCollection<ContestantModel> Contestants => GetCollection<ContestantModel>("Contestants");
         public static IMongoCollection<EventStructureModel> EventStructures => GetCollection<EventStructureModel>("EventStructures");
         public static IMongoCollection<ScoreEntry> Scores => GetCollection<ScoreEntry>("Scores");

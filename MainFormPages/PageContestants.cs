@@ -17,14 +17,15 @@ namespace NexScore.MainFormPages
     {
         private WebView2? _web;
         private bool _isLoading;
-        private string? _lastEventId;
-        private string? _mappedEventFolder; // track current mapping
+        private string? _mappedEventFolder;
+
+        // Adjust host if needed
+        private const string BASE = "http://10.122.178.191:5100";
 
         public PageContestants()
         {
             InitializeComponent();
 
-            // Initialize WebView + load on page load
             this.Load += async (_, __) =>
             {
                 await EnsureWebAsync();
@@ -32,7 +33,6 @@ namespace NexScore.MainFormPages
                     await LoadAndRenderAsync(AppSession.CurrentEvent);
             };
 
-            // Re-render when visible (e.g., tab switch)
             this.VisibleChanged += async (_, __) =>
             {
                 if (this.Visible && AppSession.CurrentEvent != null)
@@ -42,7 +42,6 @@ namespace NexScore.MainFormPages
                 }
             };
 
-            // React to event changes
             AppSession.CurrentEventChanged += async evt =>
             {
                 if (!IsHandleCreated || IsDisposed) return;
@@ -99,8 +98,6 @@ namespace NexScore.MainFormPages
 
         private static string GetPortraitsFolder(string? eventName)
         {
-            // Matches SetupContestants saving location:
-            // %LOCALAPPDATA%\NexScore\Portraits\<EventName>
             var baseFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "NexScore", "Portraits");
@@ -114,7 +111,6 @@ namespace NexScore.MainFormPages
             if (_web?.CoreWebView2 == null) return;
 
             string folder = GetPortraitsFolder(evt.EventName);
-            // Only re-map if folder changes
             if (!string.Equals(folder, _mappedEventFolder, StringComparison.OrdinalIgnoreCase))
             {
                 _web.CoreWebView2.SetVirtualHostNameToFolderMapping(
@@ -134,7 +130,6 @@ namespace NexScore.MainFormPages
             try
             {
                 UseWaitCursor = true;
-
                 await MapEventAssetsAsync(evt);
 
                 var contestants = await Database.Contestants
@@ -144,8 +139,6 @@ namespace NexScore.MainFormPages
 
                 string html = BuildHtml(contestants, evt);
                 _web.NavigateToString(html);
-
-                _lastEventId = evt.Id;
             }
             catch (Exception ex)
             {
@@ -161,71 +154,51 @@ namespace NexScore.MainFormPages
 
         private static string BuildHtml(List<ContestantModel> contestants, EventModel evt)
         {
-            string colorHeader = "#3A3D74"; // header
-            string colorRow = "#2C2E58";    // row background
-            string colorRowAlt = "#2A2C54"; // alt bg for advocacy
+            string colorHeader = "#3A3D74";
+            string colorRow = "#2C2E58";
+            string colorRowAlt = "#2A2C54";
             string colorText = "#F7F6ED";
             string colorMuted = "#C8C7BD";
             string bg = "transparent";
 
-            // Grid columns (desktop): Photo | No. | Name | Representing | Gender | Age | ▾
-            // Small screens hide Age & Gender; tiny screens also hide Representing.
             var css = $@"
-html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:14px;}}
+html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}}
 .page{{padding:10px 14px 40px 14px;}}
-
-.table{{width:100%; border-radius:2px; overflow:hidden;}}
-.thead{{display:grid; grid-template-columns:84px 90px 1fr 1fr 120px 80px 28px; background:{colorHeader}; font-weight:700;}}
+.actions{{margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}}
+.filter-select{{padding:6px 10px;border-radius:6px;background:#272a4d;color:{colorText};border:1px solid #444;font-family:'Lexend Deca';}}
+.note{{font-size:12px;opacity:.8;margin-top:4px;}}
+.table{{width:100%;border-radius:2px;overflow:hidden;}}
+.thead{{display:grid;grid-template-columns:84px 90px 1fr 1fr 120px 80px 140px;background:{colorHeader};font-weight:700;}}
 .thead .th{{padding:8px 12px;}}
-.thead .th.center{{text-align:center;}}  /* center selected header cells */
-.row{{display:grid; grid-template-columns:84px 90px 1fr 1fr 120px 80px 28px; background:{colorRow}; margin-top:1px; min-height:28px; align-items:center;}}
-.cell{{padding:6px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}}
-.no, .gender, .age{{text-align:center;}}
+.thead .th.center{{text-align:center;}}
+.row{{display:grid;grid-template-columns:84px 90px 1fr 1fr 120px 80px 140px;background:{colorRow};margin-top:1px;min-height:32px;align-items:center;transition:.25s;}}
+.row.eliminated{{opacity:.55;filter:grayscale(.4);}}
+.cell{{padding:6px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
+.no,.gender,.age,.status{{text-align:center;}}
 .photo{{padding:6px;}}
-.photo .phobox{{width:64px;height:80px;border-radius:4px;background:#1E2040;display:flex;align-items:center;justify-content:center;color:{colorMuted};font-size:11px;}}
+.photo .phobox{{width:64px;height:80px;border-radius:4px;background:#1E2040;display:flex;align-items:center;justify-content:center;color:{colorMuted};font-size:12px;}}
 .photo img{{width:64px;height:80px;border-radius:4px;object-fit:cover;display:block;background:#111;}}
-.toggle{{text-align:center;cursor:pointer;user-select:none;color:{colorText};opacity:.9;}}
-.toggle.hidden{{visibility:hidden;}}
-
-.adv-row{{display:none; background:{colorRowAlt};}}
-.adv-row.show{{display:block;}}
-.adv-cell{{grid-column: 1 / -1; padding:10px 14px; color:{colorText}; line-height:1.35; white-space:pre-wrap; word-break:break-word;}}
-.adv-muted{{opacity:.9; color:{colorMuted};}}
-
-.muted{{opacity:.85; padding:10px;}}
-
-/* Responsive tweaks */
-@media (max-width: 900px) {{
-  .thead, .row {{ grid-template-columns:84px 80px 1fr 1fr 100px 70px 28px; }}
-}}
-@media (max-width: 730px) {{
-  .thead, .row {{ grid-template-columns:84px 70px 1fr 1fr 100px 0px 28px; }} /* hide Age col by giving 0px */
-  .age{{ display:none; }}
-}}
-@media (max-width: 560px) {{
-  .thead, .row {{ grid-template-columns:84px 64px 1fr 0px 100px 0px 28px; }} /* hide Representing + Age */
-  .rep{{ display:none; }}
-  .age{{ display:none; }}
-}}
+.muted{{opacity:.85;padding:10px;}}
+@media (max-width:900px){{.thead,.row{{grid-template-columns:84px 80px 1fr 1fr 110px 70px 130px;}}}}
+@media (max-width:730px){{.thead,.row{{grid-template-columns:84px 70px 1fr 1fr 110px 0px 130px;}} .age{{display:none;}}}}
+@media (max-width:560px){{.thead,.row{{grid-template-columns:84px 64px 1fr 0px 90px 0px 120px;}} .rep{{display:none;}} .age{{display:none;}}}}
 ";
 
-            // IMPORTANT: Collapsible advocacy logic (was missing if JS removed)
-            var js = @"
-document.addEventListener('click', function (e) {
-  const t = e.target;
-  if (t && t.classList.contains('toggle')) {
-    const id = t.getAttribute('data-target');
-    if (!id) return;
-    const row = document.getElementById(id);
-    if (!row) return;
-    const isOpen = row.classList.toggle('show');
-    t.textContent = isOpen ? '▾' : '▸';
-  }
-});";
-
+            var portraitsFolder = GetPortraitsFolder(evt.EventName);
             var sb = new StringBuilder();
-            sb.Append("<!doctype html><html><head><meta charset='utf-8'>");
-            sb.Append("<style>").Append(css).Append("</style></head><body><div class='page'>");
+            sb.Append("<!doctype html><html><head><meta charset='utf-8'><style>")
+              .Append(css)
+              .Append("</style></head><body><div class='page'>");
+
+            sb.Append("<div class='actions'>")
+              .Append("<label style='font-weight:600;'>Filter:</label>")
+              .Append("<select class='filter-select' id='flt'>")
+              .Append("<option value='all'>All</option>")
+              .Append("<option value='active'>Active Only</option>")
+              .Append("<option value='elim'>Eliminated Only</option>")
+              .Append("</select>")
+              .Append("<div class='note'>Use the Results page to eliminate / restore contestants. This list always loads all.</div>")
+              .Append("</div>");
 
             sb.Append("<div class='table'>");
             sb.Append("<div class='thead'>")
@@ -235,29 +208,24 @@ document.addEventListener('click', function (e) {
               .Append("<div class='th'>Representing</div>")
               .Append("<div class='th center'>Gender</div>")
               .Append("<div class='th center'>Age</div>")
-              .Append("<div class='th'></div>")
+              .Append("<div class='th center'>Status</div>")
               .Append("</div>");
 
-            if (contestants == null || contestants.Count == 0)
+            if (contestants.Count == 0)
             {
-                sb.Append("<div class='muted'>No contestants defined for this event.</div>");
+                sb.Append("<div class='muted'>No contestants defined.</div>");
             }
             else
             {
-                string portraitsFolder = GetPortraitsFolder(evt.EventName);
-                int idx = 0;
                 foreach (var c in contestants)
                 {
-                    string id = $"adv_{idx++}";
-                    string no = c.Number.ToString() ?? "—";
+                    string no = c.Number.ToString();
                     string name = (c.FullName ?? "").Trim();
                     string rep = (c.Representing ?? "").Trim();
                     string gender = (c.Gender ?? "").Trim();
                     string age = c.Age.HasValue ? c.Age.Value.ToString() : "";
-                    string advocacy = (c.Advocacy ?? "").Trim();
                     string photo = (c.PhotoPath ?? "").Trim();
-
-                    // Photo handling: map file to https://appassets/<filename> if it lives in the portraits folder.
+                    bool active = c.IsActive;
                     string photoHtml;
                     try
                     {
@@ -279,38 +247,42 @@ document.addEventListener('click', function (e) {
                         photoHtml = "<div class='phobox'>No photo</div>";
                     }
 
-                    bool hasAdv = !string.IsNullOrWhiteSpace(advocacy);
+                    sb.Append("<div class='row")
+                      .Append(active ? "" : " eliminated")
+                      .Append("' data-active='").Append(active ? "1" : "0").Append("'>");
 
-                    // Main row
-                    sb.Append("<div class='row'>")
-                      .Append("<div class='cell photo'>").Append(photoHtml).Append("</div>")
-                      .Append("<div class='cell no'>").Append(WebUtility.HtmlEncode(no)).Append("</div>")
-                      .Append("<div class='cell'>").Append(WebUtility.HtmlEncode(name)).Append("</div>")
-                      .Append("<div class='cell rep'>").Append(WebUtility.HtmlEncode(rep)).Append("</div>")
-                      .Append("<div class='cell gender'>").Append(WebUtility.HtmlEncode(gender)).Append("</div>")
-                      .Append("<div class='cell age'>").Append(WebUtility.HtmlEncode(age)).Append("</div>");
-
-                    // Chevron toggle (hidden if no advocacy)
-                    if (hasAdv)
-                        sb.Append("<div class='cell toggle' data-target='").Append(id).Append("'>▸</div>");
-                    else
-                        sb.Append("<div class='cell toggle hidden'></div>");
-
-                    sb.Append("</div>"); // end main row
-
-                    // Advocacy row (collapsed by default)
-                    if (hasAdv)
-                    {
-                        sb.Append("<div class='row adv-row' id='").Append(id).Append("'>")
-                          .Append("<div class='adv-cell'>")
-                          .Append(WebUtility.HtmlEncode(advocacy))
-                          .Append("</div></div>");
-                    }
+                    sb.Append("<div class='cell photo'>").Append(photoHtml).Append("</div>");
+                    sb.Append("<div class='cell no'>").Append(WebUtility.HtmlEncode(no)).Append("</div>");
+                    sb.Append("<div class='cell name'>").Append(WebUtility.HtmlEncode(name)).Append("</div>");
+                    sb.Append("<div class='cell rep'>").Append(WebUtility.HtmlEncode(rep)).Append("</div>");
+                    sb.Append("<div class='cell gender'>").Append(WebUtility.HtmlEncode(gender)).Append("</div>");
+                    sb.Append("<div class='cell age'>").Append(WebUtility.HtmlEncode(age)).Append("</div>");
+                    sb.Append("<div class='cell status'>").Append(active ? "Active" : "Eliminated").Append("</div>");
+                    sb.Append("</div>");
                 }
             }
 
-            sb.Append("</div>"); // table
-            sb.Append("</div><script>").Append(js).Append("</script></body></html>");
+            sb.Append("</div>");
+
+            sb.Append(@"
+<script>
+(function(){
+  const flt = document.getElementById('flt');
+  function applyFilter(){
+    const val = flt.value;
+    document.querySelectorAll('.row').forEach(r=>{
+      const a = r.getAttribute('data-active');
+      if(val==='all'){ r.style.display='grid'; }
+      else if(val==='active'){ r.style.display = a==='1' ? 'grid' : 'none'; }
+      else if(val==='elim'){ r.style.display = a==='0' ? 'grid' : 'none'; }
+    });
+  }
+  flt.addEventListener('change', applyFilter);
+  applyFilter();
+})();
+</script>");
+
+            sb.Append("</div></body></html>");
             return sb.ToString();
         }
     }

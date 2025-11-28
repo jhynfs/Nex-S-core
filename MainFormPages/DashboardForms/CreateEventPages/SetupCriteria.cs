@@ -189,7 +189,12 @@ namespace NexScore
         private PhaseControl CreatePhaseControl()
         {
             var phase = new PhaseControl();
-            phase.txtPhaseWeight.TextChanged += (s, e) => UpdateEventTotalWeightLabel();
+            phase.txtPhaseWeight.TextChanged += (s, e) =>
+            {
+                // Update both event total and this phase's total status (now compared to phase weight)
+                UpdateEventTotalWeightLabel();
+                phase.UpdatePhaseTotalWeightLabel();
+            };
             phase.txtPhaseName.TextChanged += (s, e) => ValidateNameDuplicates(phase.txtPhaseName);
 
             phase.btnAddSegment.Click += (s, e) =>
@@ -221,6 +226,8 @@ namespace NexScore
 
             segment.txtSegmentWeight.TextChanged += (s, e) =>
             {
+                // Threshold changes -> update own label and parent totals
+                segment.UpdateSegmentTotalWeightLabel();
                 parentPhase.UpdatePhaseTotalWeightLabel();
                 UpdateEventTotalWeightLabel();
             };
@@ -295,8 +302,13 @@ namespace NexScore
             return true;
         }
 
+        // Validation rules:
+        // - Event (non-independent phases) must total 100
+        // - Each phase's segments must total EXACTLY the phase's weight (independent phases have 100)
+        // - Each segment's criteria must total EXACTLY the segment's weight
         public bool ValidateTotals()
         {
+            // Event total (non-independent phases)
             decimal eventTotal = _flowMain.Controls.OfType<PhaseControl>()
                 .Where(p => !p.chkIndependentPhase.Checked)
                 .Sum(p => decimal.TryParse(p.txtPhaseWeight.Text, out var w) ? w : 0m);
@@ -304,21 +316,38 @@ namespace NexScore
 
             foreach (var phase in _flowMain.Controls.OfType<PhaseControl>())
             {
-                decimal phaseTotal = 0;
+                // Phase weight threshold
+                decimal phaseWeight = phase.chkIndependentPhase.Checked
+                    ? 100m
+                    : (decimal.TryParse(phase.txtPhaseWeight.Text, out var pw) ? pw : 0m);
+
+                // Sum of segments under this phase
+                decimal sumSegments = 0m;
                 foreach (var seg in phase.flowSegment.Controls.OfType<SegmentControl>())
                 {
-                    phaseTotal += decimal.TryParse(seg.txtSegmentWeight.Text, out var sw) ? sw : 0m;
+                    sumSegments += decimal.TryParse(seg.txtSegmentWeight.Text, out var sw) ? sw : 0m;
 
+                    // Criteria sum must equal segment weight
                     var criteriaControls = seg.flowCriteria.Controls.OfType<CriteriaControl>().ToList();
                     if (criteriaControls.Count > 0)
                     {
-                        decimal critTotal = 0;
+                        decimal sumCriteria = 0m;
                         foreach (var crit in criteriaControls)
-                            critTotal += decimal.TryParse(crit.txtCriteriaWeight.Text, out var cw) ? cw : 0m;
-                        if (critTotal != 100m) return false;
+                            sumCriteria += decimal.TryParse(crit.txtCriteriaWeight.Text, out var cw) ? cw : 0m;
+
+                        decimal segWeight = decimal.TryParse(seg.txtSegmentWeight.Text, out var sww) ? sww : 0m;
+                        if (sumCriteria != segWeight) return false; // must be exact
+                    }
+                    else
+                    {
+                        // no criteria controls present means cannot equal intended segment weight (unless 0), let label logic show red; still enforce exact match
+                        decimal segWeight = decimal.TryParse(seg.txtSegmentWeight.Text, out var sww2) ? sww2 : 0m;
+                        if (segWeight != 0m) return false;
                     }
                 }
-                if (phaseTotal != 100m) return false;
+
+                // Segments must equal the phase weight exactly
+                if (sumSegments != phaseWeight) return false;
             }
             return true;
         }
@@ -384,8 +413,8 @@ namespace NexScore
             if (!inputsOk || !totalsOk || !uniquesOk)
             {
                 _toolTipCriteria.Show(
-                    "Cannot save. Ensure names are unique and required totals are 100.",
-                    btnSaveCriteria, 10, -30, 2800);
+                    "Cannot save. Ensure unique names and that: (1) non-independent phases total 100, (2) each phase's segments equal the phase weight, (3) each segment's criteria equal the segment weight.",
+                    btnSaveCriteria, 10, -30, 3800);
                 CriteriaValidityChanged?.Invoke(false);
                 CriteriaSaved?.Invoke(false);
                 return;
@@ -524,8 +553,20 @@ namespace NexScore
                             else
                                 tb.BackColor = Color.White;
 
+                            // Update thresholds when weights change
                             if (tb.Name.Contains("PhaseWeight"))
+                            {
                                 UpdateEventTotalWeightLabel();
+                                var phase = FindPhaseParent(tb);
+                                phase?.UpdatePhaseTotalWeightLabel();
+                            }
+                            else if (tb.Name.Contains("SegmentWeight"))
+                            {
+                                var segment = FindSegmentParent(tb);
+                                segment?.UpdateSegmentTotalWeightLabel();
+                                var phase = FindPhaseParent(tb);
+                                phase?.UpdatePhaseTotalWeightLabel();
+                            }
                         }
                         else if (isName)
                         {

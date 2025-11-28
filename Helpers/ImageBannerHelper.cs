@@ -13,7 +13,6 @@ namespace NexScore.Helpers
         public const int TargetHeight = 400;
         public const double TargetAspect = 4.0;
 
-        // Allow tiny rounding differences (set to 0.0 for exact)
         public const double AspectTolerance = 0.005; // 0.5%
 
         public static bool IsFourToOne(int width, int height, double tolerance = 0.0)
@@ -35,14 +34,12 @@ namespace NexScore.Helpers
 
             using var original = LoadClone(sourcePath);
 
-            // At this point we assume ratio already validated in UI.
             using var resized = ResizeToExact(original, TargetWidth, TargetHeight);
 
             SaveJpeg(resized, destPath, jpegQuality);
             return destPath;
         }
 
-        // NEW: Save banner using a provided base name (event name), always overwriting
         public static string ProcessBannerToManagedCopyWithBaseName(
             string sourcePath,
             string managedFolder,
@@ -57,7 +54,6 @@ namespace NexScore.Helpers
             using var original = LoadClone(sourcePath);
             using var resized = ResizeToExact(original, TargetWidth, TargetHeight);
 
-            // Overwrite existing file for this event name
             SaveJpeg(resized, destPath, jpegQuality);
             return destPath;
         }
@@ -96,7 +92,6 @@ namespace NexScore.Helpers
             using var encParams = new EncoderParameters(1);
             encParams.Param[0] = new EncoderParameter(Encoder.Quality, quality);
 
-            // Ensure overwrite
             img.Save(path, jpegEncoder, encParams);
         }
 
@@ -113,7 +108,6 @@ namespace NexScore.Helpers
             return baseName + newExtension;
         }
 
-        // NEW: Build safe filename from arbitrary base (event name)
         private static string BuildSafeFileName(string baseName, string newExtension)
         {
             baseName = baseName ?? string.Empty;

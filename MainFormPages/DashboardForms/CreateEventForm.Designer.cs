@@ -73,7 +73,7 @@
             // 
             btnDone.BackColor = Color.FromArgb(53, 55, 102);
             btnDone.FlatStyle = FlatStyle.Popup;
-            btnDone.Font = new Font("Lexend Deca", 9F);
+            btnDone.Font = new Font("Lexend Deca", 11F);
             btnDone.ForeColor = Color.FromArgb(247, 246, 237);
             btnDone.Location = new Point(60, 796);
             btnDone.Name = "btnDone";
@@ -98,7 +98,7 @@
             btnAddContestants.Dock = DockStyle.Top;
             btnAddContestants.FlatAppearance.BorderSize = 0;
             btnAddContestants.FlatStyle = FlatStyle.Flat;
-            btnAddContestants.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAddContestants.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
             btnAddContestants.ForeColor = Color.FromArgb(247, 246, 237);
             btnAddContestants.ImageAlign = ContentAlignment.MiddleLeft;
             btnAddContestants.Location = new Point(5, 177);
@@ -125,7 +125,7 @@
             btnAddJudges.Dock = DockStyle.Top;
             btnAddJudges.FlatAppearance.BorderSize = 0;
             btnAddJudges.FlatStyle = FlatStyle.Flat;
-            btnAddJudges.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAddJudges.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
             btnAddJudges.ForeColor = Color.FromArgb(247, 246, 237);
             btnAddJudges.ImageAlign = ContentAlignment.MiddleLeft;
             btnAddJudges.Location = new Point(5, 137);
@@ -152,7 +152,7 @@
             btnAddCriteria.Dock = DockStyle.Top;
             btnAddCriteria.FlatAppearance.BorderSize = 0;
             btnAddCriteria.FlatStyle = FlatStyle.Flat;
-            btnAddCriteria.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAddCriteria.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
             btnAddCriteria.ForeColor = Color.FromArgb(247, 246, 237);
             btnAddCriteria.ImageAlign = ContentAlignment.MiddleLeft;
             btnAddCriteria.Location = new Point(5, 97);
@@ -179,7 +179,7 @@
             btnDetails.Dock = DockStyle.Top;
             btnDetails.FlatAppearance.BorderSize = 0;
             btnDetails.FlatStyle = FlatStyle.Flat;
-            btnDetails.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnDetails.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
             btnDetails.ForeColor = Color.FromArgb(247, 246, 237);
             btnDetails.ImageAlign = ContentAlignment.MiddleLeft;
             btnDetails.Location = new Point(5, 57);
@@ -222,7 +222,7 @@
             // 
             // pnlEventSetup
             // 
-            pnlEventSetup.BackgroundImage = Properties.Resources.bg_dark;
+            pnlEventSetup.BackColor = Color.FromArgb(15, 23, 42);
             pnlEventSetup.Dock = DockStyle.Fill;
             pnlEventSetup.Location = new Point(192, 0);
             pnlEventSetup.Name = "pnlEventSetup";
@@ -233,7 +233,6 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources.bg_dark;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(998, 837);
             Controls.Add(pnlEventSetup);
@@ -241,6 +240,7 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "CreateEventForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "NexScore";
             pnlSidebar.ResumeLayout(false);
             pnlHeading.ResumeLayout(false);

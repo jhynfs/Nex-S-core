@@ -30,6 +30,15 @@ namespace NexScore.CreateEventPages.SetupCriteriaControls
             // PLACEHOLDER
             PlaceholderHelper.SetPlaceholder(_txtSegmentName, "(e.g. Technical Skill, Evening Gown)");
             PlaceholderHelper.SetPlaceholder(_txtSegmentWeight, "1-100%");
+
+            // Re-evaluate criteria total color relative to new threshold
+            _txtSegmentWeight.TextChanged += (s, e) =>
+            {
+                UpdateSegmentTotalWeightLabel();
+                var phase = FindParentPhase(this);
+                phase?.UpdatePhaseTotalWeightLabel();
+                (phase?.Parent?.Parent as SetupCriteria)?.UpdateEventTotalWeightLabel();
+            };
         }
 
         private void OnRemoveSegmentClicked()
@@ -76,6 +85,7 @@ namespace NexScore.CreateEventPages.SetupCriteriaControls
             UpdateSegmentTotalWeightLabel();
         }
 
+        // Color logic relative to the segment weight threshold (must be equal)
         public void UpdateSegmentTotalWeightLabel()
         {
             var crits = flowCriteria.Controls.OfType<CriteriaControl>().ToList();
@@ -83,14 +93,16 @@ namespace NexScore.CreateEventPages.SetupCriteriaControls
 
             _lblSegmentTotalWeight.Text = total.ToString("0.##");
 
-            if (crits.Count == 0)
+            decimal segWeight;
+            bool parsed = decimal.TryParse(txtSegmentWeight.Text, out segWeight);
+
+            if (!parsed)
             {
-                _lblSegmentTotalWeight.ForeColor = SystemColors.ControlText;
+                _lblSegmentTotalWeight.ForeColor = Color.Red;
+                return;
             }
-            else
-            {
-                _lblSegmentTotalWeight.ForeColor = (total == 100m ? Color.Green : Color.Red);
-            }
+
+            _lblSegmentTotalWeight.ForeColor = (total == segWeight) ? Color.Green : Color.Red;
         }
 
         private PhaseControl? FindParentPhase(Control control)

@@ -12,7 +12,6 @@ namespace NexScore.Helpers
         {
             var judges = container.Controls.OfType<AddJudgeControl>().ToList();
 
-            // Clear only duplicate errors
             foreach (var j in judges)
                 if (ep.GetError(j.txtJudgeName) == "Duplicate judge name")
                     ep.SetError(j.txtJudgeName, "");

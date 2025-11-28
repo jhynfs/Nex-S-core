@@ -83,7 +83,6 @@ namespace NexScore.Helpers
             return ok;
         }
 
-        // Incremental scopes:
         public static void PhaseScope(FlowLayoutPanel flowMain, PhaseControl changed, ErrorProvider ep)
             => ValidateUniquePhaseNames(flowMain, ep);
 

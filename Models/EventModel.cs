@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -13,7 +10,9 @@ namespace NexScore.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        public string EventId { get; set; }
+
+        public string EventId { get; set; } // Human code (not used for linking in your current scoring)
+
         [BsonElement("eventName")]
         public string EventName { get; set; }
 
@@ -35,6 +34,7 @@ namespace NexScore.Models
         [BsonElement("bannerPath")]
         public string? BannerPath { get; set; }
     }
+
     public class PhaseModel
     {
         [BsonElement("sequence")]
@@ -47,6 +47,7 @@ namespace NexScore.Models
         [BsonRepresentation(BsonType.Decimal128)]
         public decimal Weight { get; set; }
         public bool IsIndependent { get; set; }
+
         [BsonElement("segments")]
         public List<SegmentModel> Segments { get; set; } = new();
     }
@@ -134,10 +135,59 @@ namespace NexScore.Models
         [BsonElement("photoPath")]
         public string? PhotoPath { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    }
+
+    // Transitional ScoreEntry mapping:
+    // _id stored as ObjectId (sample doc shows this)
+    // EventId / ContestantId stored as simple string (sample doc shows uppercase field names with values that LOOK like ObjectId strings)
+    // We DO NOT force them to ObjectId right now to avoid filter misses if stored as strings.
+    [BsonIgnoreExtraElements]
+    public class ScoreEntry
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        // Stored field name is "EventId" (uppercase) because you did not annotate with [BsonElement]
+        public string EventId { get; set; } = default!;
+
+        public string ContestantId { get; set; } = default!;
+        public string JudgeId { get; set; } = default!;
+        public string PhaseId { get; set; } = default!;
+        public string SegmentId { get; set; } = default!;
+        public string CriteriaId { get; set; } = default!;
+        public double RawValue { get; set; }
+        public double MaxValue { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsFinalized { get; set; } = false;
+    }
+
+    [BsonIgnoreExtraElements]
+    public class AggregatedScore
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string EventId { get; set; } = default!;
+
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ContestantId { get; set; } = default!;
+
+        public double EventScore { get; set; }
+        public Dictionary<string, double> PhaseScores { get; set; } = new();
+        public Dictionary<string, double> IndependentPhaseScores { get; set; } = new();
+        public DateTime ComputedAt { get; set; } = DateTime.UtcNow;
+        public int Rank { get; set; }
+        public string? TieBreakInfo { get; set; }
     }
 }

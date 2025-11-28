@@ -74,22 +74,22 @@
             // _lblPhaseTotalWeight
             // 
             _lblPhaseTotalWeight.AutoSize = true;
-            _lblPhaseTotalWeight.Font = new Font("Lexend Deca Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _lblPhaseTotalWeight.Font = new Font("Lexend Deca Medium", 10F, FontStyle.Bold);
             _lblPhaseTotalWeight.ForeColor = Color.FromArgb(247, 246, 237);
-            _lblPhaseTotalWeight.Location = new Point(192, 40);
+            _lblPhaseTotalWeight.Location = new Point(212, 40);
             _lblPhaseTotalWeight.Name = "_lblPhaseTotalWeight";
-            _lblPhaseTotalWeight.Size = new Size(17, 19);
+            _lblPhaseTotalWeight.Size = new Size(19, 22);
             _lblPhaseTotalWeight.TabIndex = 28;
             _lblPhaseTotalWeight.Text = "0";
             // 
             // lblforPhaseTotal
             // 
             lblforPhaseTotal.AutoSize = true;
-            lblforPhaseTotal.Font = new Font("Lexend Deca Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblforPhaseTotal.Font = new Font("Lexend Deca Medium", 10F, FontStyle.Bold);
             lblforPhaseTotal.ForeColor = Color.FromArgb(247, 246, 237);
             lblforPhaseTotal.Location = new Point(41, 40);
             lblforPhaseTotal.Name = "lblforPhaseTotal";
-            lblforPhaseTotal.Size = new Size(145, 19);
+            lblforPhaseTotal.Size = new Size(165, 22);
             lblforPhaseTotal.TabIndex = 27;
             lblforPhaseTotal.Text = "Total Segment Weight:";
             // 
@@ -154,7 +154,7 @@
             // 
             _btnAddSegment.BackColor = Color.FromArgb(53, 55, 102);
             _btnAddSegment.FlatStyle = FlatStyle.Popup;
-            _btnAddSegment.Font = new Font("Lexend Deca", 9F);
+            _btnAddSegment.Font = new Font("Lexend Deca", 10F);
             _btnAddSegment.ForeColor = Color.FromArgb(247, 246, 237);
             _btnAddSegment.Location = new Point(578, 86);
             _btnAddSegment.Margin = new Padding(2);

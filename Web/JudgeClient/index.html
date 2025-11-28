@@ -1,201 +1,1047 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Judge Scoring Panel</title>
+    <title>NexScore Judge Panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #1e1f2f;
             --panel: #2c2e58;
-            --panel2: #3a3d74;
-            --text: #f7f6ed;
-            --muted: #c8c7bd;
+            --panel2: #272a4d;
+            --accent: #4E6AF2;
             --ok: #4ade80;
             --err: #f87171;
-            --accent: #4e6af2;
-            --border: #2c2e58;
+            --warn: #f5ce62;
+            --text: #f7f6ed;
+            --banner-height: 180px;
+            --banner-blur: 4px;
+            --fs-body: 15px;
+            --fs-small: 13px;
+            --fs-label: 16px;
+            --fs-button: 15px;
+            --fs-h1: 34px;
+            --fs-judge: 19px;
+            --fs-phase-label: 18px;
+            --fs-segment: 14px;
+            --fs-candidate-name: 20px;
+            --fs-crit-title: 16px;
+            --fs-crit-weight: 12px;
+            --fs-table-h: 15px;
+            --fs-table-cell: 14px;
         }
 
-        html, body {
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Lexend Deca',Segoe UI,Arial,sans-serif;
+            font-size: var(--fs-body);
             background: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-        }
-
-        .container {
-            padding: 16px;
-        }
-
-        h2, h3 {
-            margin: 8px 0 12px;
-        }
-
-        .row {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin: 8px 0;
+            min-height: 100vh;
         }
 
-        label {
+        .sidebar {
+            width: 310px;
+            background: var(--panel);
+            padding: 18px 18px 24px;
             display: flex;
             flex-direction: column;
-            font-size: 12px;
-            color: var(--muted);
+            overflow-y: auto;
         }
 
-        select, input[type="number"], input[type="text"] {
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--panel);
-            color: var(--text);
-            min-width: 160px;
-        }
+            .sidebar h2 {
+                margin: 0 0 16px;
+                font-size: var(--fs-label);
+                font-weight: 600;
+                text-align: center;
+                letter-spacing: .5px;
+            }
 
-        input[readonly] {
-            opacity: .9;
-        }
-
-        button {
-            padding: 8px 14px;
-            background: var(--accent);
-            border: none;
-            color: #fff;
-            border-radius: 6px;
+        .candidate-item {
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
+            margin-bottom: 8px;
+            background: var(--panel2);
+            font-size: var(--fs-small);
+            font-weight: 500;
+            line-height: 1.35;
+            transition: .15s background;
         }
 
-            button:disabled {
-                opacity: .6;
+            .candidate-item:hover {
+                background: #323464;
+            }
+
+            .candidate-item.active {
+                background: var(--accent);
+                color: #fff;
+            }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .banner-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--banner-height);
+            background: #20253d;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+            .banner-bg img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                filter: blur(var(--banner-blur)) brightness(0.85);
+            }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--banner-height);
+            background: linear-gradient( to bottom, rgba(30,31,47,0.35), rgba(30,31,47,0.55) 40%, rgba(30,31,47,0.75) 75%, var(--bg) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .header {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 36px 16px 14px;
+            min-height: var(--banner-height);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: var(--fs-h1);
+                font-weight: 600;
+                letter-spacing: .6px;
+            }
+
+            .header .judge-line {
+                margin-top: 10px;
+                font-size: var(--fs-judge);
+                font-weight: 500;
+                opacity: .95;
+            }
+
+        .warn {
+            color: var(--warn);
+            font-size: var(--fs-small);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 26px 48px;
+            z-index: 2;
+        }
+
+        .phase-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin: 0 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .phase-btn {
+            background: var(--panel2);
+            color: var(--text);
+            border: 1px solid #46508b;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: var(--fs-button);
+            min-width: 70px;
+            letter-spacing: .3px;
+            transition: .18s background;
+        }
+
+            .phase-btn:hover:not(:disabled) {
+                background: #343869;
+            }
+
+            .phase-btn:disabled {
+                opacity: .35;
                 cursor: not-allowed;
             }
 
-        .panel {
+        .phase-label {
+            font-size: var(--fs-phase-label);
+            font-weight: 600;
+            padding: 10px 22px;
             background: var(--panel2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 12px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 300px;
+            letter-spacing: .4px;
         }
+
+        .segment-label {
+            font-size: var(--fs-segment);
+            opacity: .75;
+            text-align: center;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .candidate-details {
+            background: var(--panel);
+            padding: 18px 20px;
+            border-radius: 14px;
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .cand-photo-box {
+            width: 150px;
+            height: 195px;
+            background: #11193b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #b9b9d2;
+            overflow: hidden;
+        }
+
+            .cand-photo-box img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+        .cand-info {
+            flex: 1;
+            min-width: 240px;
+            line-height: 1.5;
+            font-size: var(--fs-small);
+        }
+
+            .cand-info h3 {
+                margin: 0 0 6px;
+                font-size: var(--fs-candidate-name);
+                font-weight: 600;
+                letter-spacing: .4px;
+            }
+
+        .cand-meta {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 6px 12px;
+            font-size: var(--fs-small);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+            .cand-meta div {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+        .criteria-section {
+            background: var(--panel);
+            padding: 18px 20px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+            .criteria-section h2 {
+                margin: 0 0 14px;
+                font-size: 22px;
+                font-weight: 600;
+                letter-spacing: .5px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+
+                .criteria-section h2 .progress {
+                    font-size: 12px;
+                    font-weight: 600;
+                    background: #272a4d;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    letter-spacing: .5px;
+                }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+            gap: 18px;
+        }
+
+        .crit-card {
+            background: var(--panel2);
+            padding: 12px 14px 14px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+            .crit-card h4 {
+                margin: 0;
+                font-size: var(--fs-crit-title);
+                font-weight: 600;
+                letter-spacing: .3px;
+            }
+
+        .crit-weight {
+            font-size: var(--fs-crit-weight);
+            opacity: .75;
+            font-weight: 500;
+        }
+
+        .crit-card input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #3f4470;
+            background: #1f2240;
+            color: var(--text);
+            font-size: var(--fs-small);
+            font-weight: 500;
+        }
+
+        .crit-card button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            font-size: var(--fs-button);
+            cursor: pointer;
+            letter-spacing: .4px;
+            transition: .18s background;
+        }
+
+            .crit-card button:hover {
+                background: #3d58d0;
+            }
+
+        .crit-status {
+            min-height: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+            .crit-status.ok {
+                color: var(--ok);
+            }
+
+            .crit-status.err {
+                color: var(--err);
+            }
+
+            .crit-status.dirty {
+                color: var(--warn);
+            }
+
+        .scores-section {
+            background: var(--panel);
+            padding: 18px 20px;
+            border-radius: 14px;
+        }
+
+            .scores-section h2 {
+                margin: 0 0 14px;
+                font-size: 22px;
+                font-weight: 600;
+                letter-spacing: .5px;
+            }
+
+        .scores-actions {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+            .scores-actions button {
+                padding: 8px 16px;
+                border: none;
+                border-radius: 8px;
+                background: var(--accent);
+                color: #fff;
+                font-weight: 600;
+                font-size: var(--fs-button);
+                cursor: pointer;
+                letter-spacing: .4px;
+                transition: .18s background;
+            }
+
+                .scores-actions button:hover {
+                    background: #3d58d0;
+                }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 4px;
         }
 
         th, td {
-            border-bottom: 1px solid var(--border);
-            padding: 8px;
+            padding: 8px 10px;
+            font-size: var(--fs-table-cell);
+            border-bottom: 1px solid #374079;
             text-align: left;
-            font-size: 14px;
+            white-space: nowrap;
+            font-weight: 500;
         }
 
         th {
+            background: #394079;
+            font-size: var(--fs-table-h);
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        .sticky-tools {
+            position: sticky;
+            top: 0;
+            z-index: 5;
             background: var(--panel);
-        }
-
-        .status {
-            min-height: 22px;
-            margin-top: 6px;
-        }
-
-        .ok {
-            color: var(--ok);
-        }
-
-        .err {
-            color: var(--err);
-        }
-
-        .muted {
-            color: var(--muted);
-        }
-
-        .inline {
-            display: inline-flex;
+            padding: 8px 10px;
+            margin: -18px -20px 12px;
+            display: flex;
             gap: 8px;
+            flex-wrap: wrap;
             align-items: center;
+            border-bottom: 1px solid #374079;
         }
 
-        .criteria-grid {
-            width: 100%;
-            overflow-x: auto;
+        .mini-btn {
+            background: #272a4d;
+            color: #fff;
+            border: 1px solid #415086;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: .4px;
         }
 
-        .criteria-row {
-            display: grid;
-            grid-template-columns: 1fr 120px;
-            gap: 10px;
-            align-items: center;
-            padding: 6px 0;
-        }
-
-            .criteria-row + .criteria-row {
-                border-top: 1px solid var(--border);
+            .mini-btn:hover {
+                background: #313a6b;
             }
 
-        .nowrap {
-            white-space: nowrap;
+        @media (max-width:780px) {
+            .sidebar {
+                display: none;
+            }
+
+            body {
+                flex-direction: column;
+                font-size: 16px;
+            }
+
+            .header h1 {
+                font-size: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Judge Scoring Panel</h2>
+    <div class="sidebar">
+        <h2>Contestants</h2>
+        <div id="candidateList"></div>
+    </div>
 
-        <div class="panel">
-            <div class="row">
-                <div class="inline">
-                    <span class="muted">EventId:</span>
-                    <input id="eventId" type="text" placeholder="ObjectId" readonly style="min-width: 280px;">
+    <div class="main">
+        <div class="banner-bg" id="bannerBg" style="display:none;"></div>
+        <div class="banner-overlay" id="bannerOverlay" style="display:none;"></div>
+        <div class="header">
+            <h1 id="eventTitle">Event: —</h1>
+            <div id="judgeLine" class="judge-line">Judge: —</div>
+            <div id="idWarning" class="warn" style="display:none;">Missing judge identity.</div>
+        </div>
+        <div class="content">
+            <div class="phase-nav">
+                <button id="btnPrevPhase" class="phase-btn">&#9664;</button>
+                <div>
+                    <div id="phaseLabel" class="phase-label">Phase — / Segment —</div>
+                    <div id="segmentLabel" class="segment-label"></div>
                 </div>
-                <label>
-                    Judge
-                    <select id="judge"></select>
-                </label>
-                <label>
-                    Contestant
-                    <select id="contestant"></select>
-                </label>
-                <button id="btnReload">Reload Data</button>
+                <button id="btnNextPhase" class="phase-btn">&#9654;</button>
             </div>
 
-            <div class="row">
-                <label>
-                    Phase
-                    <select id="phase"></select>
-                </label>
-                <label>
-                    Segment
-                    <select id="segment"></select>
-                </label>
+            <div id="candidateDetails" class="candidate-details" style="display:none;">
+                <div class="cand-photo-box" id="candPhotoBox" style="display:none;"></div>
+                <div class="cand-info">
+                    <h3 id="candName">—</h3>
+                    <div class="cand-meta">
+                        <div>Number:</div><div id="candNumber">—</div>
+                        <div>Age:</div><div id="candAge">—</div>
+                        <div>Gender:</div><div id="candGender">—</div>
+                        <div>Representing:</div><div id="candRep">—</div>
+                    </div>
+                </div>
             </div>
 
-            <div id="structureStatus" class="status muted">Load an event to view phases, segments, and criteria.</div>
-        </div>
-
-        <div class="panel">
-            <h3>Criteria Inputs</h3>
-            <div id="criteriaArea" class="criteria-grid"></div>
-            <div class="row">
-                <button id="btnSubmitAll" disabled>Submit All Criteria Scores</button>
-                <div id="submitStatus" class="status"></div>
+            <div class="criteria-section">
+                <h2>
+                    Criteria
+                    <span class="progress" id="criteriaProgress">0 / 0 saved</span>
+                </h2>
+                <div class="sticky-tools">
+                    <button class="mini-btn" id="btnRestoreLocal">Restore Local</button>
+                    <button class="mini-btn" id="btnClearLocal">Clear Local</button>
+                    <button class="mini-btn" id="btnReloadRemote">Reload Remote</button>
+                </div>
+                <div id="criteriaGrid" class="criteria-grid"></div>
             </div>
-        </div>
 
-        <div class="panel">
-            <h3>Leaderboard</h3>
-            <table>
-                <thead><tr><th class="nowrap">Rank</th><th>Contestant</th><th>Score</th></tr></thead>
-                <tbody id="board"></tbody>
-            </table>
+            <div class="scores-section">
+                <h2>My Scores</h2>
+                <div class="scores-actions">
+                    <button id="btnRefreshScores">Refresh</button>
+                    <button id="btnForceSync">Force Sync</button>
+                </div>
+                <table>
+                    <thead><tr><th>Rank</th><th>Contestant</th><th>Total %</th></tr></thead>
+                    <tbody id="scoresBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <script src="judge.js"></script>
+    <script>
+        (function () {
+            const qs = new URLSearchParams(location.search);
+            let eventId = qs.get('eventId') || localStorage.getItem('eventId') || '';
+            let judgeId = qs.get('judgeId') || localStorage.getItem('judgeId') || '';
+            if (qs.get('eventId')) localStorage.setItem('eventId', qs.get('eventId'));
+            if (qs.get('judgeId')) localStorage.setItem('judgeId', qs.get('judgeId'));
+
+            const idWarning = document.getElementById('idWarning');
+            if (!eventId || !judgeId) { idWarning.style.display = 'block'; return; }
+
+            // DOM refs
+            const eventTitle = document.getElementById('eventTitle');
+            const judgeLine = document.getElementById('judgeLine');
+            const candidateListDiv = document.getElementById('candidateList');
+            const candDetails = document.getElementById('candidateDetails');
+            const candPhotoBox = document.getElementById('candPhotoBox');
+            const candNameEl = document.getElementById('candName');
+            const candNumberEl = document.getElementById('candNumber');
+            const candAgeEl = document.getElementById('candAge');
+            const candGenderEl = document.getElementById('candGender');
+            const candRepEl = document.getElementById('candRep');
+            const criteriaGrid = document.getElementById('criteriaGrid');
+            const scoresBody = document.getElementById('scoresBody');
+            const btnRefreshScores = document.getElementById('btnRefreshScores');
+            const btnForceSync = document.getElementById('btnForceSync');
+            const btnPrevPhase = document.getElementById('btnPrevPhase');
+            const btnNextPhase = document.getElementById('btnNextPhase');
+            const phaseLabel = document.getElementById('phaseLabel');
+            const segmentLabel = document.getElementById('segmentLabel');
+            const bannerBg = document.getElementById('bannerBg');
+            const bannerOverlay = document.getElementById('bannerOverlay');
+            const criteriaProgress = document.getElementById('criteriaProgress');
+            const btnRestoreLocal = document.getElementById('btnRestoreLocal');
+            const btnClearLocal = document.getElementById('btnClearLocal');
+            const btnReloadRemote = document.getElementById('btnReloadRemote');
+
+            // State
+            let judges = [], contestants = [], structure = { phases: [] };
+            let phaseSegments = [];
+            let currentIndex = 0;
+            let activeContestantId = null;
+            let scoreCache = {};       // remote cache { contestantId: { criteriaKey: value } }
+            let dirtySet = new Set();  // criteria keys changed locally but not confirmed
+            let inFlight = new Set();  // criteria keys currently saving
+
+            // Helpers
+            async function api(path, opts = {}) {
+                const r = await fetch(path, opts);
+                let data;
+                try { data = await r.json(); } catch { data = null; }
+                if (!r.ok && r.status !== 409) {
+                    const msg = data && (data.message || data.error) ? (data.message || data.error) : (r.status + ' ' + r.statusText);
+                    throw new Error(msg);
+                }
+                return { ok: r.ok || r.status === 409, status: r.status, data };
+            }
+            const pick = (o, ...names) => { for (const n of names) if (o && n in o) return o[n]; };
+            const canonicalPhaseKey = p => (p || '').toLowerCase();
+            const buildCriteriaKey = (phaseKey, segSeq, critName) =>
+                `${canonicalPhaseKey(phaseKey)}::${segSeq}:${(critName || '').trim().toLowerCase()}`;
+
+            function localKey(contestantId, criteriaKey) {
+                return `score:${eventId}:${judgeId}:${contestantId}:${criteriaKey}`;
+            }
+
+            function saveLocal(contestantId, criteriaKey, value) {
+                localStorage.setItem(localKey(contestantId, criteriaKey), String(value));
+            }
+
+            function getLocal(contestantId, criteriaKey) {
+                const v = localStorage.getItem(localKey(contestantId, criteriaKey));
+                if (v == null) return null;
+                const num = parseFloat(v);
+                return isNaN(num) ? null : num;
+            }
+
+            function clearLocalForContestant(contestantId) {
+                Object.keys(localStorage)
+                    .filter(k => k.startsWith(`score:${eventId}:${judgeId}:${contestantId}:`))
+                    .forEach(k => localStorage.removeItem(k));
+            }
+
+            function updateProgress() {
+                if (!activeContestantId) { criteriaProgress.textContent = '0 / 0 saved'; return; }
+                const cards = [...criteriaGrid.querySelectorAll('.crit-card')];
+                let total = cards.length;
+                let saved = 0;
+                cards.forEach(card => {
+                    const status = card.querySelector('.crit-status');
+                    if (status && status.classList.contains('ok')) saved++;
+                });
+                criteriaProgress.textContent = `${saved} / ${total} saved`;
+            }
+
+            async function loadEvent() {
+                try {
+                    const { data: e } = await api(`/api/event?eventId=${encodeURIComponent(eventId)}`);
+                    const name = e?.EventName || e?.eventName || e?.Title || e?.Name || eventId;
+                    eventTitle.textContent = 'Event: ' + name;
+                    if (e?.BannerPath || e?.bannerPath) {
+                        const img = document.createElement('img');
+                        img.src = `/api/event-banner?eventId=${encodeURIComponent(eventId)}`;
+                        img.onload = () => {
+                            if (img.naturalWidth <= 2 && img.naturalHeight <= 2) {
+                                bannerBg.style.display = 'none';
+                                bannerOverlay.style.display = 'none';
+                            } else {
+                                bannerBg.style.display = 'block';
+                                bannerOverlay.style.display = 'block';
+                                bannerBg.innerHTML = '';
+                                bannerBg.appendChild(img);
+                            }
+                        };
+                        img.onerror = () => {
+                            bannerBg.style.display = 'none';
+                            bannerOverlay.style.display = 'none';
+                        };
+                    }
+                } catch {
+                    eventTitle.textContent = 'Event: ' + eventId;
+                }
+            }
+
+            async function loadJudges() {
+                try {
+                    const { data: list } = await api(`/api/judges?eventId=${encodeURIComponent(eventId)}`);
+                    judges = list || [];
+                    const j = judges.find(j =>
+                        (j.judgeId || j.JudgeId) === judgeId ||
+                        (j.id || j.Id) === judgeId
+                    );
+                    judgeLine.textContent = j ? 'Judge: ' + (j.name || j.Name || '(Unnamed)') : 'Judge: (Unknown)';
+                } catch {
+                    judgeLine.textContent = 'Judge: ' + judgeId;
+                }
+            }
+
+            async function loadContestants() {
+                try {
+                    const { data: list } = await api(`/api/contestants?eventId=${encodeURIComponent(eventId)}`);
+                    contestants = (list || []).map(c => ({
+                        id: pick(c, 'id', 'Id'),
+                        number: pick(c, 'number', 'Number'),
+                        fullName: pick(c, 'fullName', 'FullName') || '',
+                        representing: pick(c, 'representing', 'Representing') || '',
+                        gender: (pick(c, 'gender', 'Gender') || '').toLowerCase(),
+                        age: pick(c, 'age', 'Age'),
+                        photoPath: pick(c, 'photoPath', 'PhotoPath') || '',
+                        isActive: c.isActive !== false
+                    }));
+                    renderContestantSidebar();
+                } catch {
+                    candidateListDiv.innerHTML = '<div style="opacity:.7;">Error loading contestants</div>';
+                }
+            }
+
+            function renderContestantSidebar() {
+                candidateListDiv.innerHTML = '';
+                contestants.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'candidate-item';
+                    div.dataset.id = c.id;
+                    div.textContent = `#${c.number} ${c.fullName}`;
+                    div.onclick = () => selectContestant(c.id);
+                    candidateListDiv.appendChild(div);
+                });
+                if (!activeContestantId && contestants.length) {
+                    selectContestant(contestants[0].id);
+                } else highlightContestant();
+            }
+            function highlightContestant() {
+                [...candidateListDiv.children].forEach(el => {
+                    if (el.dataset.id === activeContestantId) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+            }
+
+            function selectContestant(id) {
+                const c = contestants.find(x => x.id === id);
+                if (!c) return;
+                activeContestantId = id;
+                highlightContestant();
+                candDetails.style.display = 'flex';
+                candNameEl.textContent = c.fullName || '(Unnamed)';
+                candNumberEl.textContent = '#' + (c.number ?? '—');
+                candAgeEl.textContent = c.age != null ? c.age : '—';
+                candGenderEl.textContent = c.gender || '—';
+                candRepEl.textContent = c.representing || '—';
+
+                if (c.photoPath) {
+                    candPhotoBox.style.display = 'block';
+                    const img = document.createElement('img');
+                    img.src = `/api/contestant-photo?eventId=${encodeURIComponent(eventId)}&contestantId=${encodeURIComponent(c.id)}`;
+                    img.onload = () => {
+                        if (img.naturalWidth <= 2 && img.naturalHeight <= 2) {
+                            candPhotoBox.style.display = 'none';
+                        } else {
+                            candPhotoBox.innerHTML = '';
+                            candPhotoBox.appendChild(img);
+                        }
+                    };
+                    img.onerror = () => { candPhotoBox.style.display = 'none'; };
+                } else {
+                    candPhotoBox.style.display = 'none';
+                    candPhotoBox.innerHTML = '';
+                }
+
+                restoreScoresForCurrent();
+                updateProgress();
+            }
+
+            async function loadStructure() {
+                try {
+                    const { data: raw } = await api(`/api/structure?eventId=${encodeURIComponent(eventId)}`);
+                    const rawPhases = pick(raw, 'phases', 'Phases') || [];
+                    structure.phases = rawPhases.map(p => {
+                        const seq = pick(p, 'sequence', 'Sequence');
+                        const name = pick(p, 'name', 'Name') || '';
+                        const segments = (pick(p, 'segments', 'Segments') || []).map(s => ({
+                            sequence: pick(s, 'sequence', 'Sequence'),
+                            name: pick(s, 'name', 'Name') || '',
+                            criteria: (pick(s, 'criteria', 'Criteria') || []).map(cr => ({
+                                name: pick(cr, 'name', 'Name') || '',
+                                weight: Number(pick(cr, 'weight', 'Weight') ?? 0)
+                            }))
+                        }));
+                        return {
+                            sequence: seq,
+                            key: seq != null ? 'P' + seq : 'IND-' + name.trim().toLowerCase().replace(/\s+/g, '_'),
+                            name,
+                            segments
+                        };
+                    });
+                    buildPhaseSegments();
+                } catch {
+                    structure.phases = [];
+                    buildPhaseSegments();
+                }
+            }
+
+            function buildPhaseSegments() {
+                phaseSegments = [];
+                structure.phases.forEach(phase => {
+                    if (phase.segments && phase.segments.length) {
+                        phase.segments.forEach(seg => phaseSegments.push({ phase, segment: seg }));
+                    } else {
+                        phaseSegments.push({ phase, segment: { sequence: 1, name: '(No Segments)', criteria: [] } });
+                    }
+                });
+                if (!phaseSegments.length) {
+                    phaseSegments.push({ phase: { key: 'NONE', name: 'No Phases', sequence: null, segments: [] }, segment: { sequence: 1, name: 'Empty', criteria: [] } });
+                }
+                currentIndex = 0;
+                updatePhaseUI();
+            }
+
+            function updatePhaseUI() {
+                const ps = phaseSegments[currentIndex];
+                const phase = ps.phase, seg = ps.segment;
+                const phaseText = phase.sequence != null ? `Phase ${phase.sequence}: ${phase.name}` : `Independent: ${phase.name}`;
+                phaseLabel.textContent = phaseText;
+                segmentLabel.textContent = `Segment ${seg.sequence}: ${seg.name}`;
+                btnPrevPhase.disabled = currentIndex === 0;
+                btnNextPhase.disabled = currentIndex === phaseSegments.length - 1;
+                buildCriteriaCards();
+                restoreScoresForCurrent();
+                updateProgress();
+            }
+
+            btnPrevPhase.onclick = () => { if (currentIndex > 0) { currentIndex--; updatePhaseUI(); } };
+            btnNextPhase.onclick = () => { if (currentIndex < phaseSegments.length - 1) { currentIndex++; updatePhaseUI(); } };
+            window.addEventListener('keydown', e => {
+                if (e.key === 'ArrowLeft') btnPrevPhase.click();
+                else if (e.key === 'ArrowRight') btnNextPhase.click();
+            });
+
+            function buildCriteriaCards() {
+                criteriaGrid.innerHTML = '';
+                dirtySet.clear();
+                inFlight.clear();
+                const ps = phaseSegments[currentIndex];
+                const phase = ps.phase, seg = ps.segment;
+                (seg.criteria || []).forEach(cr => {
+                    const criteriaKey = buildCriteriaKey(phase.key, seg.sequence, cr.name);
+                    const card = document.createElement('div');
+                    card.className = 'crit-card';
+                    card.dataset.ckey = criteriaKey;
+                    card.innerHTML = `
+                            <h4>${escapeHtml(cr.name || 'Unnamed')}</h4>
+                            <div class="crit-weight">Weight: ${cr.weight}%</div>
+                            <input type="number" class="crit-input" placeholder="0-100" min="0" max="100" step="0.1">
+                            <div style="display:flex; gap:8px;">
+                              <button class="crit-submit">Save</button>
+                              <button class="crit-retry" style="display:none;">Retry</button>
+                            </div>
+                            <div class="crit-status"></div>
+                        `;
+                    const input = card.querySelector('.crit-input');
+                    const btnSave = card.querySelector('.crit-submit');
+                    const btnRetry = card.querySelector('.crit-retry');
+                    const status = card.querySelector('.crit-status');
+
+                    // Local change tracking
+                    input.addEventListener('input', () => {
+                        if (inFlight.has(criteriaKey)) return;
+                        status.textContent = 'Changed (not saved)';
+                        status.className = 'crit-status dirty';
+                        dirtySet.add(criteriaKey);
+                        updateProgress();
+                    });
+
+                    async function doSave() {
+                        if (!activeContestantId) {
+                            status.textContent = 'Select contestant';
+                            status.className = 'crit-status err';
+                            return;
+                        }
+                        const val = parseFloat(input.value);
+                        if (isNaN(val)) {
+                            status.textContent = 'Enter score';
+                            status.className = 'crit-status err';
+                            return;
+                        }
+                        const dto = {
+                            EventId: eventId,
+                            ContestantId: activeContestantId,
+                            JudgeId: judgeId,
+                            PhaseId: phase.key,          // original case for server
+                            SegmentId: 'S' + seg.sequence,
+                            CriteriaId: criteriaKey,     // canonical lowercase id
+                            RawValue: val,
+                            MaxValue: 100
+                        };
+
+                        btnSave.disabled = true;
+                        btnRetry.style.display = 'none';
+                        inFlight.add(criteriaKey);
+                        status.textContent = 'Saving...';
+                        status.className = 'crit-status';
+                        try {
+                            const { ok, status: code, data } = await api('/api/score', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(dto)
+                            });
+
+                            // Interpret server outcome
+                            let success = ok;
+                            if (!success && data) {
+                                const txt = JSON.stringify(data).toLowerCase();
+                                if (txt.includes('"ok"') || txt.includes('"saved"') || txt.includes('"updated"')) {
+                                    success = true;
+                                }
+                            }
+                            if (!success && (code === 409)) success = true; // overwrite treated as success
+
+                            if (!success) throw new Error('Failed');
+
+                            // Update caches
+                            if (!scoreCache[activeContestantId]) scoreCache[activeContestantId] = {};
+                            scoreCache[activeContestantId][criteriaKey] = val;
+                            saveLocal(activeContestantId, criteriaKey, val);
+
+                            status.textContent = 'Saved';
+                            status.className = 'crit-status ok';
+                            dirtySet.delete(criteriaKey);
+                            updateProgress();
+                            refreshScoresTable(); // update ranking table
+                        } catch (err) {
+                            status.textContent = 'Error - not saved';
+                            status.className = 'crit-status err';
+                            btnRetry.style.display = 'inline-block';
+                        } finally {
+                            btnSave.disabled = false;
+                            inFlight.delete(criteriaKey);
+                        }
+                    }
+
+                    btnSave.onclick = doSave;
+                    btnRetry.onclick = doSave;
+
+                    criteriaGrid.appendChild(card);
+                });
+            }
+
+            async function preloadScores() {
+                try {
+                    const { data: all } = await api(`/api/judge-all-scores?eventId=${encodeURIComponent(eventId)}&judgeId=${encodeURIComponent(judgeId)}`);
+                    scoreCache = {};
+                    (all || []).forEach(s => {
+                        const cId = s.contestantId || s.ContestantId;
+                        let critId = (s.criteriaId || s.CriteriaId || '').toLowerCase();
+                        // Normalize entire criteriaId to canonical form (phase part lowercased)
+                        const parts = critId.split('::');
+                        if (parts.length === 2) {
+                            parts[0] = parts[0].toLowerCase();
+                            critId = parts.join('::');
+                        }
+                        const raw = s.rawValue != null ? s.rawValue : s.RawValue;
+                        if (!scoreCache[cId]) scoreCache[cId] = {};
+                        scoreCache[cId][critId] = raw;
+                        // Also record to local for persistence offline
+                        saveLocal(cId, critId, raw);
+                    });
+                } catch { }
+            }
+
+            function restoreScoresForCurrent(from = 'both') {
+                if (!activeContestantId) return;
+                const ps = phaseSegments[currentIndex];
+                const phase = ps.phase, seg = ps.segment;
+                const contestantMap = scoreCache[activeContestantId] || {};
+                criteriaGrid.querySelectorAll('.crit-card').forEach(card => {
+                    const input = card.querySelector('.crit-input');
+                    const status = card.querySelector('.crit-status');
+                    if (!input || !status) return;
+                    const criteriaKey = card.dataset.ckey;
+                    let value = null;
+
+                    if (from !== 'local') {
+                        if (contestantMap[criteriaKey] != null) value = contestantMap[criteriaKey];
+                    }
+                    if (value == null && from !== 'remote') {
+                        // try local storage
+                        value = getLocal(activeContestantId, criteriaKey);
+                    }
+                    if (value != null) {
+                        input.value = value;
+                        status.textContent = 'Saved';
+                        status.className = 'crit-status ok';
+                        dirtySet.delete(criteriaKey);
+                    } else {
+                        // keep blank but indicate not yet scored
+                        status.textContent = 'No score yet';
+                        status.className = 'crit-status';
+                    }
+                });
+                updateProgress();
+            }
+
+            async function refreshScoresTable() {
+                try {
+                    const { data: rows } = await api(`/api/judge-progress?eventId=${encodeURIComponent(eventId)}&judgeId=${encodeURIComponent(judgeId)}`);
+                    scoresBody.innerHTML = '';
+                    let rank = 1;
+                    (rows || []).forEach(r => {
+                        const c = contestants.find(x => x.id === r.contestantId);
+                        const label = c ? `#${c.number} ${c.fullName}` : (r.contestantId || '');
+                        const pct = (Number(r.totalFraction || 0) * 100).toFixed(3);
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${rank++}</td><td>${escapeHtml(label)}</td><td>${pct}</td>`;
+                        scoresBody.appendChild(tr);
+                    });
+                    if (rank === 1) scoresBody.innerHTML = '<tr><td colspan="3">No scores yet.</td></tr>';
+                } catch (err) {
+                    scoresBody.innerHTML = '<tr><td colspan="3">Error</td></tr>';
+                }
+            }
+
+            btnRefreshScores.onclick = refreshScoresTable;
+            btnForceSync.onclick = async () => {
+                // Force re-pull remote scores and re-apply to current contestant
+                await preloadScores();
+                restoreScoresForCurrent('remote');
+                refreshScoresTable();
+            };
+            btnRestoreLocal.onclick = () => {
+                restoreScoresForCurrent('local');
+            };
+            btnClearLocal.onclick = () => {
+                if (!activeContestantId) return;
+                if (!confirm('Clear locally stored (unsent) scores for this contestant on this judge?')) return;
+                // Remove local entries ONLY for this contestant
+                Object.keys(localStorage)
+                    .filter(k => k.startsWith(`score:${eventId}:${judgeId}:${activeContestantId}:`))
+                    .forEach(k => localStorage.removeItem(k));
+                restoreScoresForCurrent();
+            };
+            btnReloadRemote.onclick = async () => {
+                await preloadScores();
+                restoreScoresForCurrent('remote');
+            };
+
+            function escapeHtml(s) {
+                return (s || '').replace(/[&<>"']/g, c => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'
+                }[c]));
+            }
+
+            (async function init() {
+                await loadEvent();
+                await loadJudges();
+                await loadStructure();
+                await loadContestants();
+                await preloadScores();
+                updatePhaseUI();           // builds criteria cards
+                restoreScoresForCurrent(); // fill with remote/local
+                await refreshScoresTable();
+            })();
+        })();
+    </script>
 </body>
 </html>

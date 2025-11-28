@@ -9,14 +9,13 @@ namespace NexScore
 {
     public partial class MainForm : Form
     {
-        private PageDashboard dashboardPage;
-        private PageLiveControl liveControlPage;
+        private PageWelcome dashboardPage;
         private PageEvents eventsPage;
         private PageContestants contestantsPage;
         private PageCriteria criteriaPage;
         private PageJudges judgesPage;
         private PageResults resultsPage;
-        private PageLogs logsPage;
+        private PageScorecards logsPage;
 
         // ---------------- Color palette ----------------
         private Color baseColor = ColorTranslator.FromHtml("#353769");
@@ -26,6 +25,7 @@ namespace NexScore
 
         private bool isCollapsed = false;
         private Button activeButton = null;
+        public Button _btnDashboard => btnDashboard;
 
         public MainForm()
         {
@@ -34,18 +34,17 @@ namespace NexScore
             pnlMainContent.BackColor = sidebarBg;
 
             // --- Load dashboard once ---
-            dashboardPage = new PageDashboard();
+            dashboardPage = new PageWelcome();
             LoadPage(dashboardPage);
             SetActiveButton(btnDashboard);
 
             // --- Initialize other pages ---
-            liveControlPage = new PageLiveControl();
             eventsPage = new PageEvents();
             contestantsPage = new PageContestants();
             criteriaPage = new PageCriteria();
             judgesPage = new PageJudges();
             resultsPage = new PageResults();
-            logsPage = new PageLogs();
+            logsPage = new PageScorecards();
 
             // --- Sidebar setup ---
             pnlSidebar.BackColor = sidebarBg;
@@ -170,12 +169,6 @@ namespace NexScore
         {
             SetActiveButton((Button)sender);
             LoadPage(dashboardPage);
-        }
-
-        private void btnLiveControl_Click(object sender, EventArgs e)
-        {
-            SetActiveButton((Button)sender);
-            LoadPage(liveControlPage);
         }
 
         private void btnEvents_Click(object sender, EventArgs e)

@@ -47,7 +47,7 @@
             _flowCriteria.AutoSize = true;
             _flowCriteria.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             _flowCriteria.FlowDirection = FlowDirection.TopDown;
-            _flowCriteria.Location = new Point(6, 83);
+            _flowCriteria.Location = new Point(6, 87);
             _flowCriteria.MinimumSize = new Size(696, 2);
             _flowCriteria.Name = "_flowCriteria";
             _flowCriteria.Padding = new Padding(25, 0, 0, 0);
@@ -59,9 +59,9 @@
             // 
             _btnAddCriteria.BackColor = Color.FromArgb(53, 55, 102);
             _btnAddCriteria.FlatStyle = FlatStyle.Popup;
-            _btnAddCriteria.Font = new Font("Lexend Deca", 9F);
+            _btnAddCriteria.Font = new Font("Lexend Deca", 10F);
             _btnAddCriteria.ForeColor = Color.FromArgb(247, 246, 237);
-            _btnAddCriteria.Location = new Point(564, 42);
+            _btnAddCriteria.Location = new Point(564, 45);
             _btnAddCriteria.Margin = new Padding(2);
             _btnAddCriteria.Name = "_btnAddCriteria";
             _btnAddCriteria.Size = new Size(134, 32);
@@ -72,18 +72,18 @@
             // lblSegmentWeight
             // 
             lblSegmentWeight.AutoSize = true;
-            lblSegmentWeight.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSegmentWeight.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblSegmentWeight.ForeColor = Color.FromArgb(247, 246, 237);
-            lblSegmentWeight.Location = new Point(451, 25);
+            lblSegmentWeight.Location = new Point(451, 26);
             lblSegmentWeight.Name = "lblSegmentWeight";
-            lblSegmentWeight.Size = new Size(57, 21);
+            lblSegmentWeight.Size = new Size(60, 22);
             lblSegmentWeight.TabIndex = 18;
             lblSegmentWeight.Text = "Weight";
             // 
             // _txtSegmentWeight
             // 
             _txtSegmentWeight.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
-            _txtSegmentWeight.Location = new Point(451, 49);
+            _txtSegmentWeight.Location = new Point(451, 52);
             _txtSegmentWeight.Name = "_txtSegmentWeight";
             _txtSegmentWeight.Size = new Size(100, 24);
             _txtSegmentWeight.TabIndex = 20;
@@ -92,18 +92,18 @@
             // lblSegmentName
             // 
             lblSegmentName.AutoSize = true;
-            lblSegmentName.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSegmentName.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblSegmentName.ForeColor = Color.FromArgb(247, 246, 237);
-            lblSegmentName.Location = new Point(119, 25);
+            lblSegmentName.Location = new Point(119, 26);
             lblSegmentName.Name = "lblSegmentName";
-            lblSegmentName.Size = new Size(113, 21);
+            lblSegmentName.Size = new Size(117, 22);
             lblSegmentName.TabIndex = 16;
             lblSegmentName.Text = "Segment Name";
             // 
             // _txtSegmentName
             // 
             _txtSegmentName.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            _txtSegmentName.Location = new Point(119, 49);
+            _txtSegmentName.Location = new Point(119, 52);
             _txtSegmentName.Margin = new Padding(15, 3, 15, 3);
             _txtSegmentName.Name = "_txtSegmentName";
             _txtSegmentName.Size = new Size(316, 24);
@@ -112,18 +112,18 @@
             // lblSegmentNo
             // 
             lblSegmentNo.AutoSize = true;
-            lblSegmentNo.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblSegmentNo.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblSegmentNo.ForeColor = Color.FromArgb(247, 246, 237);
-            lblSegmentNo.Location = new Point(42, 25);
+            lblSegmentNo.Location = new Point(42, 26);
             lblSegmentNo.Name = "lblSegmentNo";
-            lblSegmentNo.Size = new Size(63, 21);
+            lblSegmentNo.Size = new Size(68, 22);
             lblSegmentNo.TabIndex = 17;
             lblSegmentNo.Text = "Seq. No.";
             // 
             // _txtSegmentNo
             // 
             _txtSegmentNo.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            _txtSegmentNo.Location = new Point(41, 49);
+            _txtSegmentNo.Location = new Point(41, 52);
             _txtSegmentNo.Name = "_txtSegmentNo";
             _txtSegmentNo.Size = new Size(63, 24);
             _txtSegmentNo.TabIndex = 21;
@@ -133,7 +133,7 @@
             // 
             _btnRemoveSegment.BackgroundImage = Properties.Resources.lets_icons_remove_fill;
             _btnRemoveSegment.BackgroundImageLayout = ImageLayout.Zoom;
-            _btnRemoveSegment.Location = new Point(6, 48);
+            _btnRemoveSegment.Location = new Point(6, 51);
             _btnRemoveSegment.Name = "_btnRemoveSegment";
             _btnRemoveSegment.Size = new Size(27, 26);
             _btnRemoveSegment.TabIndex = 24;
@@ -142,22 +142,22 @@
             // lblforSegmentTotal
             // 
             lblforSegmentTotal.AutoSize = true;
-            lblforSegmentTotal.Font = new Font("Lexend Deca Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblforSegmentTotal.Font = new Font("Lexend Deca Medium", 10F, FontStyle.Bold);
             lblforSegmentTotal.ForeColor = Color.FromArgb(247, 246, 237);
-            lblforSegmentTotal.Location = new Point(42, 3);
+            lblforSegmentTotal.Location = new Point(42, 1);
             lblforSegmentTotal.Name = "lblforSegmentTotal";
-            lblforSegmentTotal.Size = new Size(138, 19);
+            lblforSegmentTotal.Size = new Size(156, 22);
             lblforSegmentTotal.TabIndex = 29;
             lblforSegmentTotal.Text = "Total Criteria Weight:";
             // 
             // _lblSegmentTotalWeight
             // 
             _lblSegmentTotalWeight.AutoSize = true;
-            _lblSegmentTotalWeight.Font = new Font("Lexend Deca Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _lblSegmentTotalWeight.Font = new Font("Lexend Deca Medium", 10F, FontStyle.Bold);
             _lblSegmentTotalWeight.ForeColor = Color.FromArgb(247, 246, 237);
-            _lblSegmentTotalWeight.Location = new Point(186, 3);
+            _lblSegmentTotalWeight.Location = new Point(204, 1);
             _lblSegmentTotalWeight.Name = "_lblSegmentTotalWeight";
-            _lblSegmentTotalWeight.Size = new Size(17, 19);
+            _lblSegmentTotalWeight.Size = new Size(19, 22);
             _lblSegmentTotalWeight.TabIndex = 30;
             _lblSegmentTotalWeight.Text = "0";
             // 
@@ -180,7 +180,7 @@
             Controls.Add(lblSegmentNo);
             Controls.Add(lblSegmentWeight);
             Name = "SegmentControl";
-            Size = new Size(705, 88);
+            Size = new Size(705, 92);
             ((System.ComponentModel.ISupportInitialize)_btnRemoveSegment).EndInit();
             ResumeLayout(false);
             PerformLayout();

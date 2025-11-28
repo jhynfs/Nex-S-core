@@ -65,22 +65,22 @@
             // lblCriteriaName
             // 
             lblCriteriaName.AutoSize = true;
-            lblCriteriaName.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblCriteriaName.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblCriteriaName.ForeColor = Color.FromArgb(247, 246, 237);
             lblCriteriaName.Location = new Point(61, 4);
             lblCriteriaName.Name = "lblCriteriaName";
-            lblCriteriaName.Size = new Size(105, 21);
+            lblCriteriaName.Size = new Size(108, 22);
             lblCriteriaName.TabIndex = 19;
             lblCriteriaName.Text = "Criteria Name";
             // 
             // lblCriteriaWeight
             // 
             lblCriteriaWeight.AutoSize = true;
-            lblCriteriaWeight.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblCriteriaWeight.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblCriteriaWeight.ForeColor = Color.FromArgb(247, 246, 237);
             lblCriteriaWeight.Location = new Point(390, 4);
             lblCriteriaWeight.Name = "lblCriteriaWeight";
-            lblCriteriaWeight.Size = new Size(57, 21);
+            lblCriteriaWeight.Size = new Size(60, 22);
             lblCriteriaWeight.TabIndex = 20;
             lblCriteriaWeight.Text = "Weight";
             // 

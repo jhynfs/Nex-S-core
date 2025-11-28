@@ -3,7 +3,7 @@ using Microsoft.Web.WebView2.WinForms;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using NexScore; // AppSession
+using NexScore;
 using NexScore.Models;
 using System;
 using System.Collections.Generic;
@@ -161,13 +161,12 @@ namespace NexScore.MainFormPages
             return list;
         }
 
-        // CSS updated with --right-gutter and mirrored padding-right per level
         private string BuildHtml(List<PhaseModel> phases)
         {
-            string colorPhase = "#3A3D74";   // approx (58,61,116)
-            string colorSegment = "#323464"; // approx (50,52,100)
-            string colorRow = "#2C2E58";     // approx (44,46,88)
-            string colorText = "#F7F6ED";    // approx (247,246,237)
+            string colorPhase = "#3A3D74";   
+            string colorSegment = "#323464"; 
+            string colorRow = "#2C2E58";     
+            string colorText = "#F7F6ED";   
             string bg = "transparent";
 
             var css = $@"
@@ -177,12 +176,12 @@ namespace NexScore.MainFormPages
   --right-gutter: 18px; /* adjust this to add space from the far right edge */
 }}
 
-html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:14px;}}
+html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}}
 .page{{padding:10px 14px 40px 14px;}}
 
 .phase{{margin:14px 0 8px 0;background:{colorPhase};border-radius:2px;}}
 .line{{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
-.phase .title{{font-weight:700;font-size:15px;}}
+.phase .title{{font-weight:700;font-size:17px;}}
 .phase .weight,.segment .weight{{font-weight:700;}}
 
 /* Phase: mirror right gutter only */

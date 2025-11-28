@@ -37,7 +37,7 @@
             btnDashboard = new Button();
             Separator2 = new Panel();
             pnlSidebar = new Panel();
-            btnLogs = new Button();
+            btnScorecards = new Button();
             Separator8 = new Panel();
             btnResults = new Button();
             Separator7 = new Panel();
@@ -48,8 +48,6 @@
             btnContestants = new Button();
             Separator4 = new Panel();
             btnEvents = new Button();
-            Separator3 = new Panel();
-            btnLiveControl = new Button();
             pnlHeading.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             pnlSidebar.SuspendLayout();
@@ -125,8 +123,8 @@
             btnDashboard.Name = "btnDashboard";
             btnDashboard.Size = new Size(370, 45);
             btnDashboard.TabIndex = 11;
-            btnDashboard.Tag = "Dashboard";
-            btnDashboard.Text = "Dashboard";
+            btnDashboard.Tag = "Welcome";
+            btnDashboard.Text = "Welcome";
             btnDashboard.UseVisualStyleBackColor = false;
             btnDashboard.Click += btnDashboard_Click;
             // 
@@ -142,7 +140,7 @@
             // pnlSidebar
             // 
             pnlSidebar.BackColor = Color.FromArgb(23, 23, 23);
-            pnlSidebar.Controls.Add(btnLogs);
+            pnlSidebar.Controls.Add(btnScorecards);
             pnlSidebar.Controls.Add(Separator8);
             pnlSidebar.Controls.Add(btnResults);
             pnlSidebar.Controls.Add(Separator7);
@@ -153,8 +151,6 @@
             pnlSidebar.Controls.Add(btnContestants);
             pnlSidebar.Controls.Add(Separator4);
             pnlSidebar.Controls.Add(btnEvents);
-            pnlSidebar.Controls.Add(Separator3);
-            pnlSidebar.Controls.Add(btnLiveControl);
             pnlSidebar.Controls.Add(Separator2);
             pnlSidebar.Controls.Add(btnDashboard);
             pnlSidebar.Controls.Add(Separator1);
@@ -167,30 +163,30 @@
             pnlSidebar.Size = new Size(380, 1041);
             pnlSidebar.TabIndex = 0;
             // 
-            // btnLogs
+            // btnScorecards
             // 
-            btnLogs.BackColor = Color.FromArgb(55, 53, 105);
-            btnLogs.Dock = DockStyle.Top;
-            btnLogs.FlatAppearance.BorderSize = 0;
-            btnLogs.FlatStyle = FlatStyle.Flat;
-            btnLogs.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
-            btnLogs.ForeColor = Color.FromArgb(247, 246, 237);
-            btnLogs.Image = Properties.Resources.tabler_logs;
-            btnLogs.ImageAlign = ContentAlignment.MiddleLeft;
-            btnLogs.Location = new Point(5, 437);
-            btnLogs.Name = "btnLogs";
-            btnLogs.Size = new Size(370, 45);
-            btnLogs.TabIndex = 26;
-            btnLogs.Tag = "Logs";
-            btnLogs.Text = "Logs";
-            btnLogs.UseVisualStyleBackColor = false;
-            btnLogs.Click += btnLogs_Click;
+            btnScorecards.BackColor = Color.FromArgb(55, 53, 105);
+            btnScorecards.Dock = DockStyle.Top;
+            btnScorecards.FlatAppearance.BorderSize = 0;
+            btnScorecards.FlatStyle = FlatStyle.Flat;
+            btnScorecards.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            btnScorecards.ForeColor = Color.FromArgb(247, 246, 237);
+            btnScorecards.Image = Properties.Resources.tabler_logs;
+            btnScorecards.ImageAlign = ContentAlignment.MiddleLeft;
+            btnScorecards.Location = new Point(5, 387);
+            btnScorecards.Name = "btnScorecards";
+            btnScorecards.Size = new Size(370, 45);
+            btnScorecards.TabIndex = 26;
+            btnScorecards.Tag = "Scorecards";
+            btnScorecards.Text = "Scorecards";
+            btnScorecards.UseVisualStyleBackColor = false;
+            btnScorecards.Click += btnLogs_Click;
             // 
             // Separator8
             // 
             Separator8.BackColor = Color.FromArgb(23, 23, 23);
             Separator8.Dock = DockStyle.Top;
-            Separator8.Location = new Point(5, 432);
+            Separator8.Location = new Point(5, 382);
             Separator8.Name = "Separator8";
             Separator8.Size = new Size(370, 5);
             Separator8.TabIndex = 24;
@@ -205,7 +201,7 @@
             btnResults.ForeColor = Color.FromArgb(247, 246, 237);
             btnResults.Image = Properties.Resources.counter;
             btnResults.ImageAlign = ContentAlignment.MiddleLeft;
-            btnResults.Location = new Point(5, 387);
+            btnResults.Location = new Point(5, 337);
             btnResults.Name = "btnResults";
             btnResults.Size = new Size(370, 45);
             btnResults.TabIndex = 23;
@@ -218,7 +214,7 @@
             // 
             Separator7.BackColor = Color.FromArgb(23, 23, 23);
             Separator7.Dock = DockStyle.Top;
-            Separator7.Location = new Point(5, 382);
+            Separator7.Location = new Point(5, 332);
             Separator7.Name = "Separator7";
             Separator7.Size = new Size(370, 5);
             Separator7.TabIndex = 22;
@@ -233,7 +229,7 @@
             btnJudges.ForeColor = Color.FromArgb(247, 246, 237);
             btnJudges.Image = Properties.Resources.people;
             btnJudges.ImageAlign = ContentAlignment.MiddleLeft;
-            btnJudges.Location = new Point(5, 337);
+            btnJudges.Location = new Point(5, 287);
             btnJudges.Name = "btnJudges";
             btnJudges.Size = new Size(370, 45);
             btnJudges.TabIndex = 21;
@@ -246,7 +242,7 @@
             // 
             Separator6.BackColor = Color.FromArgb(23, 23, 23);
             Separator6.Dock = DockStyle.Top;
-            Separator6.Location = new Point(5, 332);
+            Separator6.Location = new Point(5, 282);
             Separator6.Name = "Separator6";
             Separator6.Size = new Size(370, 5);
             Separator6.TabIndex = 20;
@@ -261,7 +257,7 @@
             btnCriteria.ForeColor = Color.FromArgb(247, 246, 237);
             btnCriteria.Image = Properties.Resources.checklist;
             btnCriteria.ImageAlign = ContentAlignment.MiddleLeft;
-            btnCriteria.Location = new Point(5, 287);
+            btnCriteria.Location = new Point(5, 237);
             btnCriteria.Name = "btnCriteria";
             btnCriteria.Size = new Size(370, 45);
             btnCriteria.TabIndex = 19;
@@ -274,7 +270,7 @@
             // 
             Separator5.BackColor = Color.FromArgb(23, 23, 23);
             Separator5.Dock = DockStyle.Top;
-            Separator5.Location = new Point(5, 282);
+            Separator5.Location = new Point(5, 232);
             Separator5.Name = "Separator5";
             Separator5.Size = new Size(370, 5);
             Separator5.TabIndex = 18;
@@ -289,7 +285,7 @@
             btnContestants.ForeColor = Color.FromArgb(247, 246, 237);
             btnContestants.Image = Properties.Resources.crown;
             btnContestants.ImageAlign = ContentAlignment.MiddleLeft;
-            btnContestants.Location = new Point(5, 237);
+            btnContestants.Location = new Point(5, 187);
             btnContestants.Name = "btnContestants";
             btnContestants.Size = new Size(370, 45);
             btnContestants.TabIndex = 17;
@@ -302,7 +298,7 @@
             // 
             Separator4.BackColor = Color.FromArgb(23, 23, 23);
             Separator4.Dock = DockStyle.Top;
-            Separator4.Location = new Point(5, 232);
+            Separator4.Location = new Point(5, 182);
             Separator4.Name = "Separator4";
             Separator4.Size = new Size(370, 5);
             Separator4.TabIndex = 16;
@@ -317,7 +313,7 @@
             btnEvents.ForeColor = Color.FromArgb(247, 246, 237);
             btnEvents.Image = Properties.Resources._event;
             btnEvents.ImageAlign = ContentAlignment.MiddleLeft;
-            btnEvents.Location = new Point(5, 187);
+            btnEvents.Location = new Point(5, 137);
             btnEvents.Name = "btnEvents";
             btnEvents.Size = new Size(370, 45);
             btnEvents.TabIndex = 15;
@@ -325,34 +321,6 @@
             btnEvents.Text = "Event Details";
             btnEvents.UseVisualStyleBackColor = false;
             btnEvents.Click += btnEvents_Click;
-            // 
-            // Separator3
-            // 
-            Separator3.BackColor = Color.FromArgb(23, 23, 23);
-            Separator3.Dock = DockStyle.Top;
-            Separator3.Location = new Point(5, 182);
-            Separator3.Name = "Separator3";
-            Separator3.Size = new Size(370, 5);
-            Separator3.TabIndex = 14;
-            // 
-            // btnLiveControl
-            // 
-            btnLiveControl.BackColor = Color.FromArgb(55, 53, 105);
-            btnLiveControl.Dock = DockStyle.Top;
-            btnLiveControl.FlatAppearance.BorderSize = 0;
-            btnLiveControl.FlatStyle = FlatStyle.Flat;
-            btnLiveControl.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
-            btnLiveControl.ForeColor = Color.FromArgb(247, 246, 237);
-            btnLiveControl.Image = Properties.Resources.live;
-            btnLiveControl.ImageAlign = ContentAlignment.MiddleLeft;
-            btnLiveControl.Location = new Point(5, 137);
-            btnLiveControl.Name = "btnLiveControl";
-            btnLiveControl.Size = new Size(370, 45);
-            btnLiveControl.TabIndex = 13;
-            btnLiveControl.Tag = "Live Control";
-            btnLiveControl.Text = "Live Control";
-            btnLiveControl.UseVisualStyleBackColor = false;
-            btnLiveControl.Click += btnLiveControl_Click;
             // 
             // MainForm
             // 
@@ -389,11 +357,9 @@
         private Button btnContestants;
         private Panel Separator4;
         private Button btnEvents;
-        private Panel Separator3;
-        private Button btnLiveControl;
         private PictureBox pictureBox1;
         private Button btnResults;
         private Panel Separator8;
-        private Button btnLogs;
+        private Button btnScorecards;
     }
 }

@@ -55,11 +55,11 @@
             // 
             lblJudgeName.AutoSize = true;
             lblJudgeName.BackColor = Color.Transparent;
-            lblJudgeName.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblJudgeName.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblJudgeName.ForeColor = Color.FromArgb(247, 246, 237);
             lblJudgeName.Location = new Point(344, 4);
             lblJudgeName.Name = "lblJudgeName";
-            lblJudgeName.Size = new Size(105, 21);
+            lblJudgeName.Size = new Size(109, 22);
             lblJudgeName.TabIndex = 3;
             lblJudgeName.Text = "Judge's Name";
             // 
@@ -93,11 +93,11 @@
             // 
             lblJudgeTitle.AutoSize = true;
             lblJudgeTitle.BackColor = Color.Transparent;
-            lblJudgeTitle.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblJudgeTitle.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblJudgeTitle.ForeColor = Color.FromArgb(247, 246, 237);
             lblJudgeTitle.Location = new Point(221, 4);
             lblJudgeTitle.Name = "lblJudgeTitle";
-            lblJudgeTitle.Size = new Size(40, 21);
+            lblJudgeTitle.Size = new Size(41, 22);
             lblJudgeTitle.TabIndex = 7;
             lblJudgeTitle.Text = "Title";
             // 
@@ -105,11 +105,11 @@
             // 
             lblJudgeNo.AutoSize = true;
             lblJudgeNo.BackColor = Color.Transparent;
-            lblJudgeNo.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblJudgeNo.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
             lblJudgeNo.ForeColor = Color.FromArgb(247, 246, 237);
             lblJudgeNo.Location = new Point(136, 4);
             lblJudgeNo.Name = "lblJudgeNo";
-            lblJudgeNo.Size = new Size(31, 21);
+            lblJudgeNo.Size = new Size(34, 22);
             lblJudgeNo.TabIndex = 8;
             lblJudgeNo.Text = "No.";
             // 

@@ -12,21 +12,18 @@ namespace NexScoreAdmin
             ApplicationConfiguration.Initialize();
 
             Database.Initialize();
-            // Add this line after Database.Initialize();
+            
             string staticRoot = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-    "Works", "NexScoreX", "NexScore", "Web");
-
-            // OR if you prefer absolute without constructing:
-            // string staticRoot = @"C:\Users\<YOUR_USER>\Documents\Works\NexScoreX\NexScore\Web";
+    "Works", "NexScoreY", "NexScore", "Web");
 
             var server = new NexScore.Infrastructure.JudgingServer(
                 NexScore.Database.Events.Database,
                 staticRoot
             );
-            server.Start(5100);// LAN port. Open firewall for TCP 5100 inbound.
+            server.Start(5100);// LAN port.
 
-            Application.Run(new NexScore.MainForm());
+            Application.Run(new NexScore.LogInForm());
         }
     }
 }

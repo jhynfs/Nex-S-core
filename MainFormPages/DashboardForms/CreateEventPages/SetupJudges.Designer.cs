@@ -46,6 +46,7 @@
             _flowMainJ.Controls.Add(btnAddJudge);
             _flowMainJ.Controls.Add(pnlSpaceBelowJ);
             _flowMainJ.FlowDirection = FlowDirection.TopDown;
+            _flowMainJ.ForeColor = Color.CornflowerBlue;
             _flowMainJ.Location = new Point(3, 3);
             _flowMainJ.Name = "_flowMainJ";
             _flowMainJ.Padding = new Padding(25, 15, 25, 15);
@@ -65,11 +66,11 @@
             // 
             btnAddJudge.BackColor = Color.FromArgb(53, 55, 102);
             btnAddJudge.FlatStyle = FlatStyle.Popup;
-            btnAddJudge.Font = new Font("Lexend Deca", 9F);
+            btnAddJudge.Font = new Font("Lexend Deca", 11F);
             btnAddJudge.ForeColor = Color.FromArgb(247, 246, 237);
             btnAddJudge.Location = new Point(28, 65);
             btnAddJudge.Name = "btnAddJudge";
-            btnAddJudge.Size = new Size(749, 29);
+            btnAddJudge.Size = new Size(749, 30);
             btnAddJudge.TabIndex = 1;
             btnAddJudge.Text = "+ Add Judge";
             btnAddJudge.UseVisualStyleBackColor = false;
@@ -77,7 +78,7 @@
             // pnlSpaceBelowJ
             // 
             pnlSpaceBelowJ.Dock = DockStyle.Bottom;
-            pnlSpaceBelowJ.Location = new Point(28, 100);
+            pnlSpaceBelowJ.Location = new Point(28, 101);
             pnlSpaceBelowJ.Name = "pnlSpaceBelowJ";
             pnlSpaceBelowJ.Size = new Size(749, 41);
             pnlSpaceBelowJ.TabIndex = 2;
@@ -117,7 +118,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources.bg_dark;
+            BackColor = Color.FromArgb(15, 23, 42);
             BackgroundImageLayout = ImageLayout.Stretch;
             Controls.Add(tblLayoutMainJ);
             Name = "SetupJudges";

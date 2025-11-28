@@ -8,7 +8,6 @@ namespace NexScore.Helpers
     {
         public static void SetPlaceholder(TextBox tb, string placeholder)
         {
-            // Remove previous handlers in case SetPlaceholder is called twice
             tb.GotFocus -= RemovePlaceholder;
             tb.LostFocus -= ApplyPlaceholder;
 
@@ -31,7 +30,7 @@ namespace NexScore.Helpers
                 if (tb.Text == placeholder)
                 {
                     tb.Text = "";
-                    tb.ForeColor = Color.Black; // Your normal text color
+                    tb.ForeColor = Color.Black;
                 }
             }
         }
@@ -50,10 +49,6 @@ namespace NexScore.Helpers
             }
         }
 
-        /// <summary>
-        /// True if textbox is empty or only contains the placeholder text.
-        /// Use this for validation so placeholder is never treated as input.
-        /// </summary>
         public static bool IsBlankOrPlaceholder(TextBox tb)
         {
             string placeholder = tb.Tag as string;

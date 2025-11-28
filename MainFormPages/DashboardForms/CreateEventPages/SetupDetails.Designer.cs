@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetupDetails));
             lblEventName = new Label();
             lblEventDesc = new Label();
             lblVenue = new Label();
@@ -187,11 +186,11 @@
             // 
             btnSaveDetails.BackColor = Color.FromArgb(53, 55, 102);
             btnSaveDetails.FlatStyle = FlatStyle.Popup;
-            btnSaveDetails.Font = new Font("Lexend Deca", 9F);
+            btnSaveDetails.Font = new Font("Lexend Deca", 11F);
             btnSaveDetails.ForeColor = Color.FromArgb(247, 246, 237);
             btnSaveDetails.Location = new Point(98, 712);
             btnSaveDetails.Name = "btnSaveDetails";
-            btnSaveDetails.Size = new Size(124, 29);
+            btnSaveDetails.Size = new Size(124, 30);
             btnSaveDetails.TabIndex = 14;
             btnSaveDetails.Text = "Save";
             btnSaveDetails.UseVisualStyleBackColor = false;
@@ -248,7 +247,7 @@
             // 
             // btnRemoveBanner
             // 
-            btnRemoveBanner.Image = Properties.Resources.close_solid1;
+            btnRemoveBanner.Image = Properties.Resources.close_solid;
             btnRemoveBanner.Location = new Point(674, 586);
             btnRemoveBanner.Name = "btnRemoveBanner";
             btnRemoveBanner.Size = new Size(20, 20);
@@ -261,7 +260,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
+            BackColor = Color.FromArgb(15, 23, 42);
             BackgroundImageLayout = ImageLayout.Stretch;
             Controls.Add(btnRemoveBanner);
             Controls.Add(lblOpt);

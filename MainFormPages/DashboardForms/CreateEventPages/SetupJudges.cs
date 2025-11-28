@@ -6,6 +6,7 @@ using NexScore.CreateEventPages.SetupJudgesControl;
 using NexScore.Models;
 using MongoDB.Driver;
 using NexScore.Helpers;
+using NexScore.Utils; // <-- added
 
 namespace NexScore.CreateEventPages
 {
@@ -130,6 +131,7 @@ namespace NexScore.CreateEventPages
 
             var existingJudges = await Database.Judges
                 .Find(j => j.EventId == eventId)
+                .SortBy(j => j.Number) // keep stable order if stored
                 .ToListAsync();
 
             foreach (var j in existingJudges)
@@ -137,6 +139,7 @@ namespace NexScore.CreateEventPages
                 var ctrl = CreateJudgeControl();
                 ctrl.txtJudgeName.Text = string.IsNullOrWhiteSpace(j.Name) ? NamePlaceholder : j.Name;
                 ctrl.txtJudgeTitle.Text = string.IsNullOrWhiteSpace(j.Title) ? TitlePlaceholder : j.Title;
+                ctrl.Tag = j; // keep the existing model to preserve JudgeId on update
                 _flowMainJ.Controls.Add(ctrl);
             }
 
@@ -179,39 +182,64 @@ namespace NexScore.CreateEventPages
 
             var judgeControls = _flowMainJ.Controls.OfType<AddJudgeControl>().ToList();
 
-            var judges = new List<JudgeModel>();
-            int counter = 1;
+            // Load currently stored judges to preserve JudgeId by name (names are unique by your validation)
+            var existingByName = (await Database.Judges
+                .Find(j => j.EventId == CurrentEventId)
+                .ToListAsync())
+                .ToDictionary(j => j.Name?.Trim() ?? "", j => j, StringComparer.OrdinalIgnoreCase);
+
+            var newJudges = new List<JudgeModel>();
+            var usedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var jc in judgeControls)
             {
-                if (jc.txtJudgeName.Text == NamePlaceholder) continue; // skip placeholders
-                judges.Add(new JudgeModel
+                var name = jc.txtJudgeName.Text?.Trim();
+                if (string.IsNullOrEmpty(name) || name == NamePlaceholder) continue;
+
+                // Preserve existing JudgeId if name already existed; otherwise generate a strong random id
+                string judgeId;
+                if (existingByName.TryGetValue(name, out var existing))
+                {
+                    judgeId = existing.JudgeId; // keep old ID so previous links still work
+                }
+                else
+                {
+                    judgeId = SafeId.NewId(10);
+                    // ensure uniqueness among the newly created set (extremely unlikely collision)
+                    while (!usedIds.Add(judgeId))
+                        judgeId = SafeId.NewId(10);
+                }
+
+                var numberText = jc.txtJudgeNo.Text;
+                // If your JudgeModel.Number is numeric, convert here. Your current code stores as string; we keep it.
+                var title = jc.txtJudgeTitle.Text == TitlePlaceholder ? "" : jc.txtJudgeTitle.Text.Trim();
+
+                newJudges.Add(new JudgeModel
                 {
                     EventId = CurrentEventId,
-                    JudgeId = $"J{counter++}",
-                    Name = jc.txtJudgeName.Text.Trim(),
-                    Number = jc.txtJudgeNo.Text,
-                    Title = jc.txtJudgeTitle.Text == TitlePlaceholder ? "" : jc.txtJudgeTitle.Text.Trim(),
-                    IPAddress = ""
+                    JudgeId = judgeId,
+                    Name = name,
+                    Number = numberText,
+                    Title = title
                 });
             }
 
-            // If none after filtering placeholders, show tooltip
-            if (judges.Count == 0)
+            if (newJudges.Count == 0)
             {
                 _toolTipJudges.Show("Please provide at least one real judge name.", btnSaveJudges, 10, -30, 2500);
                 return;
             }
 
-            // Replace existing docs for this EventId
+            // Replace existing docs for this EventId atomically
             await Database.Judges.DeleteManyAsync(j => j.EventId == CurrentEventId);
-            await Database.Judges.InsertManyAsync(judges);
+            await Database.Judges.InsertManyAsync(newJudges);
 
             bool first = !_isSavedOnce;
             _isSavedOnce = true;
             btnSaveJudges.Text = "update";
             _toolTipJudges.Show(first ? "Judges saved!" : "Judges updated!", btnSaveJudges, 10, -30, 2000);
 
-            ValidateJudgesPage(); // triggers enabling contestants in form (when not edit mode)
+            ValidateJudgesPage();
         }
     }
 }

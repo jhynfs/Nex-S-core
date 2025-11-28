@@ -28,18 +28,18 @@ namespace NexScore.MainFormPages
             pnlMainPhasesCri.Location = new Point(0, 0);
             pnlMainPhasesCri.Name = "pnlMainPhasesCri";
             pnlMainPhasesCri.Padding = new Padding(400, 150, 400, 150);
-            pnlMainPhasesCri.Size = new Size(1014, 681);
+            pnlMainPhasesCri.Size = new Size(1524, 1041);
             pnlMainPhasesCri.TabIndex = 0;
             // 
             // PageCriteria
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Transparent;
+            BackColor = Color.FromArgb(15, 23, 42);
             BackgroundImageLayout = ImageLayout.Stretch;
             Controls.Add(pnlMainPhasesCri);
             Name = "PageCriteria";
-            Size = new Size(1014, 681);
+            Size = new Size(1524, 1041);
             ResumeLayout(false);
         }
     }

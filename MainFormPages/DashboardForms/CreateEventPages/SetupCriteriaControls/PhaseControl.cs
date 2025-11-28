@@ -51,8 +51,12 @@ namespace NexScore
             txtPhaseName.TextChanged += (s, e) =>
                 FindSetupCriteria()?.ValidateNameDuplicates(txtPhaseName);
 
+            // Update event total AND this phase's label color vs phase weight
             txtPhaseWeight.TextChanged += (s, e) =>
+            {
+                UpdatePhaseTotalWeightLabel();
                 FindSetupCriteria()?.UpdateEventTotalWeightLabel();
+            };
 
             _hoverCheckboxes.AutoPopDelay = 8000;
             _hoverCheckboxes.InitialDelay = 300;
@@ -109,6 +113,8 @@ namespace NexScore
                         }
                     }
 
+                    // Reflect new weight constraints immediately
+                    UpdatePhaseTotalWeightLabel();
                     setup.UpdateEventTotalWeightLabel();
                     setup.ValidateCriteriaPage();
                 }));
@@ -159,12 +165,34 @@ namespace NexScore
                 seg.txtSegmentNo.Text = num++.ToString();
         }
 
+        // Compare sum of segment weights against the phase weight (or 100 for independent)
         public void UpdatePhaseTotalWeightLabel()
         {
-            decimal total = flowSegment.Controls.OfType<SegmentControl>()
+            decimal sumSegments = flowSegment.Controls.OfType<SegmentControl>()
                 .Sum(s => decimal.TryParse(s.txtSegmentWeight.Text, out var w) ? w : 0m);
-            _lblPhaseTotalWeight.Text = total.ToString("0.##");
-            _lblPhaseTotalWeight.ForeColor = (total == 100m ? Color.Green : Color.Red);
+
+            decimal phaseWeight;
+            bool parsed = true;
+
+            if (chkIndependentPhase.Checked)
+            {
+                phaseWeight = 100m;
+            }
+            else
+            {
+                parsed = decimal.TryParse(txtPhaseWeight.Text, out phaseWeight);
+            }
+
+            _lblPhaseTotalWeight.Text = sumSegments.ToString("0.##");
+
+            if (!parsed)
+            {
+                _lblPhaseTotalWeight.ForeColor = Color.Red;
+            }
+            else
+            {
+                _lblPhaseTotalWeight.ForeColor = (sumSegments == phaseWeight) ? Color.Green : Color.Red;
+            }
         }
     }
 }

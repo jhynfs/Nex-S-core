@@ -1,6 +1,6 @@
 ﻿namespace NexScore.MainFormPages
 {
-    partial class PageJudges
+    partial class PageScorecards
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,32 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            pnlMainJudges = new Panel();
+            pnlMainScorecards = new Panel();
             SuspendLayout();
             // 
-            // pnlMainJudges
+            // pnlMainScorecards
             // 
-            pnlMainJudges.AutoScroll = true;
-            pnlMainJudges.Dock = DockStyle.Fill;
-            pnlMainJudges.Location = new Point(0, 0);
-            pnlMainJudges.Name = "pnlMainJudges";
-            pnlMainJudges.Padding = new Padding(400, 150, 400, 150);
-            pnlMainJudges.Size = new Size(1524, 1041);
-            pnlMainJudges.TabIndex = 0;
+            pnlMainScorecards.Dock = DockStyle.Fill;
+            pnlMainScorecards.Location = new Point(0, 0);
+            pnlMainScorecards.Name = "pnlMainScorecards";
+            pnlMainScorecards.Padding = new Padding(400, 150, 400, 150);
+            pnlMainScorecards.Size = new Size(1524, 1041);
+            pnlMainScorecards.TabIndex = 0;
             // 
-            // PageJudges
+            // PageScorecards
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(15, 23, 42);
-            Controls.Add(pnlMainJudges);
-            Name = "PageJudges";
+            Controls.Add(pnlMainScorecards);
+            Name = "PageScorecards";
             Size = new Size(1524, 1041);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Panel pnlMainJudges;
+        private Panel pnlMainScorecards;
     }
 }

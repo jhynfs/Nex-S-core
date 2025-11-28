@@ -15,10 +15,8 @@ namespace NexScore.Helpers
         {
             if (tb == null) return;
 
-            // If not tagged yet, set up events
             if (tb.Tag is PlaceholderState psExisting)
             {
-                // Update placeholder text (in case you want to change dynamically)
                 psExisting.Placeholder = placeholder;
                 if (string.IsNullOrWhiteSpace(tb.Text) || tb.Text == psExisting.Placeholder)
                     ApplyPlaceholder(tb, psExisting.Placeholder);

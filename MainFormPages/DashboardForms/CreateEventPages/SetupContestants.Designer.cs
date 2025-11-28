@@ -11,7 +11,7 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        
+
 
         #region Component Designer generated code
 
@@ -76,11 +76,11 @@
             // 
             // cbContestType
             // 
-            cbContestType.Font = new Font("Lexend Deca", 7F);
+            cbContestType.Font = new Font("Lexend Deca", 9F);
             cbContestType.FormattingEnabled = true;
             cbContestType.Location = new Point(0, 25);
             cbContestType.Name = "cbContestType";
-            cbContestType.Size = new Size(121, 23);
+            cbContestType.Size = new Size(121, 27);
             cbContestType.TabIndex = 0;
             // 
             // lblContestType
@@ -98,11 +98,11 @@
             // 
             btnAddContestant.BackColor = Color.FromArgb(53, 55, 102);
             btnAddContestant.FlatStyle = FlatStyle.Popup;
-            btnAddContestant.Font = new Font("Lexend Deca", 9F);
+            btnAddContestant.Font = new Font("Lexend Deca", 11F);
             btnAddContestant.ForeColor = Color.FromArgb(247, 246, 237);
             btnAddContestant.Location = new Point(28, 76);
             btnAddContestant.Name = "btnAddContestant";
-            btnAddContestant.Size = new Size(749, 29);
+            btnAddContestant.Size = new Size(749, 30);
             btnAddContestant.TabIndex = 1;
             btnAddContestant.Text = "+ Add Contestant";
             btnAddContestant.UseVisualStyleBackColor = false;
@@ -110,7 +110,7 @@
             // pnlSpaceBelowC
             // 
             pnlSpaceBelowC.Dock = DockStyle.Bottom;
-            pnlSpaceBelowC.Location = new Point(28, 111);
+            pnlSpaceBelowC.Location = new Point(28, 112);
             pnlSpaceBelowC.Name = "pnlSpaceBelowC";
             pnlSpaceBelowC.Size = new Size(749, 41);
             pnlSpaceBelowC.TabIndex = 2;
@@ -133,7 +133,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources.bg_dark;
+            BackColor = Color.FromArgb(15, 23, 42);
             BackgroundImageLayout = ImageLayout.Stretch;
             Controls.Add(tblLayoutMainC);
             Name = "SetupContestants";

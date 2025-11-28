@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MongoDB.Driver;
 using Microsoft.Web.WebView2.WinForms;
-using Microsoft.Web.WebView2.Core;
 using NexScore.Models;
 
 namespace NexScore.MainFormPages
@@ -18,19 +18,18 @@ namespace NexScore.MainFormPages
         private bool _isLoading;
         private string? _lastEventId;
 
+        // Force LAN base URL for judge links
+        private const string BASE_URL = "http://10.122.178.191:5100";
+
         public PageJudges()
         {
             InitializeComponent();
-
-            // Initialize when page loads
             this.Load += async (_, __) =>
             {
                 await EnsureWebAsync();
                 if (AppSession.CurrentEvent != null)
                     await LoadAndRenderAsync(AppSession.CurrentEvent);
             };
-
-            // Re-render when page becomes visible
             this.VisibleChanged += async (_, __) =>
             {
                 if (this.Visible && AppSession.CurrentEvent != null)
@@ -40,7 +39,6 @@ namespace NexScore.MainFormPages
                 }
             };
 
-            // Re-render when current event changes
             AppSession.CurrentEventChanged += async evt =>
             {
                 if (!IsHandleCreated || IsDisposed) return;
@@ -60,7 +58,6 @@ namespace NexScore.MainFormPages
             };
         }
 
-        // Ensure WebView2 exists and is initialized
         private async Task EnsureWebAsync()
         {
             if (_web != null) return;
@@ -81,7 +78,7 @@ namespace NexScore.MainFormPages
                 _web.CoreWebView2.Settings.AreDevToolsEnabled = false;
                 _web.CoreWebView2.Settings.IsZoomControlEnabled = false;
             }
-            catch (WebView2RuntimeNotFoundException)
+            catch (Microsoft.Web.WebView2.Core.WebView2RuntimeNotFoundException)
             {
                 pnlMainJudges.Controls.Clear();
                 pnlMainJudges.Controls.Add(new Label
@@ -115,7 +112,8 @@ namespace NexScore.MainFormPages
                     .ThenBy(j => j.Number, StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                string html = BuildHtml(ordered);
+                string baseUrl = BASE_URL.TrimEnd('/');
+                string html = BuildHtml(ordered, evt.Id, baseUrl);
                 _web.NavigateToString(html);
 
                 _lastEventId = evt.Id;
@@ -132,39 +130,66 @@ namespace NexScore.MainFormPages
             }
         }
 
-        private static string BuildHtml(List<JudgeModel> judges)
+        private static string BuildHtml(List<JudgeModel> judges, string eventId, string baseUrl)
         {
             string colorHeader = "#3A3D74";
             string colorRow = "#2C2E58";
             string colorText = "#F7F6ED";
+            string colorBtn = "#4E6AF2";
+            string colorBtnHover = "#3957D9";
             string bg = "transparent";
 
-            // If you want IP column later: change grid-template-columns to: 160px 1fr 160px and add header + cell.
             var css = $@"
-html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:14px;}}
+html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lexend Deca',Segoe UI,Arial,sans-serif;font-size:16px;}}
 .page{{padding:10px 14px 40px 14px;}}
 .table{{width:100%; border-radius:2px; overflow:hidden;}}
-.thead{{display:grid; grid-template-columns:160px 1fr; background:{colorHeader}; font-weight:700;}}
+.thead{{display:grid; grid-template-columns:160px 1fr 140px; background:{colorHeader}; font-weight:700;}}
 .thead .th{{padding:8px 12px;}}
-.row{{display:grid; grid-template-columns:160px 1fr; background:{colorRow}; margin-top:1px; min-height:28px; align-items:center;}}
+.row{{display:grid; grid-template-columns:160px 1fr 140px; background:{colorRow}; margin-top:1px; min-height:36px; align-items:center;}}
 .cell{{padding:6px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}}
 .no{{font-weight:600;}}
+.btn-copy{{
+  display:inline-block; padding:6px 10px; background:{colorBtn}; color:#fff; border:none;
+  border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;
+}}
+.btn-copy:hover{{ background:{colorBtnHover}; }}
 .muted{{opacity:.85; padding:10px;}}
-@media (max-width:520px) {{
-  .thead,.row{{grid-template-columns:120px 1fr;}}
+@media (max-width:600px) {{
+  .thead,.row{{grid-template-columns:120px 1fr 120px;}}
 }}
 ";
 
+            var js = @"
+async function copyLink(url, el){
+  try{
+    await navigator.clipboard.writeText(url);
+    const old = el.textContent;
+    el.textContent = 'Copied!';
+    setTimeout(()=>{ el.textContent = old; }, 1200);
+  }catch(e){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      const old = el.textContent;
+      el.textContent = 'Copied!';
+      setTimeout(()=>{ el.textContent = old; }, 1200);
+    }catch(_){
+      alert('Copy failed. URL:\n' + url);
+    }
+  }
+}";
+
             var sb = new StringBuilder();
             sb.Append("<!doctype html><html><head><meta charset='utf-8'>");
-            sb.Append("<style>").Append(css).Append("</style></head><body><div class='page'>");
+            sb.Append("<style>").Append(css).Append("</style>");
+            sb.Append("<script>").Append(js).Append("</script>");
+            sb.Append("</head><body><div class='page'>");
 
             sb.Append("<div class='table'>");
             sb.Append("<div class='thead'>")
               .Append("<div class='th'>Judge Number</div>")
               .Append("<div class='th'>Judge Name</div>")
-              // Uncomment for IP column:
-              // .Append("<div class='th'>IP Address</div>")
+              .Append("<div class='th'>Action</div>")
               .Append("</div>");
 
             if (judges == null || judges.Count == 0)
@@ -178,20 +203,21 @@ html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lex
                     string number = (j.Number ?? "").Trim();
                     string title = (j.Title ?? "").Trim();
                     string name = (j.Name ?? "").Trim();
-                    string ip = (j.IPAddress ?? "").Trim();
 
-                    // Judge Name = title + space + name if title exists
+                    string judgeId = j.JudgeId ?? j.Id ?? "";
                     string displayName = string.IsNullOrEmpty(title) ? name : $"{title} {name}";
 
                     string safeNumber = WebUtility.HtmlEncode(string.IsNullOrEmpty(number) ? "—" : number);
                     string safeName = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(displayName) ? "(Unnamed Judge)" : displayName);
-                    string safeIp = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(ip) ? "" : ip);
+
+                    string link = $"{baseUrl}/JudgeClient/index.html?eventId={Uri.EscapeDataString(eventId)}&judgeId={Uri.EscapeDataString(judgeId)}";
 
                     sb.Append("<div class='row'>")
                       .Append("<div class='cell no'>").Append(safeNumber).Append("</div>")
                       .Append("<div class='cell'>").Append(safeName).Append("</div>")
-                      // Uncomment for IP column:
-                      // .Append("<div class='cell'>").Append(safeIp).Append("</div>")
+                      .Append("<div class='cell'>")
+                        .Append("<button class='btn-copy' onclick=\"copyLink('").Append(link.Replace("'", "\\'")).Append("', this)\">Copy Link</button>")
+                      .Append("</div>")
                       .Append("</div>");
                 }
             }

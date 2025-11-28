@@ -11,7 +11,6 @@ namespace NexScore
     {
         private EventModel? _currentEvent;
 
-        // Guards to prevent duplicate dialogs and duplicate handler side-effects
         private bool _isOpenEventDialogOpen = false;
         private bool _isEditEventDialogOpen = false;
 
@@ -19,7 +18,6 @@ namespace NexScore
         {
             InitializeComponent();
 
-            // Make all display text boxes non-selectable (no caret / no focus).
             ConfigureNonSelectableTextBox(_txtDescriptionHere);
             ConfigureNonSelectableTextBox(_txtVenueHere);
             ConfigureNonSelectableTextBox(_txtDateHere);
@@ -38,8 +36,6 @@ namespace NexScore
             {
                 ClearEventUi();
             }
-
-            // Avoid duplicate handler registrations
             btnEvtNew.Click -= btnEvtNew_Click;
             btnEvtNew.Click += btnEvtNew_Click;
 
@@ -72,7 +68,7 @@ namespace NexScore
             try
             {
                 HideCaret(c.Handle);
-                // Redirect focus to parent panel (or any other non-edit control)
+                
                 if (pnlCurrentEvtDetails != null && pnlCurrentEvtDetails.CanFocus)
                     pnlCurrentEvtDetails.Focus();
                 else
@@ -80,7 +76,7 @@ namespace NexScore
             }
             catch
             {
-                // Ignore if caret hiding fails
+               
             }
         }
         #endregion

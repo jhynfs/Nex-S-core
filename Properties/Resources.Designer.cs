@@ -453,6 +453,16 @@ namespace NexScore.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Tech_Circuitry_in_Blue_Hues {
+            get {
+                object obj = ResourceManager.GetObject("Tech Circuitry in Blue Hues", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tech_dark {
             get {
                 object obj = ResourceManager.GetObject("tech dark", resourceCulture);

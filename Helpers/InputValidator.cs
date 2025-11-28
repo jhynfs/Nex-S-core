@@ -6,7 +6,6 @@ namespace NexScore.Helpers
 {
     public static class InputValidator
     {
-        // Updated regex: allow / ( ) & along with existing characters. Hyphen placed first to avoid range ambiguity.
         private static readonly Regex NamePattern = new Regex(@"^(?=.*[A-Za-z])[-A-Za-z0-9\s,'()/&]*$");
         private static readonly Regex WholeNumberPattern = new Regex(@"^\d*$");
         private static readonly Regex DecimalPattern = new Regex(@"^\d*\.?\d*$");
