@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-// Added to access AppSession
 using NexScore;
 
 namespace NexScore.MainFormPages.DashboardForms
@@ -18,9 +17,6 @@ namespace NexScore.MainFormPages.DashboardForms
         private readonly List<EventListItemControl> _itemControls = new();
 
         public event Action<EventModel>? EventConfirmed;
-        // Consumers (e.g., parent form) can subscribe to know which event was opened.
-
-        // Expose the selected event to the caller after OK is pressed
         public EventModel? SelectedEvent => _selectedEvent;
 
         public OpenEventForm()
@@ -29,13 +25,10 @@ namespace NexScore.MainFormPages.DashboardForms
             this.Load += OpenEventForm_Load;
             btnSelectEvent.Click += BtnSelectEvent_Click;
 
-            // Ensure closing with X results in Cancel, does not reopen anything
             this.FormClosing += (s, e) =>
             {
                 if (this.DialogResult != DialogResult.OK)
-                {
                     this.DialogResult = DialogResult.Cancel;
-                }
             };
         }
 
@@ -54,7 +47,6 @@ namespace NexScore.MainFormPages.DashboardForms
                 _itemControls.Clear();
                 _selectedEvent = null;
 
-                // Fetch events from MongoDB
                 var events = await Database.Events
                     .Find(FilterDefinition<EventModel>.Empty)
                     .SortByDescending(e => e.CreatedAt)
@@ -78,6 +70,7 @@ namespace NexScore.MainFormPages.DashboardForms
                 {
                     var ctl = new EventListItemControl(evt);
                     ctl.Selected += HandleItemSelected;
+                    ctl.Activated += HandleItemActivated; // Double-click opens
                     _itemControls.Add(ctl);
                     _flowPanelEvents.Controls.Add(ctl);
                 }
@@ -99,10 +92,22 @@ namespace NexScore.MainFormPages.DashboardForms
                 ctl.SetSelected(ctl == clicked);
 
             _selectedEvent = clicked.Event;
-            btnSelectEvent.Enabled = true;
+            btnSelectEvent.Enabled = _selectedEvent != null;
+        }
+
+        // Double-click callback
+        private void HandleItemActivated(EventListItemControl clicked)
+        {
+            HandleItemSelected(clicked); // ensure selection
+            ConfirmSelectedEvent();       // open immediately
         }
 
         private void BtnSelectEvent_Click(object? sender, EventArgs e)
+        {
+            ConfirmSelectedEvent();
+        }
+
+        private void ConfirmSelectedEvent()
         {
             if (_selectedEvent == null)
             {
@@ -111,16 +116,12 @@ namespace NexScore.MainFormPages.DashboardForms
                 return;
             }
 
-            // Publish selected event so subscribers (PageEvents) update UI
             AppSession.SetCurrentEvent(_selectedEvent);
-
-            // Notify listeners (optional) and close dialog with OK
             EventConfirmed?.Invoke(_selectedEvent);
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
-        // Optional: public method to refresh from outside
         public async Task RefreshEventsAsync() => await LoadEventsAsync();
     }
 }

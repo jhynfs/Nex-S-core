@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using NexScore.Models;
 
@@ -16,17 +10,16 @@ namespace NexScore.MainFormPages.DashboardForms.OpenEventControl
         public EventModel? Event { get; private set; }
         public bool IsSelected { get; private set; }
 
-        // Raised on single-click selection
+        // Single-click selection
         public event Action<EventListItemControl>? Selected;
-
-        // Raised on double-click to request opening/confirming the event
+        // Double-click activation (open immediately)
         public event Action<EventListItemControl>? Activated;
 
         public EventListItemControl()
         {
             InitializeComponent();
 
-            // Make sure the control surface raises DoubleClick
+            // Ensure this control can raise double-click
             this.SetStyle(ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
 
             WireClickRelay();
@@ -55,30 +48,31 @@ namespace NexScore.MainFormPages.DashboardForms.OpenEventControl
 
         private void WireClickRelay()
         {
+            // Single-click: select only
             void RelaySelect() => Selected?.Invoke(this);
+            // Double-click: select then activate
             void RelayActivate()
             {
-                // Ensure selection then request activation/open
                 Selected?.Invoke(this);
                 Activated?.Invoke(this);
             }
 
             // Parent surface
             this.Click += (_, __) => RelaySelect();
-            this.DoubleClick += (_, __) => RelayActivate();
+            this.MouseDoubleClick += (_, __) => RelayActivate();
 
-            // Child surfaces also relay both click and double-click
+            // Child controls: make sure they also relay both
             _icon.Click += (_, __) => RelaySelect();
-            _icon.DoubleClick += (_, __) => RelayActivate();
+            _icon.MouseDoubleClick += (_, __) => RelayActivate();
 
             _rightContainer.Click += (_, __) => RelaySelect();
-            _rightContainer.DoubleClick += (_, __) => RelayActivate();
+            _rightContainer.MouseDoubleClick += (_, __) => RelayActivate();
 
             _lblName.Click += (_, __) => RelaySelect();
-            _lblName.DoubleClick += (_, __) => RelayActivate();
+            _lblName.MouseDoubleClick += (_, __) => RelayActivate();
 
             _lblDate.Click += (_, __) => RelaySelect();
-            _lblDate.DoubleClick += (_, __) => RelayActivate();
+            _lblDate.MouseDoubleClick += (_, __) => RelayActivate();
         }
     }
 }
