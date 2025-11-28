@@ -31,12 +31,18 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             pnlMainContent = new Panel();
             pnlHeading = new Panel();
-            pictureBox1 = new PictureBox();
+            logoShort = new PictureBox();
+            logoLong = new PictureBox();
             btnMenu = new Button();
             Separator1 = new Panel();
             btnDashboard = new Button();
             Separator2 = new Panel();
             pnlSidebar = new Panel();
+            _adminPanel = new Panel();
+            _btnSaveAdminBaseUrl = new Button();
+            _btnUseMyIp = new Button();
+            _txtAdminBaseUrl = new TextBox();
+            _lblAdminBaseUrl = new Label();
             btnScorecards = new Button();
             Separator8 = new Panel();
             btnResults = new Button();
@@ -49,8 +55,10 @@
             Separator4 = new Panel();
             btnEvents = new Button();
             pnlHeading.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)logoShort).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)logoLong).BeginInit();
             pnlSidebar.SuspendLayout();
+            _adminPanel.SuspendLayout();
             SuspendLayout();
             // 
             // pnlMainContent
@@ -67,24 +75,37 @@
             // 
             // pnlHeading
             // 
-            pnlHeading.Controls.Add(pictureBox1);
+            pnlHeading.Controls.Add(logoShort);
+            pnlHeading.Controls.Add(logoLong);
             pnlHeading.Dock = DockStyle.Top;
             pnlHeading.Location = new Point(5, 5);
             pnlHeading.Name = "pnlHeading";
             pnlHeading.Size = new Size(370, 47);
             pnlHeading.TabIndex = 0;
             // 
-            // pictureBox1
+            // logoShort
             // 
-            pictureBox1.BackgroundImage = (Image)resources.GetObject("pictureBox1.BackgroundImage");
-            pictureBox1.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Location = new Point(0, 0);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(370, 47);
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
+            logoShort.Image = (Image)resources.GetObject("logoShort.Image");
+            logoShort.InitialImage = (Image)resources.GetObject("logoShort.InitialImage");
+            logoShort.Location = new Point(0, 0);
+            logoShort.Name = "logoShort";
+            logoShort.Size = new Size(47, 47);
+            logoShort.SizeMode = PictureBoxSizeMode.Zoom;
+            logoShort.TabIndex = 28;
+            logoShort.TabStop = false;
+            // 
+            // logoLong
+            // 
+            logoLong.BackgroundImage = (Image)resources.GetObject("logoLong.BackgroundImage");
+            logoLong.BackgroundImageLayout = ImageLayout.Zoom;
+            logoLong.Dock = DockStyle.Fill;
+            logoLong.ErrorImage = null;
+            logoLong.InitialImage = (Image)resources.GetObject("logoLong.InitialImage");
+            logoLong.Location = new Point(0, 0);
+            logoLong.Name = "logoLong";
+            logoLong.Size = new Size(370, 47);
+            logoLong.TabIndex = 0;
+            logoLong.TabStop = false;
             // 
             // btnMenu
             // 
@@ -124,6 +145,7 @@
             btnDashboard.ImageAlign = ContentAlignment.MiddleLeft;
             btnDashboard.Location = new Point(5, 87);
             btnDashboard.Name = "btnDashboard";
+            btnDashboard.Padding = new Padding(5, 0, 5, 0);
             btnDashboard.Size = new Size(370, 53);
             btnDashboard.TabIndex = 11;
             btnDashboard.Tag = "Welcome";
@@ -143,6 +165,7 @@
             // pnlSidebar
             // 
             pnlSidebar.BackColor = Color.FromArgb(23, 23, 23);
+            pnlSidebar.Controls.Add(_adminPanel);
             pnlSidebar.Controls.Add(btnScorecards);
             pnlSidebar.Controls.Add(Separator8);
             pnlSidebar.Controls.Add(btnResults);
@@ -166,6 +189,64 @@
             pnlSidebar.Size = new Size(380, 1041);
             pnlSidebar.TabIndex = 0;
             // 
+            // _adminPanel
+            // 
+            _adminPanel.Controls.Add(_btnSaveAdminBaseUrl);
+            _adminPanel.Controls.Add(_btnUseMyIp);
+            _adminPanel.Controls.Add(_txtAdminBaseUrl);
+            _adminPanel.Controls.Add(_lblAdminBaseUrl);
+            _adminPanel.Dock = DockStyle.Bottom;
+            _adminPanel.Location = new Point(5, 936);
+            _adminPanel.Name = "_adminPanel";
+            _adminPanel.Padding = new Padding(10);
+            _adminPanel.Size = new Size(370, 100);
+            _adminPanel.TabIndex = 27;
+            // 
+            // _btnSaveAdminBaseUrl
+            // 
+            _btnSaveAdminBaseUrl.BackColor = Color.FromArgb(55, 53, 105);
+            _btnSaveAdminBaseUrl.FlatStyle = FlatStyle.Popup;
+            _btnSaveAdminBaseUrl.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _btnSaveAdminBaseUrl.ForeColor = Color.FromArgb(247, 246, 237);
+            _btnSaveAdminBaseUrl.Location = new Point(182, 24);
+            _btnSaveAdminBaseUrl.Name = "_btnSaveAdminBaseUrl";
+            _btnSaveAdminBaseUrl.Size = new Size(75, 32);
+            _btnSaveAdminBaseUrl.TabIndex = 3;
+            _btnSaveAdminBaseUrl.Text = "Save";
+            _btnSaveAdminBaseUrl.UseVisualStyleBackColor = false;
+            // 
+            // _btnUseMyIp
+            // 
+            _btnUseMyIp.BackColor = Color.FromArgb(55, 53, 105);
+            _btnUseMyIp.FlatStyle = FlatStyle.Popup;
+            _btnUseMyIp.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _btnUseMyIp.ForeColor = Color.FromArgb(247, 246, 237);
+            _btnUseMyIp.Location = new Point(263, 24);
+            _btnUseMyIp.Name = "_btnUseMyIp";
+            _btnUseMyIp.Size = new Size(94, 32);
+            _btnUseMyIp.TabIndex = 2;
+            _btnUseMyIp.Text = "Use My IP";
+            _btnUseMyIp.UseVisualStyleBackColor = false;
+            // 
+            // _txtAdminBaseUrl
+            // 
+            _txtAdminBaseUrl.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtAdminBaseUrl.Location = new Point(81, 63);
+            _txtAdminBaseUrl.Name = "_txtAdminBaseUrl";
+            _txtAdminBaseUrl.Size = new Size(276, 24);
+            _txtAdminBaseUrl.TabIndex = 1;
+            // 
+            // _lblAdminBaseUrl
+            // 
+            _lblAdminBaseUrl.AutoSize = true;
+            _lblAdminBaseUrl.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _lblAdminBaseUrl.ForeColor = Color.FromArgb(247, 246, 237);
+            _lblAdminBaseUrl.Location = new Point(81, 30);
+            _lblAdminBaseUrl.Name = "_lblAdminBaseUrl";
+            _lblAdminBaseUrl.Size = new Size(98, 21);
+            _lblAdminBaseUrl.TabIndex = 0;
+            _lblAdminBaseUrl.Text = "Admin's IPv4:";
+            // 
             // btnScorecards
             // 
             btnScorecards.AutoSize = true;
@@ -180,6 +261,7 @@
             btnScorecards.ImageAlign = ContentAlignment.MiddleLeft;
             btnScorecards.Location = new Point(5, 435);
             btnScorecards.Name = "btnScorecards";
+            btnScorecards.Padding = new Padding(5, 0, 5, 0);
             btnScorecards.Size = new Size(370, 53);
             btnScorecards.TabIndex = 26;
             btnScorecards.Tag = "Scorecards";
@@ -210,6 +292,7 @@
             btnResults.ImageAlign = ContentAlignment.MiddleLeft;
             btnResults.Location = new Point(5, 377);
             btnResults.Name = "btnResults";
+            btnResults.Padding = new Padding(5, 0, 5, 0);
             btnResults.Size = new Size(370, 53);
             btnResults.TabIndex = 23;
             btnResults.Tag = "Results";
@@ -240,6 +323,7 @@
             btnJudges.ImageAlign = ContentAlignment.MiddleLeft;
             btnJudges.Location = new Point(5, 319);
             btnJudges.Name = "btnJudges";
+            btnJudges.Padding = new Padding(5, 0, 5, 0);
             btnJudges.Size = new Size(370, 53);
             btnJudges.TabIndex = 21;
             btnJudges.Tag = "Judges";
@@ -270,6 +354,7 @@
             btnCriteria.ImageAlign = ContentAlignment.MiddleLeft;
             btnCriteria.Location = new Point(5, 261);
             btnCriteria.Name = "btnCriteria";
+            btnCriteria.Padding = new Padding(5, 0, 5, 0);
             btnCriteria.Size = new Size(370, 53);
             btnCriteria.TabIndex = 19;
             btnCriteria.Tag = "Phases && Criteria";
@@ -300,6 +385,7 @@
             btnContestants.ImageAlign = ContentAlignment.MiddleLeft;
             btnContestants.Location = new Point(5, 203);
             btnContestants.Name = "btnContestants";
+            btnContestants.Padding = new Padding(5, 0, 5, 0);
             btnContestants.Size = new Size(370, 53);
             btnContestants.TabIndex = 17;
             btnContestants.Tag = "Contestants";
@@ -330,6 +416,7 @@
             btnEvents.ImageAlign = ContentAlignment.MiddleLeft;
             btnEvents.Location = new Point(5, 145);
             btnEvents.Name = "btnEvents";
+            btnEvents.Padding = new Padding(5, 0, 5, 0);
             btnEvents.Size = new Size(370, 53);
             btnEvents.TabIndex = 15;
             btnEvents.Tag = "Event Details";
@@ -346,14 +433,18 @@
             ClientSize = new Size(1904, 1041);
             Controls.Add(pnlMainContent);
             Controls.Add(pnlSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(854, 480);
             Name = "MainForm";
             Text = "NexScore";
             WindowState = FormWindowState.Maximized;
             pnlHeading.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)logoShort).EndInit();
+            ((System.ComponentModel.ISupportInitialize)logoLong).EndInit();
             pnlSidebar.ResumeLayout(false);
             pnlSidebar.PerformLayout();
+            _adminPanel.ResumeLayout(false);
+            _adminPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -378,5 +469,12 @@
         private Button btnResults;
         private Panel Separator8;
         private Button btnScorecards;
+        private Panel _adminPanel;
+        private Label _lblAdminBaseUrl;
+        private TextBox _txtAdminBaseUrl;
+        private Button _btnUseMyIp;
+        private Button _btnSaveAdminBaseUrl;
+        private PictureBox logoShort;
+        private PictureBox logoLong;
     }
 }

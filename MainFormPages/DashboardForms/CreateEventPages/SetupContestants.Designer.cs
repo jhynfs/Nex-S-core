@@ -71,14 +71,14 @@
             pnlSpaceAboveC.Dock = DockStyle.Top;
             pnlSpaceAboveC.Location = new Point(28, 18);
             pnlSpaceAboveC.Name = "pnlSpaceAboveC";
-            pnlSpaceAboveC.Size = new Size(749, 52);
+            pnlSpaceAboveC.Size = new Size(749, 58);
             pnlSpaceAboveC.TabIndex = 0;
             // 
             // cbContestType
             // 
             cbContestType.Font = new Font("Lexend Deca", 9F);
             cbContestType.FormattingEnabled = true;
-            cbContestType.Location = new Point(0, 25);
+            cbContestType.Location = new Point(0, 29);
             cbContestType.Name = "cbContestType";
             cbContestType.Size = new Size(121, 27);
             cbContestType.TabIndex = 0;
@@ -86,11 +86,11 @@
             // lblContestType
             // 
             lblContestType.AutoSize = true;
-            lblContestType.Font = new Font("Lexend Deca SemiBold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblContestType.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
             lblContestType.ForeColor = Color.FromArgb(247, 246, 237);
-            lblContestType.Location = new Point(3, 3);
+            lblContestType.Location = new Point(0, 0);
             lblContestType.Name = "lblContestType";
-            lblContestType.Size = new Size(91, 19);
+            lblContestType.Size = new Size(119, 25);
             lblContestType.TabIndex = 1;
             lblContestType.Text = "Contest Type:";
             // 
@@ -98,11 +98,11 @@
             // 
             btnAddContestant.BackColor = Color.FromArgb(53, 55, 102);
             btnAddContestant.FlatStyle = FlatStyle.Popup;
-            btnAddContestant.Font = new Font("Lexend Deca", 11F);
+            btnAddContestant.Font = new Font("Lexend Deca", 12F);
             btnAddContestant.ForeColor = Color.FromArgb(247, 246, 237);
-            btnAddContestant.Location = new Point(28, 76);
+            btnAddContestant.Location = new Point(28, 82);
             btnAddContestant.Name = "btnAddContestant";
-            btnAddContestant.Size = new Size(749, 30);
+            btnAddContestant.Size = new Size(749, 35);
             btnAddContestant.TabIndex = 1;
             btnAddContestant.Text = "+ Add Contestant";
             btnAddContestant.UseVisualStyleBackColor = false;
@@ -110,7 +110,7 @@
             // pnlSpaceBelowC
             // 
             pnlSpaceBelowC.Dock = DockStyle.Bottom;
-            pnlSpaceBelowC.Location = new Point(28, 112);
+            pnlSpaceBelowC.Location = new Point(28, 123);
             pnlSpaceBelowC.Name = "pnlSpaceBelowC";
             pnlSpaceBelowC.Size = new Size(749, 41);
             pnlSpaceBelowC.TabIndex = 2;

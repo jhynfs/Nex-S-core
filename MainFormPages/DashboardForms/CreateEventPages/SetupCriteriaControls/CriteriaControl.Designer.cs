@@ -46,30 +46,30 @@
             // 
             // _txtCriteriaName
             // 
-            _txtCriteriaName.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtCriteriaName.Font = new Font("Lexend Deca Medium", 11F, FontStyle.Bold);
             _txtCriteriaName.Location = new Point(61, 28);
             _txtCriteriaName.Margin = new Padding(15, 3, 15, 3);
             _txtCriteriaName.Name = "_txtCriteriaName";
-            _txtCriteriaName.Size = new Size(316, 24);
+            _txtCriteriaName.Size = new Size(316, 26);
             _txtCriteriaName.TabIndex = 21;
             // 
             // _txtCriteriaWeight
             // 
-            _txtCriteriaWeight.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtCriteriaWeight.Font = new Font("Lexend Deca Medium", 11F, FontStyle.Bold);
             _txtCriteriaWeight.Location = new Point(390, 28);
             _txtCriteriaWeight.Name = "_txtCriteriaWeight";
-            _txtCriteriaWeight.Size = new Size(100, 24);
+            _txtCriteriaWeight.Size = new Size(100, 26);
             _txtCriteriaWeight.TabIndex = 22;
             _txtCriteriaWeight.TextAlign = HorizontalAlignment.Center;
             // 
             // lblCriteriaName
             // 
             lblCriteriaName.AutoSize = true;
-            lblCriteriaName.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
+            lblCriteriaName.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblCriteriaName.ForeColor = Color.FromArgb(247, 246, 237);
             lblCriteriaName.Location = new Point(61, 4);
             lblCriteriaName.Name = "lblCriteriaName";
-            lblCriteriaName.Size = new Size(108, 22);
+            lblCriteriaName.Size = new Size(119, 24);
             lblCriteriaName.TabIndex = 19;
             lblCriteriaName.Text = "Criteria Name";
             // 
@@ -108,7 +108,7 @@
             Controls.Add(lblCriteriaName);
             Controls.Add(lblCriteriaWeight);
             Name = "CriteriaControl";
-            Size = new Size(627, 55);
+            Size = new Size(627, 57);
             ((System.ComponentModel.ISupportInitialize)_btnRemoveCriteria).EndInit();
             ResumeLayout(false);
             PerformLayout();

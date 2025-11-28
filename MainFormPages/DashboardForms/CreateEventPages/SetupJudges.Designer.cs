@@ -66,11 +66,11 @@
             // 
             btnAddJudge.BackColor = Color.FromArgb(53, 55, 102);
             btnAddJudge.FlatStyle = FlatStyle.Popup;
-            btnAddJudge.Font = new Font("Lexend Deca", 11F);
+            btnAddJudge.Font = new Font("Lexend Deca", 12F);
             btnAddJudge.ForeColor = Color.FromArgb(247, 246, 237);
             btnAddJudge.Location = new Point(28, 65);
             btnAddJudge.Name = "btnAddJudge";
-            btnAddJudge.Size = new Size(749, 30);
+            btnAddJudge.Size = new Size(749, 35);
             btnAddJudge.TabIndex = 1;
             btnAddJudge.Text = "+ Add Judge";
             btnAddJudge.UseVisualStyleBackColor = false;
@@ -78,7 +78,7 @@
             // pnlSpaceBelowJ
             // 
             pnlSpaceBelowJ.Dock = DockStyle.Bottom;
-            pnlSpaceBelowJ.Location = new Point(28, 101);
+            pnlSpaceBelowJ.Location = new Point(28, 106);
             pnlSpaceBelowJ.Name = "pnlSpaceBelowJ";
             pnlSpaceBelowJ.Size = new Size(749, 41);
             pnlSpaceBelowJ.TabIndex = 2;

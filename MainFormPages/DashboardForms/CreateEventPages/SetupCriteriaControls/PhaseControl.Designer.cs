@@ -166,28 +166,28 @@
             // 
             // _txtPhaseNo
             // 
-            _txtPhaseNo.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtPhaseNo.Font = new Font("Lexend Deca Medium", 11F, FontStyle.Bold);
             _txtPhaseNo.Location = new Point(41, 94);
             _txtPhaseNo.Name = "_txtPhaseNo";
-            _txtPhaseNo.Size = new Size(78, 24);
+            _txtPhaseNo.Size = new Size(78, 26);
             _txtPhaseNo.TabIndex = 15;
             _txtPhaseNo.TextAlign = HorizontalAlignment.Center;
             // 
             // _txtPhaseName
             // 
-            _txtPhaseName.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtPhaseName.Font = new Font("Lexend Deca Medium", 11F, FontStyle.Bold);
             _txtPhaseName.Location = new Point(131, 94);
             _txtPhaseName.Margin = new Padding(15, 3, 15, 3);
             _txtPhaseName.Name = "_txtPhaseName";
-            _txtPhaseName.Size = new Size(316, 24);
+            _txtPhaseName.Size = new Size(316, 26);
             _txtPhaseName.TabIndex = 13;
             // 
             // _txtPhaseWeight
             // 
-            _txtPhaseWeight.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtPhaseWeight.Font = new Font("Lexend Deca Medium", 11F, FontStyle.Bold);
             _txtPhaseWeight.Location = new Point(463, 94);
             _txtPhaseWeight.Name = "_txtPhaseWeight";
-            _txtPhaseWeight.Size = new Size(100, 24);
+            _txtPhaseWeight.Size = new Size(100, 26);
             _txtPhaseWeight.TabIndex = 14;
             _txtPhaseWeight.TextAlign = HorizontalAlignment.Center;
             // 

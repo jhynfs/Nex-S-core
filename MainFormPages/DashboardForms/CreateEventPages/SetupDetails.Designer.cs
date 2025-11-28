@@ -107,7 +107,7 @@
             lblDate.BackColor = Color.Transparent;
             lblDate.Font = new Font("Lexend Deca", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblDate.ForeColor = Color.FromArgb(247, 246, 237);
-            lblDate.Location = new Point(98, 584);
+            lblDate.Location = new Point(98, 587);
             lblDate.Name = "lblDate";
             lblDate.Size = new Size(100, 25);
             lblDate.TabIndex = 4;
@@ -116,15 +116,15 @@
             // 
             // _txtEventName
             // 
-            _txtEventName.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtEventName.Font = new Font("Lexend Deca SemiBold", 11F, FontStyle.Bold);
             _txtEventName.Location = new Point(98, 91);
             _txtEventName.Name = "_txtEventName";
-            _txtEventName.Size = new Size(594, 24);
+            _txtEventName.Size = new Size(594, 26);
             _txtEventName.TabIndex = 5;
             // 
             // _txtDescription
             // 
-            _txtDescription.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtDescription.Font = new Font("Lexend Deca SemiBold", 11F, FontStyle.Bold);
             _txtDescription.Location = new Point(98, 171);
             _txtDescription.Multiline = true;
             _txtDescription.Name = "_txtDescription";
@@ -133,15 +133,15 @@
             // 
             // _txtVenue
             // 
-            _txtVenue.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtVenue.Font = new Font("Lexend Deca SemiBold", 11F, FontStyle.Bold);
             _txtVenue.Location = new Point(100, 363);
             _txtVenue.Name = "_txtVenue";
-            _txtVenue.Size = new Size(594, 24);
+            _txtVenue.Size = new Size(594, 26);
             _txtVenue.TabIndex = 8;
             // 
             // _txtOrganizers
             // 
-            _txtOrganizers.Font = new Font("Lexend Deca SemiBold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            _txtOrganizers.Font = new Font("Lexend Deca SemiBold", 11F, FontStyle.Bold);
             _txtOrganizers.Location = new Point(100, 436);
             _txtOrganizers.Multiline = true;
             _txtOrganizers.Name = "_txtOrganizers";
@@ -150,10 +150,10 @@
             // 
             // _datePicker
             // 
-            _datePicker.Font = new Font("Lexend Deca SemiBold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            _datePicker.Location = new Point(98, 612);
+            _datePicker.Font = new Font("Lexend Deca SemiBold", 11F, FontStyle.Bold);
+            _datePicker.Location = new Point(98, 616);
             _datePicker.Name = "_datePicker";
-            _datePicker.Size = new Size(300, 22);
+            _datePicker.Size = new Size(300, 26);
             _datePicker.TabIndex = 10;
             // 
             // lblReqName
@@ -175,7 +175,7 @@
             lblReqDate.BackColor = Color.Transparent;
             lblReqDate.Font = new Font("Lexend Deca", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblReqDate.ForeColor = Color.Salmon;
-            lblReqDate.Location = new Point(195, 587);
+            lblReqDate.Location = new Point(195, 590);
             lblReqDate.Name = "lblReqDate";
             lblReqDate.Size = new Size(70, 19);
             lblReqDate.TabIndex = 13;
@@ -212,10 +212,10 @@
             // 
             // btnAddBanner
             // 
-            btnAddBanner.Font = new Font("Lexend Deca SemiBold", 9F, FontStyle.Bold);
+            btnAddBanner.Font = new Font("Lexend Deca SemiBold", 11F, FontStyle.Bold);
             btnAddBanner.Location = new Point(454, 612);
             btnAddBanner.Name = "btnAddBanner";
-            btnAddBanner.Size = new Size(240, 25);
+            btnAddBanner.Size = new Size(240, 30);
             btnAddBanner.TabIndex = 17;
             btnAddBanner.Text = "Add Event Banner (4:1)";
             btnAddBanner.UseVisualStyleBackColor = true;

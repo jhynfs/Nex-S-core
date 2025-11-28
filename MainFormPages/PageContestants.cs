@@ -19,9 +19,6 @@ namespace NexScore.MainFormPages
         private bool _isLoading;
         private string? _mappedEventFolder;
 
-        // Adjust host if needed
-        private const string BASE = "http://10.122.178.191:5100";
-
         public PageContestants()
         {
             InitializeComponent();

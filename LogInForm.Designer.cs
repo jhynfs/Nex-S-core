@@ -79,9 +79,9 @@
             btn_NewHide2.BackgroundImageLayout = ImageLayout.Zoom;
             btn_NewHide2.FlatAppearance.BorderSize = 0;
             btn_NewHide2.FlatStyle = FlatStyle.Flat;
-            btn_NewHide2.Location = new Point(1000, 526);
+            btn_NewHide2.Location = new Point(1026, 548);
             btn_NewHide2.Name = "btn_NewHide2";
-            btn_NewHide2.Size = new Size(26, 17);
+            btn_NewHide2.Size = new Size(36, 17);
             btn_NewHide2.TabIndex = 11;
             btn_NewHide2.UseVisualStyleBackColor = false;
             btn_NewHide2.Click += btn_NewHide2_Click;
@@ -94,9 +94,9 @@
             btn_NewShow2.BackgroundImageLayout = ImageLayout.Zoom;
             btn_NewShow2.FlatAppearance.BorderSize = 0;
             btn_NewShow2.FlatStyle = FlatStyle.Flat;
-            btn_NewShow2.Location = new Point(1000, 526);
+            btn_NewShow2.Location = new Point(1026, 548);
             btn_NewShow2.Name = "btn_NewShow2";
-            btn_NewShow2.Size = new Size(26, 17);
+            btn_NewShow2.Size = new Size(36, 17);
             btn_NewShow2.TabIndex = 10;
             btn_NewShow2.UseVisualStyleBackColor = false;
             btn_NewShow2.Click += btn_NewShow2_Click;
@@ -109,9 +109,9 @@
             btn_NewHide1.BackgroundImageLayout = ImageLayout.Zoom;
             btn_NewHide1.FlatAppearance.BorderSize = 0;
             btn_NewHide1.FlatStyle = FlatStyle.Flat;
-            btn_NewHide1.Location = new Point(1000, 490);
+            btn_NewHide1.Location = new Point(1026, 499);
             btn_NewHide1.Name = "btn_NewHide1";
-            btn_NewHide1.Size = new Size(26, 17);
+            btn_NewHide1.Size = new Size(36, 17);
             btn_NewHide1.TabIndex = 9;
             btn_NewHide1.UseVisualStyleBackColor = false;
             btn_NewHide1.Click += btn_NewHide1_Click;
@@ -124,9 +124,9 @@
             btn_NewShow1.BackgroundImageLayout = ImageLayout.Zoom;
             btn_NewShow1.FlatAppearance.BorderSize = 0;
             btn_NewShow1.FlatStyle = FlatStyle.Flat;
-            btn_NewShow1.Location = new Point(1000, 490);
+            btn_NewShow1.Location = new Point(1026, 499);
             btn_NewShow1.Name = "btn_NewShow1";
-            btn_NewShow1.Size = new Size(26, 17);
+            btn_NewShow1.Size = new Size(36, 17);
             btn_NewShow1.TabIndex = 8;
             btn_NewShow1.UseVisualStyleBackColor = false;
             btn_NewShow1.Click += btn_NewShow1_Click;
@@ -136,11 +136,11 @@
             btnSave.Anchor = AnchorStyles.None;
             btnSave.BackColor = Color.FromArgb(53, 55, 102);
             btnSave.FlatStyle = FlatStyle.Popup;
-            btnSave.Font = new Font("Lexend Deca Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnSave.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             btnSave.ForeColor = Color.FromArgb(247, 246, 237);
-            btnSave.Location = new Point(901, 559);
+            btnSave.Location = new Point(866, 597);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(86, 35);
+            btnSave.Size = new Size(150, 35);
             btnSave.TabIndex = 4;
             btnSave.Text = "Save PIN";
             btnSave.UseVisualStyleBackColor = false;
@@ -149,24 +149,24 @@
             // txtRePin
             // 
             txtRePin.Anchor = AnchorStyles.None;
-            txtRePin.Font = new Font("Lexend Deca", 12F);
+            txtRePin.Font = new Font("Lexend Deca", 16F);
             txtRePin.ForeColor = SystemColors.InactiveCaption;
-            txtRePin.Location = new Point(866, 521);
+            txtRePin.Location = new Point(820, 539);
             txtRePin.Margin = new Padding(1, 1, 1, 2);
             txtRePin.Name = "txtRePin";
-            txtRePin.Size = new Size(160, 27);
+            txtRePin.Size = new Size(242, 34);
             txtRePin.TabIndex = 3;
             txtRePin.TextAlign = HorizontalAlignment.Center;
             // 
             // txtPin
             // 
             txtPin.Anchor = AnchorStyles.None;
-            txtPin.Font = new Font("Lexend Deca", 12F);
+            txtPin.Font = new Font("Lexend Deca", 16F);
             txtPin.ForeColor = SystemColors.InactiveCaption;
-            txtPin.Location = new Point(866, 485);
+            txtPin.Location = new Point(820, 491);
             txtPin.Margin = new Padding(1, 1, 1, 2);
             txtPin.Name = "txtPin";
-            txtPin.Size = new Size(160, 27);
+            txtPin.Size = new Size(242, 34);
             txtPin.TabIndex = 2;
             txtPin.TextAlign = HorizontalAlignment.Center;
             // 
@@ -177,7 +177,7 @@
             lblSubtitle.BackColor = Color.Transparent;
             lblSubtitle.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             lblSubtitle.ForeColor = Color.Snow;
-            lblSubtitle.Location = new Point(827, 451);
+            lblSubtitle.Location = new Point(820, 451);
             lblSubtitle.Name = "lblSubtitle";
             lblSubtitle.Size = new Size(242, 25);
             lblSubtitle.TabIndex = 1;
@@ -188,11 +188,11 @@
             lblTitle.Anchor = AnchorStyles.None;
             lblTitle.AutoSize = true;
             lblTitle.BackColor = Color.Transparent;
-            lblTitle.Font = new Font("Lexend Deca", 20F, FontStyle.Bold);
+            lblTitle.Font = new Font("Lexend Deca", 30F, FontStyle.Bold);
             lblTitle.ForeColor = SystemColors.ControlLightLight;
-            lblTitle.Location = new Point(752, 396);
+            lblTitle.Location = new Point(650, 355);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(395, 43);
+            lblTitle.Size = new Size(580, 64);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Welcome, NexScore Admin!";
             // 
@@ -222,9 +222,9 @@
             btn_EnterHide.BackgroundImageLayout = ImageLayout.Zoom;
             btn_EnterHide.FlatAppearance.BorderSize = 0;
             btn_EnterHide.FlatStyle = FlatStyle.Flat;
-            btn_EnterHide.Location = new Point(1003, 489);
+            btn_EnterHide.Location = new Point(1022, 480);
             btn_EnterHide.Name = "btn_EnterHide";
-            btn_EnterHide.Size = new Size(20, 17);
+            btn_EnterHide.Size = new Size(36, 17);
             btn_EnterHide.TabIndex = 7;
             btn_EnterHide.UseVisualStyleBackColor = false;
             btn_EnterHide.Click += btn_EnterHide_Click;
@@ -237,9 +237,9 @@
             btn_EnterShow.BackgroundImageLayout = ImageLayout.Zoom;
             btn_EnterShow.FlatAppearance.BorderSize = 0;
             btn_EnterShow.FlatStyle = FlatStyle.Flat;
-            btn_EnterShow.Location = new Point(1003, 489);
+            btn_EnterShow.Location = new Point(1022, 480);
             btn_EnterShow.Name = "btn_EnterShow";
-            btn_EnterShow.Size = new Size(20, 17);
+            btn_EnterShow.Size = new Size(36, 17);
             btn_EnterShow.TabIndex = 6;
             btn_EnterShow.UseVisualStyleBackColor = false;
             btn_EnterShow.Click += btn_EnterShow_Click;
@@ -251,7 +251,7 @@
             btnForgotPin.BackColor = Color.Transparent;
             btnForgotPin.Font = new Font("Lexend Deca Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnForgotPin.ForeColor = SystemColors.Highlight;
-            btnForgotPin.Location = new Point(914, 563);
+            btnForgotPin.Location = new Point(914, 580);
             btnForgotPin.Name = "btnForgotPin";
             btnForgotPin.Size = new Size(76, 19);
             btnForgotPin.TabIndex = 5;
@@ -263,11 +263,11 @@
             btnLogin.Anchor = AnchorStyles.None;
             btnLogin.BackColor = Color.FromArgb(53, 55, 102);
             btnLogin.FlatStyle = FlatStyle.Popup;
-            btnLogin.Font = new Font("Lexend Deca Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnLogin.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             btnLogin.ForeColor = Color.FromArgb(247, 246, 237);
-            btnLogin.Location = new Point(914, 526);
+            btnLogin.Location = new Point(871, 532);
             btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(75, 35);
+            btnLogin.Size = new Size(150, 35);
             btnLogin.TabIndex = 4;
             btnLogin.Text = "Log In";
             btnLogin.UseVisualStyleBackColor = false;
@@ -276,12 +276,12 @@
             // txtLoginPin
             // 
             txtLoginPin.Anchor = AnchorStyles.None;
-            txtLoginPin.Font = new Font("Lexend Deca", 12F);
+            txtLoginPin.Font = new Font("Lexend Deca", 16F);
             txtLoginPin.ForeColor = SystemColors.InactiveCaption;
-            txtLoginPin.Location = new Point(866, 485);
+            txtLoginPin.Location = new Point(820, 473);
             txtLoginPin.Margin = new Padding(1, 1, 1, 2);
             txtLoginPin.Name = "txtLoginPin";
-            txtLoginPin.Size = new Size(160, 27);
+            txtLoginPin.Size = new Size(242, 34);
             txtLoginPin.TabIndex = 2;
             txtLoginPin.TextAlign = HorizontalAlignment.Center;
             // 
@@ -292,7 +292,7 @@
             lblSubtitle1.BackColor = Color.Transparent;
             lblSubtitle1.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             lblSubtitle1.ForeColor = SystemColors.ControlLightLight;
-            lblSubtitle1.Location = new Point(853, 451);
+            lblSubtitle1.Location = new Point(853, 439);
             lblSubtitle1.Name = "lblSubtitle1";
             lblSubtitle1.Size = new Size(190, 25);
             lblSubtitle1.TabIndex = 1;
@@ -303,11 +303,11 @@
             lblTitle1.Anchor = AnchorStyles.None;
             lblTitle1.AutoSize = true;
             lblTitle1.BackColor = Color.Transparent;
-            lblTitle1.Font = new Font("Lexend Deca", 20F, FontStyle.Bold);
+            lblTitle1.Font = new Font("Lexend Deca", 30F, FontStyle.Bold);
             lblTitle1.ForeColor = SystemColors.ControlLightLight;
-            lblTitle1.Location = new Point(725, 396);
+            lblTitle1.Location = new Point(599, 355);
             lblTitle1.Name = "lblTitle1";
-            lblTitle1.Size = new Size(472, 43);
+            lblTitle1.Size = new Size(692, 64);
             lblTitle1.TabIndex = 0;
             lblTitle1.Text = "Welcome back, NexScore Admin!";
             // 
@@ -316,8 +316,9 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1904, 1041);
-            Controls.Add(pnlSetup);
             Controls.Add(pnlLogIn);
+            Controls.Add(pnlSetup);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(820, 480);
             Name = "LogInForm";
             Text = "NexScore";

@@ -18,9 +18,6 @@ namespace NexScore.MainFormPages
         private bool _isLoading;
         private string? _lastEventId;
 
-        // Force LAN base URL for judge links
-        private const string BASE_URL = "http://10.122.178.191:5100";
-
         public PageJudges()
         {
             InitializeComponent();
@@ -112,7 +109,7 @@ namespace NexScore.MainFormPages
                     .ThenBy(j => j.Number, StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                string baseUrl = BASE_URL.TrimEnd('/');
+                var baseUrl = ApiBase.Get();
                 string html = BuildHtml(ordered, evt.Id, baseUrl);
                 _web.NavigateToString(html);
 

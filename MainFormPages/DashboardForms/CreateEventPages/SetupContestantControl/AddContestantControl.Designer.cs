@@ -55,7 +55,7 @@
             // 
             picPortrait.BackColor = SystemColors.Control;
             picPortrait.Image = Properties.Resources.Group_2__1_;
-            picPortrait.Location = new Point(49, 43);
+            picPortrait.Location = new Point(49, 38);
             picPortrait.Name = "picPortrait";
             picPortrait.Size = new Size(80, 100);
             picPortrait.SizeMode = PictureBoxSizeMode.Zoom;
@@ -66,17 +66,18 @@
             // 
             lblConNo.AutoSize = true;
             lblConNo.BackColor = Color.Transparent;
-            lblConNo.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblConNo.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblConNo.ForeColor = Color.FromArgb(247, 246, 237);
             lblConNo.Location = new Point(151, 10);
             lblConNo.Name = "lblConNo";
-            lblConNo.Size = new Size(31, 21);
+            lblConNo.Size = new Size(36, 24);
             lblConNo.TabIndex = 1;
             lblConNo.Text = "No.";
             // 
             // pnlAddContestants
             // 
             pnlAddContestants.BackColor = Color.Transparent;
+            pnlAddContestants.Controls.Add(_cbGender);
             pnlAddContestants.Controls.Add(lblReqRep);
             pnlAddContestants.Controls.Add(lblReqFullName);
             pnlAddContestants.Controls.Add(btnRemoveCon);
@@ -87,7 +88,6 @@
             pnlAddContestants.Controls.Add(lblRepresenting);
             pnlAddContestants.Controls.Add(lblGender);
             pnlAddContestants.Controls.Add(_txtAge);
-            pnlAddContestants.Controls.Add(_cbGender);
             pnlAddContestants.Controls.Add(_txtFullName);
             pnlAddContestants.Controls.Add(lblAge);
             pnlAddContestants.Controls.Add(lblFullName);
@@ -105,7 +105,7 @@
             lblReqRep.AutoSize = true;
             lblReqRep.Font = new Font("Lexend Deca", 7F);
             lblReqRep.ForeColor = Color.Salmon;
-            lblReqRep.Location = new Point(246, 67);
+            lblReqRep.Location = new Point(260, 69);
             lblReqRep.Name = "lblReqRep";
             lblReqRep.Size = new Size(59, 16);
             lblReqRep.TabIndex = 18;
@@ -116,7 +116,7 @@
             lblReqFullName.AutoSize = true;
             lblReqFullName.Font = new Font("Lexend Deca", 7F);
             lblReqFullName.ForeColor = Color.Salmon;
-            lblReqFullName.Location = new Point(303, 12);
+            lblReqFullName.Location = new Point(319, 13);
             lblReqFullName.Name = "lblReqFullName";
             lblReqFullName.Size = new Size(59, 16);
             lblReqFullName.TabIndex = 17;
@@ -136,17 +136,17 @@
             // 
             btnAddPhoto.BackColor = Color.FromArgb(53, 55, 102);
             btnAddPhoto.FlatStyle = FlatStyle.Popup;
-            btnAddPhoto.Font = new Font("Lexend Deca", 7F);
-            btnAddPhoto.Location = new Point(49, 150);
+            btnAddPhoto.Font = new Font("Lexend Deca", 10F);
+            btnAddPhoto.Location = new Point(49, 145);
             btnAddPhoto.Name = "btnAddPhoto";
-            btnAddPhoto.Size = new Size(80, 23);
+            btnAddPhoto.Size = new Size(80, 30);
             btnAddPhoto.TabIndex = 15;
-            btnAddPhoto.Text = "Add Photo";
+            btnAddPhoto.Text = "+ Photo";
             btnAddPhoto.UseVisualStyleBackColor = false;
             // 
             // _txtAdvocacy
             // 
-            _txtAdvocacy.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtAdvocacy.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtAdvocacy.Location = new Point(151, 146);
             _txtAdvocacy.Multiline = true;
             _txtAdvocacy.Name = "_txtAdvocacy";
@@ -156,50 +156,50 @@
             // lblAdvocacy
             // 
             lblAdvocacy.AutoSize = true;
-            lblAdvocacy.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblAdvocacy.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblAdvocacy.ForeColor = Color.FromArgb(247, 246, 237);
             lblAdvocacy.Location = new Point(151, 122);
             lblAdvocacy.Name = "lblAdvocacy";
-            lblAdvocacy.Size = new Size(187, 21);
+            lblAdvocacy.Size = new Size(217, 24);
             lblAdvocacy.TabIndex = 12;
             lblAdvocacy.Text = "Short Advocacy Statement";
             // 
             // _txtRep
             // 
-            _txtRep.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtRep.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtRep.Location = new Point(151, 91);
             _txtRep.Name = "_txtRep";
-            _txtRep.Size = new Size(393, 24);
+            _txtRep.Size = new Size(393, 27);
             _txtRep.TabIndex = 11;
             // 
             // lblRepresenting
             // 
             lblRepresenting.AutoSize = true;
-            lblRepresenting.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblRepresenting.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblRepresenting.ForeColor = Color.FromArgb(247, 246, 237);
             lblRepresenting.Location = new Point(151, 67);
             lblRepresenting.Name = "lblRepresenting";
-            lblRepresenting.Size = new Size(98, 21);
+            lblRepresenting.Size = new Size(113, 24);
             lblRepresenting.TabIndex = 10;
             lblRepresenting.Text = "Representing";
             // 
             // lblGender
             // 
             lblGender.AutoSize = true;
-            lblGender.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblGender.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblGender.ForeColor = Color.FromArgb(247, 246, 237);
             lblGender.Location = new Point(563, 69);
             lblGender.Name = "lblGender";
-            lblGender.Size = new Size(59, 21);
+            lblGender.Size = new Size(67, 24);
             lblGender.TabIndex = 9;
             lblGender.Text = "Gender";
             // 
             // _txtAge
             // 
-            _txtAge.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtAge.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtAge.Location = new Point(563, 34);
             _txtAge.Name = "_txtAge";
-            _txtAge.Size = new Size(74, 24);
+            _txtAge.Size = new Size(74, 27);
             _txtAge.TabIndex = 8;
             _txtAge.TextAlign = HorizontalAlignment.Center;
             // 
@@ -215,40 +215,40 @@
             // 
             // _txtFullName
             // 
-            _txtFullName.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtFullName.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtFullName.Location = new Point(229, 34);
             _txtFullName.Name = "_txtFullName";
-            _txtFullName.Size = new Size(315, 24);
+            _txtFullName.Size = new Size(315, 27);
             _txtFullName.TabIndex = 6;
             // 
             // lblAge
             // 
             lblAge.AutoSize = true;
-            lblAge.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblAge.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblAge.ForeColor = Color.FromArgb(247, 246, 237);
             lblAge.Location = new Point(563, 10);
             lblAge.Name = "lblAge";
-            lblAge.Size = new Size(36, 21);
+            lblAge.Size = new Size(39, 24);
             lblAge.TabIndex = 4;
             lblAge.Text = "Age";
             // 
             // lblFullName
             // 
             lblFullName.AutoSize = true;
-            lblFullName.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            lblFullName.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblFullName.ForeColor = Color.FromArgb(247, 246, 237);
             lblFullName.Location = new Point(229, 10);
             lblFullName.Name = "lblFullName";
-            lblFullName.Size = new Size(78, 21);
+            lblFullName.Size = new Size(89, 24);
             lblFullName.TabIndex = 3;
             lblFullName.Text = "Full Name";
             // 
             // _txtConNo
             // 
-            _txtConNo.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtConNo.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtConNo.Location = new Point(151, 34);
             _txtConNo.Name = "_txtConNo";
-            _txtConNo.Size = new Size(61, 24);
+            _txtConNo.Size = new Size(61, 27);
             _txtConNo.TabIndex = 2;
             _txtConNo.TextAlign = HorizontalAlignment.Center;
             // 

@@ -40,11 +40,11 @@
             // 
             btnSelectEvent.BackColor = Color.FromArgb(53, 55, 102);
             btnSelectEvent.FlatStyle = FlatStyle.Popup;
-            btnSelectEvent.Font = new Font("Lexend Deca", 9F);
+            btnSelectEvent.Font = new Font("Lexend Deca", 12F);
             btnSelectEvent.ForeColor = Color.FromArgb(247, 246, 237);
             btnSelectEvent.Location = new Point(507, 3);
             btnSelectEvent.Name = "btnSelectEvent";
-            btnSelectEvent.Size = new Size(124, 29);
+            btnSelectEvent.Size = new Size(124, 35);
             btnSelectEvent.TabIndex = 1;
             btnSelectEvent.Text = "Select";
             btnSelectEvent.UseVisualStyleBackColor = false;
@@ -57,7 +57,7 @@
             pnlListContainer.Dock = DockStyle.Fill;
             pnlListContainer.Location = new Point(25, 15);
             pnlListContainer.Name = "pnlListContainer";
-            pnlListContainer.Size = new Size(666, 746);
+            pnlListContainer.Size = new Size(666, 737);
             pnlListContainer.TabIndex = 1;
             // 
             // _flowPanelEvents
@@ -78,9 +78,9 @@
             pnlBottom.BackColor = Color.Transparent;
             pnlBottom.Controls.Add(btnSelectEvent);
             pnlBottom.Dock = DockStyle.Bottom;
-            pnlBottom.Location = new Point(25, 761);
+            pnlBottom.Location = new Point(25, 752);
             pnlBottom.Name = "pnlBottom";
-            pnlBottom.Size = new Size(666, 35);
+            pnlBottom.Size = new Size(666, 44);
             pnlBottom.TabIndex = 2;
             // 
             // OpenEventForm

@@ -68,13 +68,13 @@
             panelSpaceAbove.Dock = DockStyle.Top;
             panelSpaceAbove.Location = new Point(28, 18);
             panelSpaceAbove.Name = "panelSpaceAbove";
-            panelSpaceAbove.Size = new Size(747, 25);
+            panelSpaceAbove.Size = new Size(747, 30);
             panelSpaceAbove.TabIndex = 14;
             // 
             // btnRefresh
             // 
             btnRefresh.Image = Properties.Resources.material_symbols_refresh;
-            btnRefresh.Location = new Point(724, 5);
+            btnRefresh.Location = new Point(724, 4);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(20, 20);
             btnRefresh.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -84,29 +84,29 @@
             // lblforEventWeight
             // 
             lblforEventWeight.AutoSize = true;
-            lblforEventWeight.Font = new Font("Lexend Deca Medium", 10F, FontStyle.Bold);
+            lblforEventWeight.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             lblforEventWeight.ForeColor = Color.FromArgb(247, 246, 237);
             lblforEventWeight.Location = new Point(3, 2);
             lblforEventWeight.Name = "lblforEventWeight";
-            lblforEventWeight.Size = new Size(146, 22);
+            lblforEventWeight.Size = new Size(168, 25);
             lblforEventWeight.TabIndex = 0;
             lblforEventWeight.Text = "Total Phase Weight:";
             // 
             // lblEventTotalWeight
             // 
             lblEventTotalWeight.AutoSize = true;
-            lblEventTotalWeight.Font = new Font("Lexend Deca Medium", 10F, FontStyle.Bold);
+            lblEventTotalWeight.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             lblEventTotalWeight.ForeColor = Color.FromArgb(247, 246, 237);
-            lblEventTotalWeight.Location = new Point(155, 2);
+            lblEventTotalWeight.Location = new Point(173, 2);
             lblEventTotalWeight.Name = "lblEventTotalWeight";
-            lblEventTotalWeight.Size = new Size(19, 22);
+            lblEventTotalWeight.Size = new Size(22, 25);
             lblEventTotalWeight.TabIndex = 17;
             lblEventTotalWeight.Text = "0";
             // 
             // panelSpaceBelow
             // 
             panelSpaceBelow.Dock = DockStyle.Bottom;
-            panelSpaceBelow.Location = new Point(28, 49);
+            panelSpaceBelow.Location = new Point(28, 54);
             panelSpaceBelow.Name = "panelSpaceBelow";
             panelSpaceBelow.Size = new Size(747, 41);
             panelSpaceBelow.TabIndex = 15;
@@ -116,19 +116,19 @@
             btnAddPhase.Anchor = AnchorStyles.None;
             btnAddPhase.BackColor = Color.FromArgb(53, 55, 102);
             btnAddPhase.FlatStyle = FlatStyle.Popup;
-            btnAddPhase.Font = new Font("Lexend Deca", 11F);
+            btnAddPhase.Font = new Font("Lexend Deca", 12F);
             btnAddPhase.ForeColor = Color.FromArgb(247, 246, 237);
-            btnAddPhase.Location = new Point(27, 95);
+            btnAddPhase.Location = new Point(27, 100);
             btnAddPhase.Margin = new Padding(2);
             btnAddPhase.Name = "btnAddPhase";
-            btnAddPhase.Size = new Size(749, 30);
+            btnAddPhase.Size = new Size(749, 35);
             btnAddPhase.TabIndex = 13;
             btnAddPhase.Text = "+ Add Phase";
             btnAddPhase.UseVisualStyleBackColor = false;
             // 
             // panelSpaceNext
             // 
-            panelSpaceNext.Location = new Point(28, 130);
+            panelSpaceNext.Location = new Point(28, 140);
             panelSpaceNext.Name = "panelSpaceNext";
             panelSpaceNext.Size = new Size(747, 41);
             panelSpaceNext.TabIndex = 16;

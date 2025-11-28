@@ -29,9 +29,6 @@ namespace NexScore.MainFormPages
         // Filter mode: all / active / elim
         private string _filterMode = "active";
 
-        // LAN base (same you used elsewhere)
-        private const string BASE = "http://10.122.178.191:5100";
-
         public PageResults()
         {
             InitializeComponent();
@@ -712,8 +709,9 @@ html,body{margin:0;padding:0;background:transparent;color:#F7F6ED;font-family:'L
             }
 
             // JS for navigation, filter pills, toggle breakdown, eliminate
+            var baseUrl = ApiBase.Get();
             sb.Append("<script>");
-            sb.Append("const baseUrl='").Append(BASE.Replace("'", "\\'")).Append("';");
+            sb.Append("const baseUrl='").Append(baseUrl.Replace("'", "\\'")).Append("';");
             sb.Append("const eventId='").Append(WebUtility.HtmlEncode(eventId)).Append("';");
             sb.Append("const views=[...document.querySelectorAll('.view')]; let idx=0;");
             sb.Append("const label=document.getElementById('navLabel'); const prev=document.getElementById('navPrev'); const next=document.getElementById('navNext');");

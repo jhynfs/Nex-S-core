@@ -19,9 +19,6 @@ namespace NexScore.MainFormPages
         private bool _htmlInjected;
         private bool _initSentOnce;
 
-        // Use your LAN base URL everywhere for scorecards fetches
-        private const string BASE_URL = "http://10.122.178.191:5100";
-
         public PageScorecards()
         {
             InitializeComponent();
@@ -187,7 +184,7 @@ namespace NexScore.MainFormPages
                 .Find(j => j.EventId == eventId)
                 .ToListAsync();
 
-            var baseUrl = BASE_URL.TrimEnd('/');
+            var baseUrl = ApiBase.Get();
             System.Diagnostics.Debug.WriteLine("[Scorecards] Using baseUrl: " + baseUrl);
             System.Diagnostics.Debug.WriteLine("[Scorecards] Judges count: " + judges.Count);
 

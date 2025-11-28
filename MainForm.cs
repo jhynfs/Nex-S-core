@@ -4,6 +4,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+using System.Diagnostics;
+using NexScore.Utils;
+using System.Net;
 
 namespace NexScore
 {
@@ -16,6 +19,10 @@ namespace NexScore
         private PageJudges judgesPage;
         private PageResults resultsPage;
         private PageScorecards logsPage;
+
+        
+        private Label _lblAdminError;
+
 
         // ---------------- Color palette ----------------
         private Color baseColor = ColorTranslator.FromHtml("#353769");
@@ -30,6 +37,9 @@ namespace NexScore
         public MainForm()
         {
             InitializeComponent();
+
+            logoLong.Visible = true;
+            logoShort.Visible = false;
 
             pnlMainContent.BackColor = sidebarBg;
 
@@ -63,6 +73,50 @@ namespace NexScore
                     page.PerformLayout();
                 }
             };
+
+            _txtAdminBaseUrl.Text = SettingsService.LoadAdminBaseUrl("http://localhost:5100");
+
+            // Small helper to write to the error label if present
+            void SetAdminError(string msg)
+            {
+                if (_lblAdminError != null) _lblAdminError.Text = msg ?? "";
+            }
+
+            // Validation as you type
+            _txtAdminBaseUrl.TextChanged += (s, e2) =>
+            {
+                if (NetUtil.TryNormalizeAdminBaseUrl(_txtAdminBaseUrl.Text, out var _, out var err, 5100))
+                    SetAdminError("");
+                else
+                    SetAdminError(err);
+            };
+
+            
+            _btnUseMyIp.Click += (s, e2) =>
+            {
+                var ip = NetUtil.GetDefaultLocalIPv4();
+                if (string.IsNullOrWhiteSpace(ip))
+                {
+                    SetAdminError("Could not detect a local IPv4.");
+                    return;
+                }
+                _txtAdminBaseUrl.Text = $"http://{ip}:5100";
+            };
+
+           
+            _btnSaveAdminBaseUrl.Click += (s, e2) =>
+            {
+                if (!NetUtil.TryNormalizeAdminBaseUrl(_txtAdminBaseUrl.Text, out var norm, out var err, 5100))
+                {
+                    SetAdminError(err);
+                    return;
+                }
+                SettingsService.SaveAdminBaseUrl(norm);
+                _txtAdminBaseUrl.Text = norm;   // reflect normalization
+                SetAdminError("Saved.");
+
+
+            };
         }
 
         // ---------------- Sidebar Toggle ----------------
@@ -74,6 +128,9 @@ namespace NexScore
                 btnMenu.Text = "☰  Menu";
                 ShowSidebarButtonText();
                 isCollapsed = false;
+                logoLong.Visible = true;
+                logoShort.Visible = false;
+
             }
             else
             {
@@ -81,6 +138,9 @@ namespace NexScore
                 btnMenu.Text = "›";
                 HideSidebarButtonText();
                 isCollapsed = true;
+                logoLong.Visible = false;
+                logoShort.Visible = true;
+
             }
         }
 
@@ -205,10 +265,6 @@ namespace NexScore
         {
             SetActiveButton((Button)sender);
             LoadPage(logsPage);
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
         }
     }
 }

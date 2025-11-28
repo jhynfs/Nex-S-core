@@ -42,7 +42,7 @@
             _icon.Image = Properties.Resources.bxs_file;
             _icon.Location = new Point(10, 10);
             _icon.Name = "_icon";
-            _icon.Size = new Size(40, 50);
+            _icon.Size = new Size(40, 61);
             _icon.SizeMode = PictureBoxSizeMode.CenterImage;
             _icon.TabIndex = 0;
             _icon.TabStop = false;
@@ -50,24 +50,24 @@
             // _lblName
             // 
             _lblName.AutoSize = true;
-            _lblName.Font = new Font("Lexend Deca", 9.75F, FontStyle.Bold);
+            _lblName.Font = new Font("Lexend Deca", 14F, FontStyle.Bold);
             _lblName.ForeColor = Color.FromArgb(247, 246, 237);
             _lblName.Location = new Point(46, 4);
             _lblName.MinimumSize = new Size(550, 24);
             _lblName.Name = "_lblName";
-            _lblName.Size = new Size(550, 24);
+            _lblName.Size = new Size(550, 30);
             _lblName.TabIndex = 1;
             _lblName.Text = "Event Name";
             // 
             // _lblDate
             // 
             _lblDate.AutoSize = true;
-            _lblDate.Font = new Font("Lexend", 8.25F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            _lblDate.Font = new Font("Lexend", 12F, FontStyle.Italic);
             _lblDate.ForeColor = Color.FromArgb(247, 246, 237);
-            _lblDate.Location = new Point(46, 28);
+            _lblDate.Location = new Point(46, 34);
             _lblDate.MinimumSize = new Size(550, 17);
             _lblDate.Name = "_lblDate";
-            _lblDate.Size = new Size(550, 17);
+            _lblDate.Size = new Size(550, 25);
             _lblDate.TabIndex = 2;
             _lblDate.Text = "Date";
             // 
@@ -78,7 +78,7 @@
             _rightContainer.Dock = DockStyle.Fill;
             _rightContainer.Location = new Point(10, 10);
             _rightContainer.Name = "_rightContainer";
-            _rightContainer.Size = new Size(607, 50);
+            _rightContainer.Size = new Size(607, 61);
             _rightContainer.TabIndex = 3;
             // 
             // EventListItemControl
@@ -90,7 +90,7 @@
             Controls.Add(_rightContainer);
             Name = "EventListItemControl";
             Padding = new Padding(10);
-            Size = new Size(627, 70);
+            Size = new Size(627, 81);
             ((System.ComponentModel.ISupportInitialize)_icon).EndInit();
             _rightContainer.ResumeLayout(false);
             _rightContainer.PerformLayout();

@@ -55,49 +55,49 @@
             // 
             lblJudgeName.AutoSize = true;
             lblJudgeName.BackColor = Color.Transparent;
-            lblJudgeName.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
+            lblJudgeName.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblJudgeName.ForeColor = Color.FromArgb(247, 246, 237);
             lblJudgeName.Location = new Point(344, 4);
             lblJudgeName.Name = "lblJudgeName";
-            lblJudgeName.Size = new Size(109, 22);
+            lblJudgeName.Size = new Size(119, 24);
             lblJudgeName.TabIndex = 3;
             lblJudgeName.Text = "Judge's Name";
             // 
             // _txtJudgeNo
             // 
-            _txtJudgeNo.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtJudgeNo.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtJudgeNo.Location = new Point(136, 28);
             _txtJudgeNo.Name = "_txtJudgeNo";
-            _txtJudgeNo.Size = new Size(63, 24);
+            _txtJudgeNo.Size = new Size(63, 27);
             _txtJudgeNo.TabIndex = 4;
             _txtJudgeNo.TextAlign = HorizontalAlignment.Center;
             // 
             // _txtJudgeTitle
             // 
-            _txtJudgeTitle.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtJudgeTitle.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtJudgeTitle.Location = new Point(221, 28);
             _txtJudgeTitle.Name = "_txtJudgeTitle";
-            _txtJudgeTitle.Size = new Size(100, 24);
+            _txtJudgeTitle.Size = new Size(100, 27);
             _txtJudgeTitle.TabIndex = 5;
             _txtJudgeTitle.TextAlign = HorizontalAlignment.Center;
             // 
             // _txtJudgeName
             // 
-            _txtJudgeName.Font = new Font("Lexend Deca Medium", 9.75F, FontStyle.Bold);
+            _txtJudgeName.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
             _txtJudgeName.Location = new Point(344, 28);
             _txtJudgeName.Name = "_txtJudgeName";
-            _txtJudgeName.Size = new Size(316, 24);
+            _txtJudgeName.Size = new Size(316, 27);
             _txtJudgeName.TabIndex = 6;
             // 
             // lblJudgeTitle
             // 
             lblJudgeTitle.AutoSize = true;
             lblJudgeTitle.BackColor = Color.Transparent;
-            lblJudgeTitle.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
+            lblJudgeTitle.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblJudgeTitle.ForeColor = Color.FromArgb(247, 246, 237);
             lblJudgeTitle.Location = new Point(221, 4);
             lblJudgeTitle.Name = "lblJudgeTitle";
-            lblJudgeTitle.Size = new Size(41, 22);
+            lblJudgeTitle.Size = new Size(45, 24);
             lblJudgeTitle.TabIndex = 7;
             lblJudgeTitle.Text = "Title";
             // 
@@ -105,11 +105,11 @@
             // 
             lblJudgeNo.AutoSize = true;
             lblJudgeNo.BackColor = Color.Transparent;
-            lblJudgeNo.Font = new Font("Lexend Deca", 10F, FontStyle.Bold);
+            lblJudgeNo.Font = new Font("Lexend Deca", 11F, FontStyle.Bold);
             lblJudgeNo.ForeColor = Color.FromArgb(247, 246, 237);
             lblJudgeNo.Location = new Point(136, 4);
             lblJudgeNo.Name = "lblJudgeNo";
-            lblJudgeNo.Size = new Size(34, 22);
+            lblJudgeNo.Size = new Size(36, 24);
             lblJudgeNo.TabIndex = 8;
             lblJudgeNo.Text = "No.";
             // 
