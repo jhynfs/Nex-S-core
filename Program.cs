@@ -12,17 +12,15 @@ namespace NexScoreAdmin
             ApplicationConfiguration.Initialize();
 
             Database.Initialize();
-
-            string staticRoot = Path.Combine(
-    AppDomain.CurrentDomain.BaseDirectory, "Web");
+            string staticRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Web");
 
             var server = new NexScore.Infrastructure.JudgingServer(
                 NexScore.Database.Events.Database,
                 staticRoot
             );
             server.Start(5100);
+            Application.Run(new NexScore.LogInForm());
 
-            Application.Run(new NexScore.MainForm());
         }
     }
 }

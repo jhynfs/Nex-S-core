@@ -51,6 +51,7 @@
             // 
             // pnlMainEvents
             // 
+            pnlMainEvents.AutoSize = true;
             pnlMainEvents.BackColor = Color.Transparent;
             pnlMainEvents.Controls.Add(btnEvtSelect);
             pnlMainEvents.Controls.Add(button1);
@@ -72,7 +73,7 @@
             pnlMainEvents.Dock = DockStyle.Fill;
             pnlMainEvents.Location = new Point(0, 0);
             pnlMainEvents.Name = "pnlMainEvents";
-            pnlMainEvents.Padding = new Padding(200, 150, 200, 150);
+            pnlMainEvents.Padding = new Padding(150);
             pnlMainEvents.Size = new Size(1524, 1041);
             pnlMainEvents.TabIndex = 0;
             // 
@@ -113,6 +114,7 @@
             _lblCurrentEvtName.TabIndex = 35;
             _lblCurrentEvtName.Text = "Current Event Name";
             _lblCurrentEvtName.TextAlign = ContentAlignment.MiddleCenter;
+            _lblCurrentEvtName.UseMnemonic = false;
             // 
             // btnDetailsMod
             // 
@@ -313,6 +315,7 @@
             pnlMainEvents.ResumeLayout(false);
             pnlMainEvents.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

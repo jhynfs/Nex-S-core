@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing; // Added
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -14,6 +15,11 @@ namespace NexScore.MainFormPages
 {
     public partial class PageJudges : UserControl
     {
+        // --- UI Fields ---
+        private Panel _topBar;
+        private Label _lblTitle;
+        // -----------------
+
         private WebView2? _web;
         private bool _isLoading;
         private string? _lastEventId;
@@ -21,6 +27,11 @@ namespace NexScore.MainFormPages
         public PageJudges()
         {
             InitializeComponent();
+
+            // --- Init Top Bar ---
+            InitializeTopBar();
+            // --------------------
+
             this.Load += async (_, __) =>
             {
                 await EnsureWebAsync();
@@ -53,6 +64,30 @@ namespace NexScore.MainFormPages
                     await LoadAndRenderAsync(evt);
                 }
             };
+        }
+
+        private void InitializeTopBar()
+        {
+            _topBar = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(58, 61, 116),
+                Padding = new Padding(0)
+            };
+
+            _lblTitle = new Label
+            {
+                Text = "Judges",
+                AutoSize = true,
+                ForeColor = Color.White,
+                Font = new Font("Lexend Deca", 13f, FontStyle.Bold),
+                Location = new Point(18, 13)
+            };
+
+            _topBar.Controls.Add(_lblTitle);
+            this.Controls.Add(_topBar);
+            _topBar.BringToFront();
         }
 
         private async Task EnsureWebAsync()
@@ -186,7 +221,7 @@ async function copyLink(url, el){
             sb.Append("<div class='thead'>")
               .Append("<div class='th'>Judge Number</div>")
               .Append("<div class='th'>Judge Name</div>")
-              .Append("<div class='th'>Action</div>")
+              .Append("<div class='th'> </div>")
               .Append("</div>");
 
             if (judges == null || judges.Count == 0)

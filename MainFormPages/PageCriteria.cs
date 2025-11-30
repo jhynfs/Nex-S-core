@@ -7,6 +7,7 @@ using NexScore;
 using NexScore.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing; // Added
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -17,6 +18,11 @@ namespace NexScore.MainFormPages
 {
     public partial class PageCriteria : UserControl
     {
+        // --- UI Fields ---
+        private Panel _topBar;
+        private Label _lblTitle;
+        // -----------------
+
         private bool _isLoading;
         private string? _lastEventId;
         private WebView2? _web;
@@ -24,6 +30,10 @@ namespace NexScore.MainFormPages
         public PageCriteria()
         {
             InitializeComponent();
+
+            // --- Init Top Bar ---
+            InitializeTopBar();
+            // --------------------
 
             this.Load += async (_, __) =>
             {
@@ -58,6 +68,31 @@ namespace NexScore.MainFormPages
                     await LoadAndRenderAsync(evt);
                 }
             };
+        }
+
+        private void InitializeTopBar()
+        {
+            _topBar = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(58, 61, 116),
+                Padding = new Padding(0)
+            };
+
+            _lblTitle = new Label
+            {
+                Text = "Phases & Criteria",
+                AutoSize = true,
+                ForeColor = Color.White,
+                Font = new Font("Lexend Deca", 13f, FontStyle.Bold),
+                Location = new Point(18, 13),
+                UseMnemonic = false
+            };
+
+            _topBar.Controls.Add(_lblTitle);
+            this.Controls.Add(_topBar);
+            _topBar.BringToFront();
         }
 
         private async Task EnsureWebAsync()
@@ -163,10 +198,10 @@ namespace NexScore.MainFormPages
 
         private string BuildHtml(List<PhaseModel> phases)
         {
-            string colorPhase = "#3A3D74";   
-            string colorSegment = "#323464"; 
-            string colorRow = "#2C2E58";     
-            string colorText = "#F7F6ED";   
+            string colorPhase = "#3A3D74";
+            string colorSegment = "#323464";
+            string colorRow = "#2C2E58";
+            string colorText = "#F7F6ED";
             string bg = "transparent";
 
             var css = $@"

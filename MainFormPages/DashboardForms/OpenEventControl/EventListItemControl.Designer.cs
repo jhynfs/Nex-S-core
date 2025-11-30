@@ -58,6 +58,7 @@
             _lblName.Size = new Size(550, 30);
             _lblName.TabIndex = 1;
             _lblName.Text = "Event Name";
+            _lblName.UseMnemonic = false;
             // 
             // _lblDate
             // 

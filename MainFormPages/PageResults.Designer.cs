@@ -37,7 +37,7 @@
             pnlMainResults.Dock = DockStyle.Fill;
             pnlMainResults.Location = new Point(0, 0);
             pnlMainResults.Name = "pnlMainResults";
-            pnlMainResults.Padding = new Padding(200, 150, 200, 150);
+            pnlMainResults.Padding = new Padding(150);
             pnlMainResults.Size = new Size(1524, 1041);
             pnlMainResults.TabIndex = 0;
             // 

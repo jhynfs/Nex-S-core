@@ -18,9 +18,10 @@ namespace NexScore
         private PageCriteria criteriaPage;
         private PageJudges judgesPage;
         private PageResults resultsPage;
-        private PageScorecards logsPage;
+        private PageScorecards scorePage;
+        private PageLogs logsPage;
 
-        
+
         private Label _lblAdminError;
 
 
@@ -31,6 +32,7 @@ namespace NexScore
         private Color sidebarBg = ColorTranslator.FromHtml("#171717");
 
         private bool isCollapsed = false;
+        private bool autoSidebar = true;
         private Button activeButton = null;
         public Button _btnDashboard => btnDashboard;
 
@@ -54,7 +56,8 @@ namespace NexScore
             criteriaPage = new PageCriteria();
             judgesPage = new PageJudges();
             resultsPage = new PageResults();
-            logsPage = new PageScorecards();
+            scorePage = new PageScorecards();
+            logsPage = new PageLogs();
 
             // --- Sidebar setup ---
             pnlSidebar.BackColor = sidebarBg;
@@ -91,7 +94,7 @@ namespace NexScore
                     SetAdminError(err);
             };
 
-            
+
             _btnUseMyIp.Click += (s, e2) =>
             {
                 var ip = NetUtil.GetDefaultLocalIPv4();
@@ -103,7 +106,7 @@ namespace NexScore
                 _txtAdminBaseUrl.Text = $"http://{ip}:5100";
             };
 
-           
+
             _btnSaveAdminBaseUrl.Click += (s, e2) =>
             {
                 if (!NetUtil.TryNormalizeAdminBaseUrl(_txtAdminBaseUrl.Text, out var norm, out var err, 5100))
@@ -114,9 +117,8 @@ namespace NexScore
                 SettingsService.SaveAdminBaseUrl(norm);
                 _txtAdminBaseUrl.Text = norm;   // reflect normalization
                 SetAdminError("Saved.");
-
-
             };
+            this.Resize += MainForm_Resize_AutoSidebar;
         }
 
         // ---------------- Sidebar Toggle ----------------
@@ -261,10 +263,62 @@ namespace NexScore
             LoadPage(resultsPage);
         }
 
+        private void btnScorecards_Click(object sender, EventArgs e)
+        {
+            SetActiveButton((Button)sender);
+            LoadPage(scorePage);
+        }
+
         private void btnLogs_Click(object sender, EventArgs e)
         {
             SetActiveButton((Button)sender);
             LoadPage(logsPage);
         }
+
+        private void MainForm_Resize_AutoSidebar(object sender, EventArgs e)
+        {
+            if (Width <= 1000)
+            {
+                if (!isCollapsed)
+                {
+                    // Collapse if not already
+                    CollapseSidebarAuto();
+                }
+            }
+            else
+            {
+                if (isCollapsed)
+                {
+                    // Expand if not already
+                    ExpandSidebarAuto();
+                }
+            }
+        }
+        private void CollapseSidebarAuto()
+        {
+            // Set only if not already collapsed.
+            if (!isCollapsed)
+            {
+                pnlSidebar.Width = 60;
+                btnMenu.Text = "›";
+                HideSidebarButtonText();
+                isCollapsed = true;
+                logoLong.Visible = false;
+                logoShort.Visible = true;
+            }
+        }
+        private void ExpandSidebarAuto()
+        {
+            if (isCollapsed)
+            {
+                pnlSidebar.Width = 380;
+                btnMenu.Text = "☰  Menu";
+                ShowSidebarButtonText();
+                isCollapsed = false;
+                logoLong.Visible = true;
+                logoShort.Visible = false;
+            }
+        }
+
     }
 }

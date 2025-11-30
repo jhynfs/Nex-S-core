@@ -37,7 +37,7 @@
             pnlMainScorecards.Dock = DockStyle.Fill;
             pnlMainScorecards.Location = new Point(0, 0);
             pnlMainScorecards.Name = "pnlMainScorecards";
-            pnlMainScorecards.Padding = new Padding(200, 150, 200, 150);
+            pnlMainScorecards.Padding = new Padding(150);
             pnlMainScorecards.Size = new Size(1524, 1041);
             pnlMainScorecards.TabIndex = 0;
             // 

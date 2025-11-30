@@ -28,17 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
+            pnlMainLogs = new Panel();
             SuspendLayout();
+            // 
+            // pnlMainLogs
+            // 
+            pnlMainLogs.AutoSize = true;
+            pnlMainLogs.BackColor = Color.FromArgb(15, 23, 42);
+            pnlMainLogs.Dock = DockStyle.Fill;
+            pnlMainLogs.Location = new Point(0, 0);
+            pnlMainLogs.Name = "pnlMainLogs";
+            pnlMainLogs.Padding = new Padding(200, 150, 200, 150);
+            pnlMainLogs.Size = new Size(1524, 1041);
+            pnlMainLogs.TabIndex = 0;
             // 
             // PageLogs
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
+            Controls.Add(pnlMainLogs);
             Name = "PageLogs";
-            Size = new Size(1014, 684);
+            Size = new Size(1524, 1041);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
+
+        private Panel pnlMainLogs;
     }
 }

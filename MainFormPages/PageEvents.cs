@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using NexScore.Models;
 using System;
+using System.Drawing; // Added
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -9,6 +10,11 @@ namespace NexScore
 {
     public partial class PageEvents : UserControl
     {
+        // --- UI Fields ---
+        private Panel _topBar;
+        private Label _lblTitle;
+        // -----------------
+
         private EventModel? _currentEvent;
 
         private bool _isOpenEventDialogOpen = false;
@@ -17,6 +23,10 @@ namespace NexScore
         public PageEvents()
         {
             InitializeComponent();
+
+            // --- Init Top Bar ---
+            InitializeTopBar();
+            // --------------------
 
             ConfigureNonSelectableTextBox(_txtDescriptionHere);
             ConfigureNonSelectableTextBox(_txtVenueHere);
@@ -44,6 +54,30 @@ namespace NexScore
 
             btnEvtSelect.Click -= btnEvtSelect_Click;
             btnEvtSelect.Click += btnEvtSelect_Click;
+        }
+
+        private void InitializeTopBar()
+        {
+            _topBar = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(58, 61, 116),
+                Padding = new Padding(0)
+            };
+
+            _lblTitle = new Label
+            {
+                Text = "Event Details",
+                AutoSize = true,
+                ForeColor = Color.White,
+                Font = new Font("Lexend Deca", 13f, FontStyle.Bold),
+                Location = new Point(18, 13)
+            };
+
+            _topBar.Controls.Add(_lblTitle);
+            this.Controls.Add(_topBar);
+            _topBar.BringToFront();
         }
 
         #region Non-selectable TextBox Helper

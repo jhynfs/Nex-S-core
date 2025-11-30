@@ -319,7 +319,7 @@
             Controls.Add(pnlLogIn);
             Controls.Add(pnlSetup);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(820, 480);
+            MinimumSize = new Size(1000, 480);
             Name = "LogInForm";
             Text = "NexScore";
             WindowState = FormWindowState.Maximized;

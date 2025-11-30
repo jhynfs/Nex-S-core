@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing; // Added
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,11 @@ namespace NexScore.MainFormPages
 {
     public partial class PageContestants : UserControl
     {
+        // --- UI Fields ---
+        private Panel _topBar;
+        private Label _lblTitle;
+        // -----------------
+
         private WebView2? _web;
         private bool _isLoading;
         private string? _mappedEventFolder;
@@ -22,6 +28,10 @@ namespace NexScore.MainFormPages
         public PageContestants()
         {
             InitializeComponent();
+
+            // --- Init Top Bar ---
+            InitializeTopBar();
+            // --------------------
 
             this.Load += async (_, __) =>
             {
@@ -56,6 +66,30 @@ namespace NexScore.MainFormPages
                     await LoadAndRenderAsync(evt);
                 }
             };
+        }
+
+        private void InitializeTopBar()
+        {
+            _topBar = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(58, 61, 116),
+                Padding = new Padding(0)
+            };
+
+            _lblTitle = new Label
+            {
+                Text = "Contestants",
+                AutoSize = true,
+                ForeColor = Color.White,
+                Font = new Font("Lexend Deca", 13f, FontStyle.Bold),
+                Location = new Point(18, 13)
+            };
+
+            _topBar.Controls.Add(_lblTitle);
+            this.Controls.Add(_topBar);
+            _topBar.BringToFront();
         }
 
         private async Task EnsureWebAsync()

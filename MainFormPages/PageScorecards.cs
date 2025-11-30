@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing; // Added for Color, Point, Font
 using System.Linq;
 using System.Net;
 using System.Text.Json;
@@ -13,6 +14,11 @@ namespace NexScore.MainFormPages
 {
     public partial class PageScorecards : UserControl
     {
+        // --- Added UI Fields ---
+        private Panel _topBar;
+        private Label _lblTitle;
+        // -----------------------
+
         private WebView2? _web;
         private bool _isLoading;
         private string? _lastEventId;
@@ -23,6 +29,10 @@ namespace NexScore.MainFormPages
         public PageScorecards()
         {
             InitializeComponent();
+
+            // --- Initialize Top Bar ---
+            InitializeTopBar();
+            // --------------------------
 
             this.Load += async (_, __) =>
             {
@@ -64,6 +74,37 @@ namespace NexScore.MainFormPages
             };
         }
 
+        // --- New Helper Method ---
+        private void InitializeTopBar()
+        {
+            _topBar = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(58, 61, 116),
+                Padding = new Padding(0)
+            };
+
+            _lblTitle = new Label
+            {
+                Text = "Scorecards",
+                AutoSize = true,
+                ForeColor = Color.White,
+                Font = new Font("Lexend Deca", 13f, FontStyle.Bold),
+                Location = new Point(18, 13)
+            };
+
+            _topBar.Controls.Add(_lblTitle);
+
+            // Add the top bar to the UserControl
+            this.Controls.Add(_topBar);
+
+            // Important: BringToFront ensures the DockStyle.Top takes precedence 
+            // and pushes the pnlMainScorecards down.
+            _topBar.BringToFront();
+        }
+        // -------------------------
+
         private async Task EnsureWebAsync()
         {
             if (_web != null) return;
@@ -103,8 +144,14 @@ namespace NexScore.MainFormPages
             }
         }
 
+        // ... [Rest of the file remains exactly the same] ...
+        // (CoreWebView2_WebMessageReceived, CoreWebView2_NavigationCompleted, 
+        // SafeSendInitAsync, InitForEventAsync, SendInitializationMessageAsync,
+        // BuildEmbeddedScorecardsHtml, StartAutoRefresh, StopAutoRefresh)
+
         private void CoreWebView2_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
+            // ... (Existing implementation) ...
             try
             {
                 var msg = e.TryGetWebMessageAsString();
@@ -292,11 +339,8 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif
 .muted{opacity:.75;font-size:17px;padding:4px 2px;}
 @media print{
     body,html{ background:#fff; color:#000; font-size: 12pt; }
-
     .page{ padding: 0 10px; }
-
     .controls-bar, .btn-small, .muted { display:none!important; }
-
     .scorecard{ 
         border: 1px solid #000; 
         padding: 10px; 
@@ -305,13 +349,11 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif
         box-shadow: none; 
     }
     .scorecard h3{ color:#000; font-size: 16pt; margin-bottom: 5px; }
-
     .crit-row { 
         grid-template-columns: 60px 80px 1fr 60px !important; 
         font-size: 10pt; 
         border-bottom: 1px solid #ccc;
     }
-
     .crit-details{ 
         display: block !important; 
         background: transparent; 
@@ -319,7 +361,6 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif
         padding: 0; 
         margin-top: 5px;
     }
-
     .scorecard{ page-break-before: always; }
     .scorecard:first-of-type{ page-break-before: auto; }
 }
@@ -370,9 +411,25 @@ async function buildScorecard(j, expandAllCriteria=false){
       if(a.fraction==null) return 1; if(b.fraction==null) return -1; return b.fraction-a.fraction;
     });
   let rank=1;
-  // Helper for criteria details
-  async function addCriteriaDetails(tr, jid, cid, autoExpand){
-    let details=document.createElement('div'); details.className='crit-details';
+
+  function properCase(s) {
+    if(!s) return '';
+    const smallWords = new Set(['in', 'on', 'of', 'and']);
+    return s.split(' ').map((w,i) => {
+        const wl = w.toLowerCase();
+        if (i > 0 && smallWords.has(wl)) return wl;
+        // capitalize special first letter, keep rest as original for acronym etc
+        return wl.charAt(0).toUpperCase() + wl.slice(1);
+    }).join(' ');
+}
+
+async function addCriteriaDetails(tr, jid, cid, autoExpand){
+    let details=tr.querySelector('.crit-details');
+    if(details){
+      if(autoExpand) details.classList.add('show');
+      return;
+    }
+    details=document.createElement('div'); details.className='crit-details';
     details.innerHTML='<div style="font-size:16px;opacity:.7;">Loading...</div>';
     tr.lastElementChild.appendChild(details);
     try{
@@ -381,11 +438,20 @@ async function buildScorecard(j, expandAllCriteria=false){
       else{
         const wrap=document.createElement('div'); wrap.innerHTML='<div class="crit-row crit-head"><div>Phase</div><div>Segment</div><div>Criteria</div><div style="text-align:right;">Score</div></div>';
         rows.forEach(r=>{
-          const phase=r.phaseId||r.PhaseId||'', segment=r.segmentId||r.SegmentId||'', crit=r.criteriaId||r.CriteriaId||'';
-          const raw=r.rawValue!=null?r.RawValue??r.rawValue:r.RawValue;
-          let critName=(crit.split(':').pop()||crit).replace(/[_\-]+/g,' ').trim();
+          // Use IDs if names are not present, but prettify always!
+          let phase   = r.phaseName   || r.phaseId   || r.PhaseName   || r.PhaseId   || '';
+          let segment = r.segmentName || r.segmentId || r.SegmentName || r.SegmentId || '';
+          let crit    = r.criteriaName|| r.criteriaId|| r.CriteriaName|| r.CriteriaId|| '';
+          // Remove anything like "p1::1:" or number/code prefixes from names
+          crit = crit.replace(/^.*[:]{1,2}/g, '');
+          phase = phase.replace(/^.*[:]{1,2}/g, '');
+          segment = segment.replace(/^.*[:]{1,2}/g, '');
+          crit = properCase(crit.replace(/[_\-]+/g, ' ').trim());
+          phase = properCase(phase.replace(/[_\-]+/g, ' ').trim());
+          segment = properCase(segment.replace(/[_\-]+/g, ' ').trim());
+          const raw = r.rawValue!=null?r.RawValue??r.rawValue:r.RawValue;
           const line=document.createElement('div'); line.className='crit-row';
-          line.innerHTML='<div>'+escapeHtml(phase)+'</div><div>'+escapeHtml(segment)+'</div><div>'+escapeHtml(critName)+'</div><div style="text-align:right;">'+escapeHtml(String(raw))+'</div>';
+          line.innerHTML='<div>'+escapeHtml(phase)+'</div><div>'+escapeHtml(segment)+'</div><div>'+escapeHtml(crit)+'</div><div style="text-align:right;">'+escapeHtml(String(raw))+'</div>';
           wrap.appendChild(line);
         });
         details.innerHTML=''; details.appendChild(wrap);
@@ -396,7 +462,8 @@ async function buildScorecard(j, expandAllCriteria=false){
       if(autoExpand) details.classList.add('show');
       window.chrome?.webview?.postMessage({type:'scorecards-error', error:err.message});
     }
-  }
+}
+
   // Rows for each contestant in this judge's scorecard
   for(let i=0;i<enriched.length;i++){
     const item=enriched[i];
@@ -406,14 +473,39 @@ async function buildScorecard(j, expandAllCriteria=false){
       <td>${item.contestant.number ?? '—'}</td>
       <td>${escapeHtml(item.contestant.name)}</td>
       <td class='pct'>${has?(item.fraction*100).toFixed(3):'—'}</td>
-      <td>${has||expandAllCriteria?'<span style="display:none" class="toggle-crit" data-jid="'+escapeHtml(j.judgeId)+'" data-cid="'+escapeHtml(item.contestant.id)+'">View Criteria</span>':''}</td>`;
-    // Fifth (details) cell will have criteria details block injected below
+      <td>${
+        has||expandAllCriteria?
+        '<span class="toggle-crit" data-jid="'+escapeHtml(j.judgeId)+'" data-cid="'+escapeHtml(item.contestant.id)+'">View Criteria</span>'
+        :''
+      }</td>`;
     tbody.appendChild(tr);
-    if(has||expandAllCriteria){
-      // Fetch and show criteria by default for print mode
-      addCriteriaDetails(tr, j.judgeId, item.contestant.id, expandAllCriteria);
+
+    // Attach details for print expansion, but don't auto-show in normal mode
+    if(has&&expandAllCriteria){
+      addCriteriaDetails(tr, j.judgeId, item.contestant.id, true);
     }
   }
+
+  // Make View Criteria button work for collapsible show/hide
+  card.querySelectorAll('.toggle-crit').forEach(btn =>{
+    btn.onclick= async function() {
+      let tr = btn.closest("tr");
+      let details = tr && tr.querySelector(".crit-details");
+      if(details && details.classList.contains("show")){
+        details.classList.remove("show");
+        btn.textContent = "View Criteria";
+      }else if(details){
+        details.classList.add("show");
+        btn.textContent = "Hide Criteria";
+      }else if(tr){
+        // If not already loaded, load and show
+        await addCriteriaDetails(tr, btn.dataset.jid, btn.dataset.cid, true);
+        tr.querySelector('.crit-details').classList.add('show');
+        btn.textContent = "Hide Criteria";
+      }
+    };
+  });
+
   card.querySelector('[data-jreload]')?.addEventListener('click', async ev=>{
     const btn=ev.currentTarget; if(!btn) return;
     btn.disabled=true; btn.textContent='...';
@@ -443,20 +535,13 @@ document.addEventListener('click', async e=>{
     const originalText = btn.textContent;
     btn.textContent = "Preparing...";
     btn.disabled = true;
-
-    // 1. Load all data (expanded)
     await loadAll(true);
-
-    // 2. Wait a moment for DOM reflow/paint
-    // 500ms is usually safe for WebView2 to render the new table rows
     setTimeout(()=>{ 
         window.print(); 
-
-        // Reset button state after print dialog opens/closes
         btn.textContent = originalText;
         btn.disabled = false;
     }, 500); 
-}
+  }
   else if(t.id==='btnReloadAll'){ loadAll(false); }
 });
 
@@ -476,7 +561,7 @@ if(window.chrome && window.chrome.webview){
         {
             if (_autoRefreshTimer != null) return;
             _autoRefreshTimer = new System.Windows.Forms.Timer();
-            _autoRefreshTimer.Interval = 8000; // 8s periodic refresh
+            _autoRefreshTimer.Interval = 20000; // 20s periodic refresh
             _autoRefreshTimer.Tick += (s, e) =>
             {
                 try
