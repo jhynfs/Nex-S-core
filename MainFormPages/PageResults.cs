@@ -28,6 +28,10 @@ namespace NexScore.MainFormPages
         private ComboBox? _cboFilter;
         private Label? _lblUpdated;
 
+        // For print phase selection
+        private List<string>? _lastPhaseKeys;
+        private Dictionary<string, string>? _lastPhaseNames;
+
         // Filter mode: all / active / elim
         private string _filterMode = "active";
 
@@ -91,8 +95,8 @@ namespace NexScore.MainFormPages
                 Text = "Results",
                 AutoSize = true,
                 ForeColor = Color.White,
-                Font = new Font("Lexend Deca", 12f, FontStyle.Bold),
-                Location = new Point(10, 12)
+                Font = new Font("Lexend Deca", 13f, FontStyle.Bold),
+                Location = new Point(18, 13)
             };
 
             _lblEvent = new Label
@@ -101,17 +105,20 @@ namespace NexScore.MainFormPages
                 AutoSize = true,
                 ForeColor = Color.Gainsboro,
                 Font = new Font("Lexend Deca", 11f),
-                Location = new Point(90, 14)
+                Location = new Point(110, 19)
             };
 
             _btnRefresh = new Button
             {
                 Text = "Refresh",
-                AutoSize = true,
+                Width = 95,
+                Height = 38,
                 BackColor = Color.FromArgb(78, 106, 242),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(360, 9)
+                Font = new Font("Lexend Deca", 11, FontStyle.Bold),
+                Location = new Point(380, 11),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             _btnRefresh.FlatAppearance.BorderSize = 0;
             _btnRefresh.Click += async (_, __) =>
@@ -122,19 +129,22 @@ namespace NexScore.MainFormPages
 
             _btnPrint = new Button
             {
-                Text = "Print",
-                AutoSize = true,
+                Text = "Print Results",
+                Width = 125,
+                Height = 38,
                 BackColor = Color.FromArgb(78, 106, 242),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(450, 9)
+                Font = new Font("Lexend Deca", 11, FontStyle.Bold),
+                Location = new Point(485, 11),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             _btnPrint.FlatAppearance.BorderSize = 0;
             _btnPrint.Click += async (_, __) =>
             {
                 try
                 {
-                    await PrintResultsAsync();
+                    await PrintActiveResultsAsync();
                 }
                 catch (Exception ex)
                 {
@@ -145,8 +155,9 @@ namespace NexScore.MainFormPages
             _cboFilter = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(540, 10),
-                Width = 160
+                Location = new Point(640, 16),
+                Width = 160,
+                Font = new Font("Lexend Deca", 11, FontStyle.Regular)
             };
             _cboFilter.Items.AddRange(new object[]
             {
@@ -173,7 +184,8 @@ namespace NexScore.MainFormPages
                 Text = "Updated: —",
                 AutoSize = true,
                 ForeColor = Color.Gainsboro,
-                Location = new Point(720, 14)
+                Location = new Point(830, 20),
+                Font = new Font("Lexend Deca", 10, FontStyle.Regular)
             };
 
             _topBar.Controls.AddRange(new Control[] {
@@ -182,6 +194,16 @@ namespace NexScore.MainFormPages
 
             this.Controls.Add(_topBar);
             _topBar.BringToFront();
+        }
+
+        // NEW: Listen for print-complete messages
+        private void WebView_WebMessageReceived(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e)
+        {
+            var msg = e.TryGetWebMessageAsString();
+            if (msg == "print-complete")
+            {
+                StartAutoRefresh();
+            }
         }
 
         private async Task EnsureWebAsync()
@@ -204,6 +226,10 @@ namespace NexScore.MainFormPages
                 s.AreDefaultContextMenusEnabled = false;
                 s.AreDevToolsEnabled = false;
                 s.IsZoomControlEnabled = false;
+
+                // Attach the print-complete listener
+                _web.CoreWebView2.WebMessageReceived -= WebView_WebMessageReceived;
+                _web.CoreWebView2.WebMessageReceived += WebView_WebMessageReceived;
             }
             catch (Microsoft.Web.WebView2.Core.WebView2RuntimeNotFoundException)
             {
@@ -220,8 +246,7 @@ namespace NexScore.MainFormPages
             }
         }
 
-        // Programmatic printing via WebView2.PrintToPdfAsync with SaveFileDialog, fallback to window.print()
-        private async Task PrintResultsAsync()
+        private async Task PrintActiveResultsAsync()
         {
             if (_web?.CoreWebView2 == null)
             {
@@ -229,87 +254,43 @@ namespace NexScore.MainFormPages
                 return;
             }
 
-            // Pause auto-refresh to avoid navigation/race closing print dialog
-            var wasRunning = _refreshTimer != null;
             StopAutoRefresh();
 
-            try
-            {
-                // Try PrintToPdfAsync if available (silent PDF export)
-                string initialName = $"Results_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-                using var sfd = new SaveFileDialog
-                {
-                    Title = "Save results as PDF",
-                    Filter = "PDF files|*.pdf",
-                    FileName = initialName,
-                    AddExtension = true,
-                    DefaultExt = "pdf",
-                    OverwritePrompt = true
-                };
-
-                if (sfd.ShowDialog(this) != DialogResult.OK)
-                {
-                    return;
-                }
-
-                var path = sfd.FileName;
-
-                try
-                {
-                    // Ensure layout is up to date
-                    await _web.CoreWebView2.ExecuteScriptAsync("window.scrollTo(0,0);");
-
-                    // Some versions of WebView2 expose PrintToPdfAsync directly
-                    // Try to call it; if not supported, this will throw and we fallback.
-                    await _web.CoreWebView2.PrintToPdfAsync(path);
-                    // Open the created PDF
-                    try
-                    {
-                        ProcessStartInfo psi = new ProcessStartInfo(path) { UseShellExecute = true };
-                        Process.Start(psi);
+            string js = @"
+    (function(){
+        // Black/white print CSS: only the .view.active is shown
+        var style = document.getElementById('results-print-style');
+        if(!style){
+            style = document.createElement('style');
+            style.id = 'results-print-style';
+            style.innerHTML = `
+                @media print {
+                    .view:not(.active){ display:none!important; }
+                    body, html{background:#fff !important; color:#000 !important;}
+                    .table, .thead, .row, .cell, .filters, .pill, .breakdown, .muted, .btn, .status { 
+                        background: transparent !important; 
+                        color: #000 !important; 
+                        border-color: #000 !important; 
+                        box-shadow:none !important;
+                        filter:none !important;
                     }
-                    catch { /* ignore open errors */ }
-                    return;
+                    .elim, .name-del{ color:#888 !important; text-decoration:line-through !important;}
+                    .btn, .btn:hover, .btn:active{ background: #fff!important; color:#000!important; border: 1px solid #000!important;}
+                    .nav, .filters, .note, .btn, .muted { display:none!important; }
                 }
-                catch (MissingMethodException) { /* fallback below */ }
-                catch (Exception ex)
-                {
-                    // Some environments may not support PrintToPdfAsync; log and fallback
-                    Debug.WriteLine("PrintToPdfAsync failed: " + ex);
-                }
+            `;
+            document.head.appendChild(style);
+        }
+        window.onafterprint = function() {
+            if(window.chrome && window.chrome.webview)
+                window.chrome.webview.postMessage('print-complete');
+        };
+    })();
+    ";
+            await _web.CoreWebView2.ExecuteScriptAsync(js);
 
-                // Fallback: try showing the print dialog inside the web content
-                try
-                {
-                    // Give focus to the WebView so the dialog stays open
-                    _web.Focus();
-                    // Small delay to allow focus
-                    await Task.Delay(120);
-                    // Ensure content is fully loaded and expanded (invoke a small script to expand breakdowns if needed)
-                    // This will expand any breakdowns that have a 'breakdown' class and add 'show' class
-                    string expandScript = @"
-                        try {
-                            document.querySelectorAll('.breakdown').forEach(d => d.classList.add('show'));
-                            true;
-                        } catch(e) { false; }";
-                    await _web.CoreWebView2.ExecuteScriptAsync(expandScript);
-                    await Task.Delay(200);
-
-                    // Call window.print(); this opens the native print dialog
-                    await _web.CoreWebView2.ExecuteScriptAsync("window.print();");
-                    // Note: we cannot reliably detect when the dialog closes from here.
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Fallback window.print() failed: " + ex);
-                    MessageBox.Show("Printing is not supported in this environment.", "Print", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            finally
-            {
-                // Restart auto-refresh if it was running
-                if (wasRunning) StartAutoRefresh();
-            }
+            await Task.Delay(300);
+            await _web.CoreWebView2.ExecuteScriptAsync("window.print();");
         }
 
         private async Task RenderAsync(string eventId)
@@ -345,20 +326,17 @@ namespace NexScore.MainFormPages
                     .Find(sc => sc.EventId == eventId)
                     .ToListAsync();
 
-                // If aggregated missing or empty, build client-side aggregates from rawScores
                 var finalAgg = (aggregated.Count == 0)
                     ? ComputeAggregatesClientSide(eventId, rawScores, structure)
                     : aggregated;
 
-                // Build rows (phase raw performance for ranking)
                 var phaseNames = BuildPhaseNames(structure);
-                var phaseWeightsFraction = BuildPhaseWeightFractions(structure); // main phases only
+                var phaseWeightsFraction = BuildPhaseWeightFractions(structure);
 
                 var rowsAll = finalAgg.Select(a =>
                 {
                     contestantsMap.TryGetValue(a.ContestantId, out var c);
 
-                    // Recover raw phase perf for main phases: score / (phase weight fraction)
                     var rawPhasePerf = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
                     foreach (var kv in a.PhaseScores)
                     {
@@ -385,7 +363,6 @@ namespace NexScore.MainFormPages
                     };
                 }).ToList();
 
-                // Filter by active state
                 var rowsFiltered = _filterMode switch
                 {
                     "active" => rowsAll.Where(r => r.IsActive).ToList(),
@@ -394,6 +371,10 @@ namespace NexScore.MainFormPages
                 };
 
                 var orderedPhases = BuildPhaseOrder(structure, rowsFiltered);
+
+                // SAVE phase key info for printing
+                _lastPhaseNames = phaseNames;
+                _lastPhaseKeys = orderedPhases.ToList();
 
                 var html = BuildHtml(rowsFiltered, rowsAll, phaseNames, orderedPhases, eventId);
                 _web.NavigateToString(html);
@@ -411,6 +392,7 @@ namespace NexScore.MainFormPages
                 _loading = false;
             }
         }
+
 
 // -------- Aggregation Fallback Logic --------
 private List<AggregatedScore> ComputeAggregatesClientSide(
