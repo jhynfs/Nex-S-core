@@ -3,6 +3,7 @@ using NexScore.Models;
 using NexScore.Helpers;
 
 using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,8 +17,6 @@ namespace NexScore
         private readonly ToolTip _toolTipDetails = new ToolTip();
         public event Action<bool>? SavedStatusChanged;
         public event Action<string>? EventIdGenerated;
-
-        // pass both id and name together to other pages
         public event Action<string, string>? EventContextReady;
 
         private string? _bannerPath;
@@ -45,7 +44,6 @@ namespace NexScore
             btnUpdateDetails.Visible = false;
         }
 
-        // Allow parent to force edit-mode button state
         public void SetEditMode(bool isEditMode)
         {
             if (isEditMode)
@@ -83,7 +81,6 @@ namespace NexScore
                 return false;
 
             var collection = Database.GetCollection<EventModel>("Events");
-
             if (string.IsNullOrWhiteSpace(CurrentEventId))
                 CurrentEventId = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
 
@@ -113,13 +110,11 @@ namespace NexScore
             {
                 try
                 {
-                    if (File.Exists(previousBannerPath))
-                        File.Delete(previousBannerPath);
+                    var absOld = PathHelpers.AbsoluteFromRelative(previousBannerPath);
+                    if (File.Exists(absOld))
+                        File.Delete(absOld);
                 }
-                catch
-                {
-                    // ignore
-                }
+                catch { }
                 _bannerRemoved = false;
             }
 
@@ -153,10 +148,7 @@ namespace NexScore
 
         private string GetManagedBannerFolder()
         {
-            return Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "NexScore",
-                "Banners");
+            return PathHelpers.EventsFolder;
         }
 
         #region Buttons
@@ -184,8 +176,6 @@ namespace NexScore
             btnSaveDetails.Visible = false;
             btnUpdateDetails.Visible = true;
             EventIdGenerated?.Invoke(CurrentEventId!);
-
-            // provide both id and current event name to other controls
             EventContextReady?.Invoke(CurrentEventId!, _txtEventName.Text.Trim());
         }
 
@@ -208,13 +198,11 @@ namespace NexScore
 
             _toolTipDetails.Show("Event details updated!", btnUpdateDetails, 10, -30, 2000);
 
-            // notify updated name
             EventContextReady?.Invoke(CurrentEventId!, _txtEventName.Text.Trim());
         }
 
         private async void btnAddBanner_Click(object sender, EventArgs e)
         {
-            // Require a valid event name to name the banner file
             if (!IsEventNameValid())
             {
                 MessageBox.Show("Please enter an event name before adding a banner.",
@@ -250,23 +238,28 @@ namespace NexScore
                 double ratio = (double)width / height;
                 MessageBox.Show(
                     $"Selected image is {width}x{height} (ratio {ratio:0.###}). It must be 4:1. Please choose another image.",
-                    "Invalid Banner",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                    "Invalid Banner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
                 var managedFolder = GetManagedBannerFolder();
+                Directory.CreateDirectory(managedFolder);
                 string eventName = _txtEventName.Text.Trim();
+                string safeEvent = PathHelpers.MakeSafeFilename(eventName);
+                string fileName = $"{safeEvent}_banner.jpg";
+                string absPath = Path.Combine(managedFolder, fileName);
 
-                // Save using the event name and overwrite the same file on changes
-                string processedPath = await Task.Run(() =>
-                    ImageBannerHelper.ProcessBannerToManagedCopyWithBaseName(
-                        ofd.FileName, managedFolder, eventName, 85L));
+                await Task.Run(() =>
+                {
+                    using (var img = ImageBannerHelper.LoadClone(ofd.FileName))
+                    {
+                        ImageBannerHelper.SaveResizedBanner(img, absPath, 1600, 400, 85L);
+                    }
+                });
 
-                _bannerPath = processedPath;
+                _bannerPath = Path.Combine("Events", fileName).Replace('\\', '/');
                 _bannerRemoved = false;
 
                 if (lblOpt != null)
@@ -287,7 +280,6 @@ namespace NexScore
             if (lblOpt != null)
                 lblOpt.Text = "(Optional)";
         }
-
         #endregion
     }
 }

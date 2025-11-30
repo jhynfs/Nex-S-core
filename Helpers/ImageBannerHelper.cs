@@ -140,5 +140,11 @@ namespace NexScore.Helpers
 
             return candidate;
         }
+
+        public static void SaveResizedBanner(Image source, string destPath, int width = TargetWidth, int height = TargetHeight, long jpegQuality = 85L)
+        {
+            using var resized = ResizeToExact(source, width, height);
+            SaveJpeg(resized, destPath, jpegQuality);
+        }
     }
 }

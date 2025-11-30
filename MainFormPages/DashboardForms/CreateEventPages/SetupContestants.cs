@@ -21,11 +21,9 @@ namespace NexScore
         private ErrorProvider _errorProvider = new ErrorProvider();
         private string? _currentEventName;
 
-        // Track which textboxes have actual user input (touched)
         private readonly HashSet<TextBox> _touched = new();
         private System.Windows.Forms.Timer _validateTimer;
 
-        // notify CreateEventForm when contestants are saved (or fail to save)
         public event Action<bool>? ContestantsSaved;
 
         public SetupContestants()
@@ -34,7 +32,6 @@ namespace NexScore
             InitializeExtras();
         }
 
-        // Force Update-only mode in UI
         public void SetEditMode(bool isEditMode)
         {
             if (isEditMode)
@@ -61,47 +58,34 @@ namespace NexScore
             _validateTimer.Tick += (s, e) =>
             {
                 _validateTimer.Stop();
-                if (!IsDisposed) // guard
+                if (!IsDisposed)
                     ValidateAll();
             };
 
-            // Configure ErrorProvider to reduce flicker
             _errorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
         }
 
-        // Cleanup invoked by parent before form closes
         public void PrepareForClose()
         {
             try
             {
                 _validateTimer?.Stop();
                 if (_toolTipContestants != null && btnSaveContestants != null && btnSaveContestants.IsHandleCreated)
-                {
-                    // Safely hide tooltip if still visible
                     _toolTipContestants.Hide(btnSaveContestants);
-                }
                 if (_toolTipContestants != null)
                 {
                     _toolTipContestants.Active = false;
                     _toolTipContestants.RemoveAll();
                 }
             }
-            catch
-            {
-                // swallow - safe cleanup
-            }
+            catch { }
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                try
-                {
-                    _validateTimer?.Stop();
-                    _validateTimer?.Dispose();
-                }
-                catch { }
+                try { _validateTimer?.Stop(); _validateTimer?.Dispose(); } catch { }
                 _validateTimer = null;
 
                 if (_toolTipContestants != null)
@@ -123,20 +107,17 @@ namespace NexScore
             base.Dispose(disposing);
         }
 
-        // Allow SetupDetails (or parent) to pass event id + name directly
         public void SetEventContext(string eventId, string eventName)
         {
             CurrentEventId = eventId;
             _currentEventName = string.IsNullOrWhiteSpace(eventName) ? null : eventName.Trim();
         }
 
-        // Optional: if you only want to update the name later
         public void SetEventName(string eventName)
         {
             _currentEventName = string.IsNullOrWhiteSpace(eventName) ? null : eventName.Trim();
         }
 
-        // Fallback: ensure we have the EventName; query DB if still missing
         private async Task EnsureEventNameAsync()
         {
             if (!string.IsNullOrWhiteSpace(_currentEventName))
@@ -150,18 +131,13 @@ namespace NexScore
                 var evt = await eventsCol.Find(e => e.Id == CurrentEventId).FirstOrDefaultAsync();
                 _currentEventName = evt?.EventName?.Trim();
             }
-            catch
-            {
-                // swallow to avoid UI disruption; _currentEventName remains null if it fails
-            }
+            catch { }
         }
 
         #region Load / Prepare
         public async Task LoadContestantsForEventAsync(string eventId)
         {
             CurrentEventId = eventId;
-
-            // Prefill name if not provided by SetEventContext
             await EnsureEventNameAsync();
 
             var existingDynamic = _flowMainC.Controls.OfType<AddContestantControl>().ToList();
@@ -181,21 +157,19 @@ namespace NexScore
             {
                 var ctrl = CreateContestantControl();
                 ctrl.SetNumber(c.Number);
-                ctrl.FullNameTextBox.Text = c.FullName; // not placeholder (color differs)
+                ctrl.FullNameTextBox.Text = c.FullName;
                 ctrl.RepresentingTextBox.Text = c.Representing;
                 ctrl.ConfigureGenderOpen();
                 if (c.Age.HasValue)
                     ctrl.AgeTextBox.Text = c.Age.Value.ToString();
                 ctrl.SetPhoto(c.PhotoPath ?? "");
 
-                // FIX: Load Advocacy so it doesn't remain placeholder in edit mode
                 if (!string.IsNullOrWhiteSpace(c.Advocacy))
                 {
                     ctrl.AdvocacyTextBox.Text = c.Advocacy;
                     MarkTouched(ctrl.AdvocacyTextBox);
                 }
 
-                // Mark loaded fields as touched so validation applies sensibly
                 MarkTouched(ctrl.FullNameTextBox);
                 MarkTouched(ctrl.RepresentingTextBox);
                 if (!string.IsNullOrWhiteSpace(ctrl.AgeTextBox.Text))
@@ -237,18 +211,13 @@ namespace NexScore
             InsertContestantControlAtQueueEnd(ctrl);
             RenumberContestants();
             ApplyGenderMode(ctrl);
-            // Do not validate immediately (avoid flicker); will occur when user types.
         }
 
         private AddContestantControl CreateContestantControl()
         {
             var ctrl = new AddContestantControl();
             ctrl.RemoveRequested += Ctrl_RemoveRequested;
-
-            // IMPORTANT: async handler so we can EnsureEventNameAsync on demand
             ctrl.AddPhotoRequested += Ctrl_AddPhotoRequestedAsync;
-
-            // Debounced validation only after meaningful typing (ignore placeholder states).
             ctrl.FullNameTextBox.TextChanged += (s, e) =>
             {
                 if (!ctrl.IsPlaceholder(ctrl.FullNameTextBox))
@@ -271,7 +240,6 @@ namespace NexScore
             {
                 if (!ctrl.IsPlaceholder(ctrl.AdvocacyTextBox))
                     MarkTouched(ctrl.AdvocacyTextBox);
-                // Advocacy optional; no error needed
             };
 
             return ctrl;
@@ -293,9 +261,7 @@ namespace NexScore
         {
             int bottomIndex = _flowMainC.Controls.IndexOf(pnlSpaceBelowC);
             if (bottomIndex < 0)
-            {
                 _flowMainC.Controls.Add(ctrl);
-            }
             else
             {
                 _flowMainC.Controls.Add(ctrl);
@@ -316,7 +282,6 @@ namespace NexScore
         #endregion
 
         #region Photo
-        // Async so we can fetch event name if missing at click-time
         private async void Ctrl_AddPhotoRequestedAsync(object sender, EventArgs e)
         {
             if (sender is not AddContestantControl acc) return;
@@ -328,7 +293,6 @@ namespace NexScore
                 return;
             }
 
-            // If name is missing (e.g., navigation timing), fetch it now
             await EnsureEventNameAsync();
 
             if (string.IsNullOrWhiteSpace(_currentEventName))
@@ -360,40 +324,28 @@ namespace NexScore
                     return;
                 }
 
-                string folder = GetPortraitFolder(_currentEventName);
+                string folder = PathHelpers.ContestantPhotosFolder;
                 Directory.CreateDirectory(folder);
 
-                string safeName = string.Join("_",
-                    acc.FullName.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries))
-                    .Replace(' ', '_');
-
-                string filePath = Path.Combine(folder, $"{safeName}.jpg");
-
-                // Save to a temp file first, then atomically replace the target (avoids overwrite issues)
+                string safeName = $"{PathHelpers.MakeSafeFilename(acc.FullName)}_{acc.Number}";
+                string fileName = $"{safeName}.jpg";
+                string absPath = Path.Combine(folder, fileName);
                 string tempPath = Path.Combine(folder, $"{safeName}_{Guid.NewGuid():N}.tmp.jpg");
                 img.Save(tempPath, System.Drawing.Imaging.ImageFormat.Jpeg);
 
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
+                if (File.Exists(absPath))
+                    File.Delete(absPath);
 
-                File.Move(tempPath, filePath);
+                File.Move(tempPath, absPath);
 
-                acc.SetPhoto(filePath);
+                string relPhotoPath = Path.Combine("Contestants", fileName).Replace('\\', '/');
+                acc.SetPhoto(relPhotoPath);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to process image: {ex.Message}", "Photo Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private string GetPortraitFolder(string eventName)
-        {
-            return Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "NexScore",
-                "Portraits",
-                eventName);
         }
         #endregion
 
@@ -438,8 +390,7 @@ namespace NexScore
 
         private void ValidateAll()
         {
-            if (IsDisposed) return; // defensive
-            // Clear errors first (we reapply selectively)
+            if (IsDisposed) return;
             foreach (var c in GetContestantControls())
             {
                 _errorProvider.SetError(c.FullNameTextBox, "");
@@ -451,21 +402,18 @@ namespace NexScore
 
             foreach (var c in list)
             {
-                // Full Name
                 if (IsTouched(c.FullNameTextBox))
                 {
                     if (string.IsNullOrWhiteSpace(c.FullName))
                         _errorProvider.SetError(c.FullNameTextBox, "Full Name required");
                 }
 
-                // Representing
                 if (IsTouched(c.RepresentingTextBox))
                 {
                     if (string.IsNullOrWhiteSpace(c.Representing))
                         _errorProvider.SetError(c.RepresentingTextBox, "Representing required");
                 }
 
-                // Age (optional)
                 if (IsTouched(c.AgeTextBox))
                 {
                     if (!string.IsNullOrWhiteSpace(c.AgeRaw) && !int.TryParse(c.AgeRaw, out _))
@@ -473,7 +421,6 @@ namespace NexScore
                 }
             }
 
-            // Duplicate detection: only among entries where both fields are touched & non-empty
             var dupGroups = list
                 .Where(c => IsTouched(c.FullNameTextBox) && IsTouched(c.RepresentingTextBox))
                 .Where(c => !string.IsNullOrWhiteSpace(c.FullName) && !string.IsNullOrWhiteSpace(c.Representing))
@@ -505,7 +452,6 @@ namespace NexScore
                 return false;
             }
 
-            // Strict required-field checks irrespective of 'touched' state
             if (list.Any(c => string.IsNullOrWhiteSpace(c.FullName)))
             {
                 message = "Full Name is required for all contestants.";
@@ -517,7 +463,6 @@ namespace NexScore
                 return false;
             }
 
-            // Check any field-level errors currently set (e.g., invalid Age, etc.)
             foreach (var c in list)
             {
                 var fullErr = _errorProvider.GetError(c.FullNameTextBox);
@@ -532,7 +477,6 @@ namespace NexScore
                     return false;
             }
 
-            // Duplicate check across all non-empty entries (ignore 'touched')
             bool hasDupes = list
                 .Where(c => !string.IsNullOrWhiteSpace(c.FullName) && !string.IsNullOrWhiteSpace(c.Representing))
                 .Select(c => $"{c.FullName.ToLowerInvariant()}||{c.Representing.ToLowerInvariant()}")
@@ -576,7 +520,6 @@ namespace NexScore
                 var now = DateTime.Now;
                 var col = Database.GetCollection<ContestantModel>("Contestants");
 
-                // Load existing docs to preserve PhotoPath if UI accidentally cleared it
                 var existingDocs = await col.Find(c => c.EventId == CurrentEventId).ToListAsync();
 
                 var byNumber = existingDocs
@@ -627,7 +570,6 @@ namespace NexScore
                         btnSaveContestants, 10, -30, 2000);
                 }
 
-                // Notify success to enable Done (when not edit mode)
                 ContestantsSaved?.Invoke(true);
             }
             catch (Exception ex)

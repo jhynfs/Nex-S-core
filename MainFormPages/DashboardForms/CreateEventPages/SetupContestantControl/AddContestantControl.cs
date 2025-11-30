@@ -12,7 +12,6 @@ namespace NexScore.CreateEventPages.SetupContestantControls
         public event EventHandler RemoveRequested;
         public event EventHandler AddPhotoRequested;
 
-        // Track placeholders
         private readonly Dictionary<TextBox, string> _placeholders = new();
 
         public AddContestantControl()
@@ -66,7 +65,6 @@ namespace NexScore.CreateEventPages.SetupContestantControls
             btnRemoveCon.Click += (s, e) => RemoveRequested?.Invoke(this, EventArgs.Empty);
             btnAddPhoto.Click += (s, e) => AddPhotoRequested?.Invoke(this, EventArgs.Empty);
 
-            // Age: only whole numbers (optional)
             _txtAge.KeyPress += (s, e) =>
             {
                 if (char.IsControl(e.KeyChar)) return;
@@ -81,7 +79,6 @@ namespace NexScore.CreateEventPages.SetupContestantControls
             _txtAdvocacy.Multiline = true;
         }
 
-        // Public surface (ignore placeholders)
         public int Number => int.TryParse(_txtConNo.Text, out var n) ? n : 0;
         public string FullName => IsPlaceholder(_txtFullName) ? "" : _txtFullName.Text.Trim();
         public string Representing => IsPlaceholder(_txtRep) ? "" : _txtRep.Text.Trim();
@@ -137,21 +134,21 @@ namespace NexScore.CreateEventPages.SetupContestantControls
             _cbGender.DropDownStyle = ComboBoxStyle.DropDown;
         }
 
-        public void SetPhoto(string path)
+        public void SetPhoto(string relativePath)
         {
-            PhotoPath = path;
+            PhotoPath = relativePath;
             try
             {
-                // Dispose any previous image to release file locks and memory
+                string absolutePath = PathHelpers.AbsoluteFromRelative(relativePath);
+                if (string.IsNullOrWhiteSpace(absolutePath) || !File.Exists(absolutePath))
+                    return;
                 if (picPortrait.Image != null)
                 {
                     var old = picPortrait.Image;
                     picPortrait.Image = null;
                     old.Dispose();
                 }
-
-                // Load without locking the file: read via stream and clone to a Bitmap
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var fs = new FileStream(absolutePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (var temp = Image.FromStream(fs))
                 {
                     picPortrait.Image = new Bitmap(temp);
@@ -163,7 +160,6 @@ namespace NexScore.CreateEventPages.SetupContestantControls
             }
         }
 
-        // Expose controls for ErrorProvider usage
         public TextBox FullNameTextBox => _txtFullName;
         public TextBox RepresentingTextBox => _txtRep;
         public TextBox AgeTextBox => _txtAge;

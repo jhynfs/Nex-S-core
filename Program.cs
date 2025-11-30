@@ -12,10 +12,9 @@ namespace NexScoreAdmin
             ApplicationConfiguration.Initialize();
 
             Database.Initialize();
-            
+
             string staticRoot = Path.Combine(
-    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-    "Works", "NexScoreY", "NexScore", "Web");
+    AppDomain.CurrentDomain.BaseDirectory, "Web");
 
             var server = new NexScore.Infrastructure.JudgingServer(
                 NexScore.Database.Events.Database,
