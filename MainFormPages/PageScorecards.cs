@@ -18,6 +18,7 @@ namespace NexScore.MainFormPages
         private string? _lastEventId;
         private bool _htmlInjected;
         private bool _initSentOnce;
+        private System.Windows.Forms.Timer? _autoRefreshTimer;
 
         public PageScorecards()
         {
@@ -36,6 +37,11 @@ namespace NexScore.MainFormPages
                 {
                     await EnsureWebAsync();
                     await InitForEventAsync(AppSession.CurrentEvent);
+                    StartAutoRefresh();
+                }
+                else
+                {
+                    StopAutoRefresh();
                 }
             };
 
@@ -104,14 +110,49 @@ namespace NexScore.MainFormPages
                 var msg = e.TryGetWebMessageAsString();
                 if (string.IsNullOrWhiteSpace(msg)) return;
 
-                if (msg.Contains("\"type\":\"ready\""))
+                // Try to parse JSON and inspect 'type'
+                string? msgType = null;
+                try
+                {
+                    using var doc = JsonDocument.Parse(msg);
+                    if (doc.RootElement.TryGetProperty("type", out var t))
+                        msgType = t.GetString();
+                }
+                catch
+                {
+                    // fallback to string contains (legacy)
+                }
+
+                if (string.Equals(msgType, "ready", StringComparison.OrdinalIgnoreCase) || msg.Contains("\"type\":\"ready\""))
                 {
                     System.Diagnostics.Debug.WriteLine("[Scorecards] Received ready from HTML.");
                     _ = SafeSendInitAsync();
                 }
-                else if (msg.Contains("\"type\":\"scorecards-error\""))
+                else if (string.Equals(msgType, "scorecards-error", StringComparison.OrdinalIgnoreCase) || msg.Contains("\"type\":\"scorecards-error\""))
                 {
                     System.Diagnostics.Debug.WriteLine("[Scorecards] HTML error: " + msg);
+                }
+                else if (string.Equals(msgType, "score-saved", StringComparison.OrdinalIgnoreCase) || msg.Contains("\"type\":\"score-saved\""))
+                {
+                    System.Diagnostics.Debug.WriteLine("[Scorecards] Received score-saved from embedded judge UI: " + msg);
+
+                    // Ask the embedded scorecards HTML to reload its content
+                    try
+                    {
+                        if (_web?.CoreWebView2 != null)
+                        {
+                            var payload = new { type = "reloadAll" };
+                            var json = JsonSerializer.Serialize(payload);
+                            _web.CoreWebView2.PostWebMessageAsJson(json);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[Scorecards] Failed to post reloadAll: " + ex);
+                    }
+
+                    // Also send a lightweight init to ensure judges list is fresh (if needed)
+                    _ = SafeSendInitAsync();
                 }
             }
             catch (Exception ex)
@@ -249,7 +290,40 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif
 .crit-row:last-child{border-bottom:none;}
 .crit-head{font-weight:600;opacity:.85;}
 .muted{opacity:.75;font-size:17px;padding:4px 2px;}
-@media print{body,html{background:#fff;color:#000;} .controls-bar{display:none!important;} .scorecard h3{color:#000;} .crit-details{background:#eee;color:#000;}}
+@media print{
+    body,html{ background:#fff; color:#000; font-size: 12pt; }
+
+    .page{ padding: 0 10px; }
+
+    .controls-bar, .btn-small, .muted { display:none!important; }
+
+    .scorecard{ 
+        border: 1px solid #000; 
+        padding: 10px; 
+        margin-bottom: 20px; 
+        page-break-inside: avoid;
+        box-shadow: none; 
+    }
+    .scorecard h3{ color:#000; font-size: 16pt; margin-bottom: 5px; }
+
+    .crit-row { 
+        grid-template-columns: 60px 80px 1fr 60px !important; 
+        font-size: 10pt; 
+        border-bottom: 1px solid #ccc;
+    }
+
+    .crit-details{ 
+        display: block !important; 
+        background: transparent; 
+        color: #000; 
+        padding: 0; 
+        margin-top: 5px;
+    }
+
+    .scorecard{ page-break-before: always; }
+    .scorecard:first-of-type{ page-break-before: auto; }
+}
+/* end css */
 </style>
 </head>
 <body>
@@ -261,8 +335,9 @@ html,body{margin:0;padding:0;font-family:'Lexend Deca',Segoe UI,Arial,sans-serif
   <div class="scorecards" id="scorecardsHost">
     <div style="opacity:.7;font-size:18px;">Waiting for initialization...</div>
   </div>
-  <div class="muted">Printing: choose 'Microsoft Print to PDF'.</div>
+  <div class="muted">Printing: chooses 'Microsoft Print to PDF' or your real printer.</div>
 </div>
+<div style="display:none" id="dummy"></div>
 <script>
 let initData=null;
 let contestants=[];
@@ -272,7 +347,7 @@ async function loadContestants(){
   const raw=await fetchJson(initData.baseUrl + '/api/contestants?eventId=' + encodeURIComponent(initData.eventId));
   contestants=(raw||[]).map(c=>({ id:c.id||c.Id, number:c.number||c.Number, name:c.fullName||c.FullName||'', isActive:c.isActive!==false }));
 }
-async function buildScorecard(j){
+async function buildScorecard(j, expandAllCriteria=false){
   const totals=await fetchJson(initData.baseUrl + '/api/judge-progress?eventId=' + encodeURIComponent(initData.eventId) + '&judgeId=' + encodeURIComponent(j.judgeId));
   const map={}; (totals||[]).forEach(t=> map[t.contestantId]=t.totalFraction);
   const card=document.createElement('div'); card.className='scorecard';
@@ -295,45 +370,11 @@ async function buildScorecard(j){
       if(a.fraction==null) return 1; if(b.fraction==null) return -1; return b.fraction-a.fraction;
     });
   let rank=1;
-  enriched.forEach(item=>{
-    const tr=document.createElement('tr'); const has=item.fraction!=null;
-    tr.innerHTML=`<td class='rank'>${has?rank++:'—'}</td>
-      <td>${item.contestant.number ?? '—'}</td>
-      <td>${escapeHtml(item.contestant.name)}</td>
-      <td class='pct'>${has?(item.fraction*100).toFixed(3):'—'}</td>
-      <td><span class='toggle-crit' data-jid='${escapeHtml(j.judgeId)}' data-cid='${escapeHtml(item.contestant.id)}'>${has?'View Criteria':'—'}</span></td>`;
-    tbody.appendChild(tr);
-  });
-  card.querySelector('[data-jreload]')?.addEventListener('click', async ev=>{
-    const btn=ev.currentTarget; if(!btn) return;
-    btn.disabled=true; btn.textContent='...';
-    try{ card.remove(); await buildScorecard(j); }catch(err){ btn.textContent='Err'; }
-    finally{ btn.disabled=false; if(btn.textContent==='Err') setTimeout(()=>btn.textContent='Reload',1500); }
-  });
-  document.getElementById('scorecardsHost').appendChild(card);
-}
-async function loadAll(){
-  const host=document.getElementById('scorecardsHost');
-  host.innerHTML='<div style="opacity:.7;font-size:18px;">Loading scorecards...</div>';
-  try{
-    if(!initData) throw new Error('Init data missing');
-    await loadContestants(); host.innerHTML='';
-    if(!initData.judges || !initData.judges.length){ host.innerHTML='<div style="opacity:.7;font-size:18px;">No judges defined for this event.</div>'; return; }
-    for(const j of initData.judges){ await buildScorecard(j); }
-  }catch(e){
-    host.innerHTML='<div style="color:var(--danger);">Failed to load scorecards.<br>'+escapeHtml(e.message)+'</div>';
-    window.chrome?.webview?.postMessage({type:'scorecards-error', error:e.message});
-  }
-}
-document.addEventListener('click', async e=>{
-  const t=e.target; if(!t) return;
-  if(t.id==='btnPrint'){ window.print(); }
-  else if(t.id==='btnReloadAll'){ loadAll(); }
-  else if(t.classList.contains('toggle-crit') && t.dataset.jid){
-    const jid=t.dataset.jid, cid=t.dataset.cid; if(!jid||!cid) return;
-    let details=t.parentElement.querySelector('.crit-details');
-    if(details){ const show=!details.classList.contains('show'); details.classList.toggle('show',show); t.textContent=show?'Hide Criteria':'View Criteria'; return; }
-    details=document.createElement('div'); details.className='crit-details'; details.innerHTML='<div style="font-size:16px;opacity:.7;">Loading...</div>'; t.parentElement.appendChild(details);
+  // Helper for criteria details
+  async function addCriteriaDetails(tr, jid, cid, autoExpand){
+    let details=document.createElement('div'); details.className='crit-details';
+    details.innerHTML='<div style="font-size:16px;opacity:.7;">Loading...</div>';
+    tr.lastElementChild.appendChild(details);
     try{
       const rows=await fetchJson(initData.baseUrl + '/api/judge-scores?eventId=' + encodeURIComponent(initData.eventId) + '&judgeId=' + encodeURIComponent(jid) + '&contestantId=' + encodeURIComponent(cid));
       if(!Array.isArray(rows) || rows.length===0){ details.innerHTML='<div style="font-size:16px;opacity:.7;">No criteria scores.</div>'; }
@@ -349,18 +390,80 @@ document.addEventListener('click', async e=>{
         });
         details.innerHTML=''; details.appendChild(wrap);
       }
-      details.classList.add('show'); t.textContent='Hide Criteria';
+      if(autoExpand) details.classList.add('show');
     }catch(err){
       details.innerHTML='<div style="color:var(--danger);font-size:16px;">Failed to load.<br>'+escapeHtml(err.message)+'</div>';
-      details.classList.add('show'); t.textContent='Hide Criteria';
+      if(autoExpand) details.classList.add('show');
       window.chrome?.webview?.postMessage({type:'scorecards-error', error:err.message});
     }
   }
+  // Rows for each contestant in this judge's scorecard
+  for(let i=0;i<enriched.length;i++){
+    const item=enriched[i];
+    const tr=document.createElement('tr'); const has=item.fraction!=null;
+    tr.innerHTML=
+      `<td class='rank'>${has?rank++:'—'}</td>
+      <td>${item.contestant.number ?? '—'}</td>
+      <td>${escapeHtml(item.contestant.name)}</td>
+      <td class='pct'>${has?(item.fraction*100).toFixed(3):'—'}</td>
+      <td>${has||expandAllCriteria?'<span style="display:none" class="toggle-crit" data-jid="'+escapeHtml(j.judgeId)+'" data-cid="'+escapeHtml(item.contestant.id)+'">View Criteria</span>':''}</td>`;
+    // Fifth (details) cell will have criteria details block injected below
+    tbody.appendChild(tr);
+    if(has||expandAllCriteria){
+      // Fetch and show criteria by default for print mode
+      addCriteriaDetails(tr, j.judgeId, item.contestant.id, expandAllCriteria);
+    }
+  }
+  card.querySelector('[data-jreload]')?.addEventListener('click', async ev=>{
+    const btn=ev.currentTarget; if(!btn) return;
+    btn.disabled=true; btn.textContent='...';
+    try{ card.remove(); await buildScorecard(j, false); }catch(err){ btn.textContent='Err'; }
+    finally{ btn.disabled=false; if(btn.textContent==='Err') setTimeout(()=>btn.textContent='Reload',1500); }
+  });
+  document.getElementById('scorecardsHost').appendChild(card);
+}
+async function loadAll(expandAll=false){
+  const host=document.getElementById('scorecardsHost');
+  host.innerHTML='<div style="opacity:.7;font-size:18px;">Loading scorecards...</div>';
+  try{
+    if(!initData) throw new Error('Init data missing');
+    await loadContestants(); host.innerHTML='';
+    if(!initData.judges || !initData.judges.length){ host.innerHTML='<div style="opacity:.7;font-size:18px;">No judges defined for this event.</div>'; return; }
+    // For print: pass expandAll=true so all criteria are loaded and shown
+    for(const j of initData.judges){ await buildScorecard(j, expandAll); }
+  }catch(e){
+    host.innerHTML='<div style="color:var(--danger);">Failed to load scorecards.<br>'+escapeHtml(e.message)+'</div>';
+    window.chrome?.webview?.postMessage({type:'scorecards-error', error:e.message});
+  }
+}
+document.addEventListener('click', async e=>{
+  const t=e.target; if(!t) return;
+  if(t.id==='btnPrint'){
+    const btn = t;
+    const originalText = btn.textContent;
+    btn.textContent = "Preparing...";
+    btn.disabled = true;
+
+    // 1. Load all data (expanded)
+    await loadAll(true);
+
+    // 2. Wait a moment for DOM reflow/paint
+    // 500ms is usually safe for WebView2 to render the new table rows
+    setTimeout(()=>{ 
+        window.print(); 
+
+        // Reset button state after print dialog opens/closes
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }, 500); 
+}
+  else if(t.id==='btnReloadAll'){ loadAll(false); }
 });
-function init(data){ initData=data; loadAll(); }
+
+function init(data){ initData=data; loadAll(false); }
 window.chrome?.webview?.postMessage({type:'ready'});
 if(window.chrome && window.chrome.webview){
-  window.chrome.webview.addEventListener('message', e=>{ const d=e.data; if(!d) return; if(d.type==='init') init(d); else if(d.type==='reloadAll') loadAll(); });
+  window.chrome.webview.addEventListener('message', e=>{ const d=e.data; if(!d) return; if(d.type==='init') init(d); else if(d.type==='reloadAll') loadAll(false); else if(d.type==='refreshScores') loadAll(false); });
 }else{
   document.getElementById('scorecardsHost').innerHTML='<div style="color:#f87171;">Host messaging not available.</div>';
 }
@@ -368,5 +471,40 @@ if(window.chrome && window.chrome.webview){
 </body>
 </html>
 """;
+
+        private void StartAutoRefresh()
+        {
+            if (_autoRefreshTimer != null) return;
+            _autoRefreshTimer = new System.Windows.Forms.Timer();
+            _autoRefreshTimer.Interval = 8000; // 8s periodic refresh
+            _autoRefreshTimer.Tick += (s, e) =>
+            {
+                try
+                {
+                    if (_web?.CoreWebView2 != null)
+                    {
+                        var payload = new { type = "reloadAll" };
+                        var json = JsonSerializer.Serialize(payload);
+                        _web.CoreWebView2.PostWebMessageAsJson(json);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[Scorecards] Auto refresh failed: " + ex);
+                }
+            };
+            _autoRefreshTimer.Start();
+        }
+
+        private void StopAutoRefresh()
+        {
+            try
+            {
+                _autoRefreshTimer?.Stop();
+                _autoRefreshTimer?.Dispose();
+            }
+            catch { }
+            _autoRefreshTimer = null;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -16,6 +17,7 @@ namespace NexScore.MainFormPages
     {
         private WebView2? _web;
         private bool _loading;
+        private System.Windows.Forms.Timer? _refreshTimer;
 
         // Top bar controls
         private Panel? _topBar;
@@ -39,6 +41,7 @@ namespace NexScore.MainFormPages
                 await EnsureWebAsync();
                 if (AppSession.CurrentEvent != null)
                     await RenderAsync(AppSession.CurrentEvent.Id);
+                StartAutoRefresh();
             };
 
             this.VisibleChanged += async (_, __) =>
@@ -47,6 +50,11 @@ namespace NexScore.MainFormPages
                 {
                     await EnsureWebAsync();
                     await RenderAsync(AppSession.CurrentEvent.Id);
+                    StartAutoRefresh();
+                }
+                else
+                {
+                    StopAutoRefresh();
                 }
             };
 
@@ -74,7 +82,7 @@ namespace NexScore.MainFormPages
             _topBar = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 46,
+                Height = 60,
                 BackColor = Color.FromArgb(58, 61, 116)
             };
 
@@ -83,7 +91,7 @@ namespace NexScore.MainFormPages
                 Text = "Results",
                 AutoSize = true,
                 ForeColor = Color.White,
-                Font = new Font("Lexend Deca", 11f, FontStyle.Bold),
+                Font = new Font("Lexend Deca", 12f, FontStyle.Bold),
                 Location = new Point(10, 12)
             };
 
@@ -92,7 +100,7 @@ namespace NexScore.MainFormPages
                 Text = "Event: —",
                 AutoSize = true,
                 ForeColor = Color.Gainsboro,
-                Font = new Font("Lexend Deca", 9f),
+                Font = new Font("Lexend Deca", 11f),
                 Location = new Point(90, 14)
             };
 
@@ -124,7 +132,14 @@ namespace NexScore.MainFormPages
             _btnPrint.FlatAppearance.BorderSize = 0;
             _btnPrint.Click += async (_, __) =>
             {
-                try { await _web?.CoreWebView2?.ExecuteScriptAsync("window.print();"); } catch { }
+                try
+                {
+                    await PrintResultsAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Print failed: " + ex.Message, "Print", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             };
 
             _cboFilter = new ComboBox
@@ -202,6 +217,98 @@ namespace NexScore.MainFormPages
                     Padding = new Padding(12),
                     Location = new Point(10, 10)
                 });
+            }
+        }
+
+        // Programmatic printing via WebView2.PrintToPdfAsync with SaveFileDialog, fallback to window.print()
+        private async Task PrintResultsAsync()
+        {
+            if (_web?.CoreWebView2 == null)
+            {
+                MessageBox.Show("Web view is not ready.", "Print", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Pause auto-refresh to avoid navigation/race closing print dialog
+            var wasRunning = _refreshTimer != null;
+            StopAutoRefresh();
+
+            try
+            {
+                // Try PrintToPdfAsync if available (silent PDF export)
+                string initialName = $"Results_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                using var sfd = new SaveFileDialog
+                {
+                    Title = "Save results as PDF",
+                    Filter = "PDF files|*.pdf",
+                    FileName = initialName,
+                    AddExtension = true,
+                    DefaultExt = "pdf",
+                    OverwritePrompt = true
+                };
+
+                if (sfd.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                var path = sfd.FileName;
+
+                try
+                {
+                    // Ensure layout is up to date
+                    await _web.CoreWebView2.ExecuteScriptAsync("window.scrollTo(0,0);");
+
+                    // Some versions of WebView2 expose PrintToPdfAsync directly
+                    // Try to call it; if not supported, this will throw and we fallback.
+                    await _web.CoreWebView2.PrintToPdfAsync(path);
+                    // Open the created PDF
+                    try
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo(path) { UseShellExecute = true };
+                        Process.Start(psi);
+                    }
+                    catch { /* ignore open errors */ }
+                    return;
+                }
+                catch (MissingMethodException) { /* fallback below */ }
+                catch (Exception ex)
+                {
+                    // Some environments may not support PrintToPdfAsync; log and fallback
+                    Debug.WriteLine("PrintToPdfAsync failed: " + ex);
+                }
+
+                // Fallback: try showing the print dialog inside the web content
+                try
+                {
+                    // Give focus to the WebView so the dialog stays open
+                    _web.Focus();
+                    // Small delay to allow focus
+                    await Task.Delay(120);
+                    // Ensure content is fully loaded and expanded (invoke a small script to expand breakdowns if needed)
+                    // This will expand any breakdowns that have a 'breakdown' class and add 'show' class
+                    string expandScript = @"
+                        try {
+                            document.querySelectorAll('.breakdown').forEach(d => d.classList.add('show'));
+                            true;
+                        } catch(e) { false; }";
+                    await _web.CoreWebView2.ExecuteScriptAsync(expandScript);
+                    await Task.Delay(200);
+
+                    // Call window.print(); this opens the native print dialog
+                    await _web.CoreWebView2.ExecuteScriptAsync("window.print();");
+                    // Note: we cannot reliably detect when the dialog closes from here.
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Fallback window.print() failed: " + ex);
+                    MessageBox.Show("Printing is not supported in this environment.", "Print", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            finally
+            {
+                // Restart auto-refresh if it was running
+                if (wasRunning) StartAutoRefresh();
             }
         }
 
@@ -305,8 +412,8 @@ namespace NexScore.MainFormPages
             }
         }
 
-        // -------- Aggregation Fallback Logic --------
-        private List<AggregatedScore> ComputeAggregatesClientSide(
+// -------- Aggregation Fallback Logic --------
+private List<AggregatedScore> ComputeAggregatesClientSide(
             string eventId,
             List<ScoreEntry> rawScores,
             EventStructureModel? structure)
@@ -771,6 +878,39 @@ html,body{margin:0;padding:0;background:transparent;color:#F7F6ED;font-family:'L
             public Dictionary<string, double> PhaseScoresWeighted { get; set; } = new();
             public Dictionary<string, double> IndependentScores { get; set; } = new();
             public Dictionary<string, double> RawPhasePerf { get; set; } = new();
+        }
+
+        private void StartAutoRefresh()
+        {
+            if (_refreshTimer != null) return;
+            _refreshTimer = new System.Windows.Forms.Timer();
+            _refreshTimer.Interval = 5000; // 5 seconds
+            _refreshTimer.Tick += async (s, e) =>
+            {
+                if (!this.Visible) return;
+                if (AppSession.CurrentEvent == null) return;
+                if (_loading) return;
+                try
+                {
+                    await RenderAsync(AppSession.CurrentEvent.Id);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[Results] Auto refresh failed: " + ex);
+                }
+            };
+            _refreshTimer.Start();
+        }
+
+        private void StopAutoRefresh()
+        {
+            try
+            {
+                _refreshTimer?.Stop();
+                _refreshTimer?.Dispose();
+            }
+            catch { }
+            _refreshTimer = null;
         }
     }
 }

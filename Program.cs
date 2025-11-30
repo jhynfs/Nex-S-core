@@ -21,9 +21,9 @@ namespace NexScoreAdmin
                 NexScore.Database.Events.Database,
                 staticRoot
             );
-            server.Start(5100);// LAN port.
+            server.Start(5100);
 
-            Application.Run(new NexScore.LogInForm());
+            Application.Run(new NexScore.MainForm());
         }
     }
 }

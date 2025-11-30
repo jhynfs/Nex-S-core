@@ -6,7 +6,7 @@ using NexScore.CreateEventPages.SetupJudgesControl;
 using NexScore.Models;
 using MongoDB.Driver;
 using NexScore.Helpers;
-using NexScore.Utils; // <-- added
+using NexScore.Utils;
 
 namespace NexScore.CreateEventPages
 {
@@ -18,7 +18,7 @@ namespace NexScore.CreateEventPages
         private readonly ErrorProvider _errorProvider = new ErrorProvider();
         private bool _isSavedOnce = false;
 
-        public event Action<bool> JudgesValidityChanged;
+        public event Action<bool>? JudgesValidityChanged;
 
         private const string NamePlaceholder = "Judge's Full Name";
         private const string TitlePlaceholder = "Title/Position: e.g., Dr., Ms., Engr. (Optional)";
@@ -28,17 +28,19 @@ namespace NexScore.CreateEventPages
             InitializeComponent();
             _toolTipJudges.SetToolTip(btnSaveJudges, "Save judges");
 
-            btnAddJudge.Click += (s, e) =>
+            btnAddJudge.Click += (_, __) =>
             {
                 var judge = CreateJudgeControl();
+                // Insert new judge just below the top spacer, so existing items keep order
                 _flowMainJ.Controls.Add(judge);
-                _flowMainJ.Controls.SetChildIndex(judge, _flowMainJ.Controls.IndexOf(pnlSpaceAboveJ));
+                _flowMainJ.Controls.SetChildIndex(judge, _flowMainJ.Controls.IndexOf(pnlSpaceAboveJ) + 1);
                 RefreshJudgeNumbers();
                 ValidateJudgesPage();
             };
+
+            btnSaveJudges.Click += btnSaveJudges_Click;
         }
 
-        // Force Update-only mode in UI
         public void SetEditMode(bool isEditMode)
         {
             if (isEditMode)
@@ -46,6 +48,14 @@ namespace NexScore.CreateEventPages
                 _isSavedOnce = true;
                 btnSaveJudges.Text = "update";
                 _toolTipJudges.SetToolTip(btnSaveJudges, "Update judges");
+                // Ensure Add Judge stays visible in edit mode
+                btnAddJudge.Visible = true;
+                btnAddJudge.Enabled = true;
+            }
+            else
+            {
+                btnSaveJudges.Text = "save";
+                _toolTipJudges.SetToolTip(btnSaveJudges, "Save judges");
             }
         }
 
@@ -59,7 +69,7 @@ namespace NexScore.CreateEventPages
                 ValidateSingleJudgeName(ctrl.txtJudgeName);
                 ValidateJudgesPage();
             };
-            // Title optional – no validation needed
+            // Title optional; you can add validation later if needed
             return ctrl;
         }
 
@@ -68,15 +78,14 @@ namespace NexScore.CreateEventPages
             var judges = _flowMainJ.Controls.OfType<AddJudgeControl>().ToList();
             if (judges.Count == 0) return false;
 
-            // Name required and not placeholder
-            if (judges.Any(j => string.IsNullOrWhiteSpace(j.txtJudgeName.Text) || j.txtJudgeName.Text == NamePlaceholder))
+            if (judges.Any(j =>
+                string.IsNullOrWhiteSpace(j.txtJudgeName.Text) ||
+                j.txtJudgeName.Text == NamePlaceholder))
                 return false;
 
-            // Uniqueness
             if (!JudgesUniquenessHelper.ValidateUniqueJudgeNames(_flowMainJ, _errorProvider, NamePlaceholder))
                 return false;
 
-            // Any non-duplicate errors?
             if (judges.Any(j =>
             {
                 var err = _errorProvider.GetError(j.txtJudgeName);
@@ -127,11 +136,17 @@ namespace NexScore.CreateEventPages
         public async void LoadJudgesForEvent(string eventId)
         {
             CurrentEventId = eventId;
+
+            // Rebuild the FlowLayout: keep spacer panels + add button, then existing judges
+            _flowMainJ.SuspendLayout();
             _flowMainJ.Controls.Clear();
+            _flowMainJ.Controls.Add(pnlSpaceAboveJ);
+            _flowMainJ.Controls.Add(btnAddJudge);
+            _flowMainJ.Controls.Add(pnlSpaceBelowJ);
 
             var existingJudges = await Database.Judges
                 .Find(j => j.EventId == eventId)
-                .SortBy(j => j.Number) // keep stable order if stored
+                .SortBy(j => j.Number)
                 .ToListAsync();
 
             foreach (var j in existingJudges)
@@ -139,9 +154,13 @@ namespace NexScore.CreateEventPages
                 var ctrl = CreateJudgeControl();
                 ctrl.txtJudgeName.Text = string.IsNullOrWhiteSpace(j.Name) ? NamePlaceholder : j.Name;
                 ctrl.txtJudgeTitle.Text = string.IsNullOrWhiteSpace(j.Title) ? TitlePlaceholder : j.Title;
-                ctrl.Tag = j; // keep the existing model to preserve JudgeId on update
+                ctrl.Tag = j; // keep existing model if needed
                 _flowMainJ.Controls.Add(ctrl);
+                // Move just under top spacer (so new ones always appear at top when added)
+                _flowMainJ.Controls.SetChildIndex(ctrl, _flowMainJ.Controls.IndexOf(pnlSpaceAboveJ) + 1);
             }
+
+            _flowMainJ.ResumeLayout();
 
             RefreshJudgeNumbers();
 
@@ -158,6 +177,9 @@ namespace NexScore.CreateEventPages
                 _isSavedOnce = false;
             }
 
+            btnAddJudge.Visible = true;
+            btnAddJudge.Enabled = true;
+
             ValidateJudgesPage();
         }
 
@@ -166,11 +188,11 @@ namespace NexScore.CreateEventPages
             JudgesValidityChanged?.Invoke(AreJudgesValid());
         }
 
-        private async void btnSaveJudges_Click(object sender, EventArgs e)
+        private async void btnSaveJudges_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(CurrentEventId))
             {
-                _toolTipJudges.Show("No event selected (EventId is empty).", btnSaveJudges, 10, -30, 2500);
+                _toolTipJudges.Show("No event selected (EventId empty).", btnSaveJudges, 10, -30, 2500);
                 return;
             }
 
@@ -181,8 +203,6 @@ namespace NexScore.CreateEventPages
             }
 
             var judgeControls = _flowMainJ.Controls.OfType<AddJudgeControl>().ToList();
-
-            // Load currently stored judges to preserve JudgeId by name (names are unique by your validation)
             var existingByName = (await Database.Judges
                 .Find(j => j.EventId == CurrentEventId)
                 .ToListAsync())
@@ -196,22 +216,19 @@ namespace NexScore.CreateEventPages
                 var name = jc.txtJudgeName.Text?.Trim();
                 if (string.IsNullOrEmpty(name) || name == NamePlaceholder) continue;
 
-                // Preserve existing JudgeId if name already existed; otherwise generate a strong random id
                 string judgeId;
                 if (existingByName.TryGetValue(name, out var existing))
                 {
-                    judgeId = existing.JudgeId; // keep old ID so previous links still work
+                    judgeId = existing.JudgeId; // preserve so links remain valid
                 }
                 else
                 {
                     judgeId = SafeId.NewId(10);
-                    // ensure uniqueness among the newly created set (extremely unlikely collision)
                     while (!usedIds.Add(judgeId))
                         judgeId = SafeId.NewId(10);
                 }
 
                 var numberText = jc.txtJudgeNo.Text;
-                // If your JudgeModel.Number is numeric, convert here. Your current code stores as string; we keep it.
                 var title = jc.txtJudgeTitle.Text == TitlePlaceholder ? "" : jc.txtJudgeTitle.Text.Trim();
 
                 newJudges.Add(new JudgeModel
@@ -226,11 +243,10 @@ namespace NexScore.CreateEventPages
 
             if (newJudges.Count == 0)
             {
-                _toolTipJudges.Show("Please provide at least one real judge name.", btnSaveJudges, 10, -30, 2500);
+                _toolTipJudges.Show("Provide at least one judge.", btnSaveJudges, 10, -30, 2500);
                 return;
             }
 
-            // Replace existing docs for this EventId atomically
             await Database.Judges.DeleteManyAsync(j => j.EventId == CurrentEventId);
             await Database.Judges.InsertManyAsync(newJudges);
 

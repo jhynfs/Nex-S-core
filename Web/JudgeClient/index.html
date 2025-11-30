@@ -592,6 +592,7 @@
                 const r = await fetch(path, opts);
                 let data;
                 try { data = await r.json(); } catch { data = null; }
+                // treat 2xx as ok, also accept 409 as interpreted success by server logic
                 if (!r.ok && r.status !== 409) {
                     const msg = data && (data.message || data.error) ? (data.message || data.error) : (r.status + ' ' + r.statusText);
                     throw new Error(msg);
@@ -788,7 +789,7 @@
                     if (phase.segments && phase.segments.length) {
                         phase.segments.forEach(seg => phaseSegments.push({ phase, segment: seg }));
                     } else {
-                        phaseSegments.push({ phase, segment: { sequence: 1, name: '(No Segments)', criteria: [] } });
+                        phaseSegments.push({ phase: { key: 'NONE', name: 'No Phases', sequence: null, segments: [] }, segment: { sequence: 1, name: 'Empty', criteria: [] } });
                     }
                 });
                 if (!phaseSegments.length) {
@@ -830,15 +831,15 @@
                     card.className = 'crit-card';
                     card.dataset.ckey = criteriaKey;
                     card.innerHTML = `
-                            <h4>${escapeHtml(cr.name || 'Unnamed')}</h4>
-                            <div class="crit-weight">Weight: ${cr.weight}%</div>
-                            <input type="number" class="crit-input" placeholder="0-100" min="0" max="100" step="0.1">
-                            <div style="display:flex; gap:8px;">
-                              <button class="crit-submit">Save</button>
-                              <button class="crit-retry" style="display:none;">Retry</button>
-                            </div>
-                            <div class="crit-status"></div>
-                        `;
+                                <h4>${escapeHtml(cr.name || 'Unnamed')}</h4>
+                                <div class="crit-weight">Weight: ${cr.weight}%</div>
+                                <input type="number" class="crit-input" placeholder="0-100" min="0" max="100" step="0.1">
+                                <div style="display:flex; gap:8px;">
+                                  <button class="crit-submit">Save</button>
+                                  <button class="crit-retry" style="display:none;">Retry</button>
+                                </div>
+                                <div class="crit-status"></div>
+                            `;
                     const input = card.querySelector('.crit-input');
                     const btnSave = card.querySelector('.crit-submit');
                     const btnRetry = card.querySelector('.crit-retry');
@@ -898,6 +899,20 @@
                             }
                             if (!success && (code === 409)) success = true; // overwrite treated as success
 
+                            // If server reported failure but the score exists (race/secondary error), verify and treat as success.
+                            if (!success) {
+                                // reload remote judge scores for this judge and contestant to verify persistence
+                                try {
+                                    await preloadScores(); // updates scoreCache
+                                    const persisted = scoreCache[activeContestantId] && (scoreCache[activeContestantId][criteriaKey] != null);
+                                    if (persisted && Number(scoreCache[activeContestantId][criteriaKey]) === val) {
+                                        success = true;
+                                    }
+                                } catch (e) {
+                                    // ignore; success remains false
+                                }
+                            }
+
                             if (!success) throw new Error('Failed');
 
                             // Update caches
@@ -910,6 +925,15 @@
                             dirtySet.delete(criteriaKey);
                             updateProgress();
                             refreshScoresTable(); // update ranking table
+
+                            // Notify host container (WebView2) so embedded scorecards and results can refresh
+                            try {
+                                if (window.chrome && window.chrome.webview && typeof window.chrome.webview.postMessage === 'function') {
+                                    window.chrome.webview.postMessage({ type: 'score-saved', eventId, judgeId, contestantId: activeContestantId, criteriaKey });
+                                }
+                            } catch (e) {
+                                // not running in host or postMessage not available; ignore
+                            }
                         } catch (err) {
                             status.textContent = 'Error - not saved';
                             status.className = 'crit-status err';
@@ -1029,6 +1053,27 @@
                 return (s || '').replace(/[&<>"']/g, c => ({
                     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'
                 }[c]));
+
+            }
+
+            // Listen for host messages (useful when running in WebView2 host)
+            try {
+                if (window.chrome && window.chrome.webview && window.chrome.webview.addEventListener) {
+                    window.chrome.webview.addEventListener('message', ev => {
+                        const d = ev.data;
+                        if (!d || !d.type) return;
+                        // Host can request a reload of remote data
+                        if (d.type === 'reloadRemote') {
+                            preloadScores().then(() => { restoreScoresForCurrent('remote'); refreshScoresTable(); });
+                        }
+                        // Host can request a force refresh of our score table
+                        if (d.type === 'refreshScores') {
+                            refreshScoresTable();
+                        }
+                    });
+                }
+            } catch (e) {
+                // ignore if not available
             }
 
             (async function init() {
@@ -1040,6 +1085,16 @@
                 updatePhaseUI();           // builds criteria cards
                 restoreScoresForCurrent(); // fill with remote/local
                 await refreshScoresTable();
+
+                // small auto-refresh so UI reflects changes done elsewhere (optional)
+                setInterval(async () => {
+                    // If there are no unsaved changes, poll remote every 8s
+                    if (dirtySet.size === 0 && inFlight.size === 0) {
+                        await preloadScores();
+                        restoreScoresForCurrent('remote');
+                        refreshScoresTable();
+                    }
+                }, 8000);
             })();
         })();
     </script>

@@ -1,5 +1,5 @@
-﻿using MongoDB.Driver;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using NexScore.Models;
 using NexScore.Services;
 using System;
@@ -109,7 +109,6 @@ namespace NexScore.Infrastructure
             {
                 SetCors(res);
 
-               
                 if (req.HttpMethod == "OPTIONS")
                 {
                     res.StatusCode = 204;
@@ -131,7 +130,7 @@ namespace NexScore.Infrastructure
                     return;
                 }
 
-                // EVENT META (EventModel fields)
+                // EVENT
                 if (path.Equals("/api/event", StringComparison.OrdinalIgnoreCase))
                 {
                     string eventId = req.QueryString["eventId"];
@@ -172,7 +171,7 @@ namespace NexScore.Infrastructure
                     return;
                 }
 
-                // CONTESTANTS (active by default)
+                // CONTESTANTS
                 if (path.Equals("/api/contestants", StringComparison.OrdinalIgnoreCase))
                 {
                     string eventId = req.QueryString["eventId"];
@@ -184,7 +183,6 @@ namespace NexScore.Infrastructure
                     bool showAll = string.Equals(req.QueryString["showAll"], "true", StringComparison.OrdinalIgnoreCase);
 
                     var col = _db.GetCollection<ContestantModel>("Contestants");
-
                     var baseFilter = Builders<ContestantModel>.Filter.Eq(c => c.EventId, eventId);
                     if (!showAll)
                     {
@@ -196,7 +194,6 @@ namespace NexScore.Infrastructure
                     }
 
                     var list = await col.Find(baseFilter).SortBy(c => c.Number).ToListAsync();
-
                     await JsonAsync(res, list.Select(c => new
                     {
                         c.Id,
@@ -485,7 +482,15 @@ namespace NexScore.Infrastructure
 
                     await scores.UpdateOneAsync(keyFilter, update, new UpdateOptions { IsUpsert = true });
 
-                    await _scoring.RecomputeContestantAsync(dto.EventId, dto.ContestantId);
+                    // Robust: catch aggregation errors so judge UI never shows backend 500
+                    try
+                    {
+                        await _scoring.RecomputeContestantAsync(dto.EventId, dto.ContestantId);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Aggregation error: " + ex);
+                    }
 
                     await JsonAsync(res, new { status = "ok" });
                     return;
@@ -563,14 +568,13 @@ namespace NexScore.Infrastructure
                     }
                     catch (Exception ex)
                     {
-                        // Return detailed error so you can see the cause in the browser
                         res.StatusCode = 500;
                         await JsonAsync(res, new { error = "judge-progress failed", message = ex.Message, stack = ex.StackTrace });
                         return;
                     }
                 }
 
-                // Criteria-level rows for a judge + contestant (used by "View Criteria")
+                // JUDGE SCORES: "View Criteria" and restore individually (ONLY ONE BLOCK, no conflicts)
                 if (path.Equals("/api/judge-scores", StringComparison.OrdinalIgnoreCase) && req.HttpMethod == "GET")
                 {
                     try
@@ -584,37 +588,20 @@ namespace NexScore.Infrastructure
                             return;
                         }
 
-                        async Task<string> PickScoresCollectionAsync()
+                        var scoresCol = _db.GetCollection<ScoreEntry>("Scores");
+                        var list = await scoresCol
+                            .Find(s => s.EventId == eventIdQ && s.JudgeId == judgeIdQ && s.ContestantId == contestantIdQ)
+                            .SortBy(s => s.CreatedAt)
+                            .ToListAsync();
+
+                        await JsonAsync(res, list.Select(s => new
                         {
-                            var preferred = new[] { "Scores", "ScoreEntries", "JudgeScores" };
-                            var existing = await (await _db.ListCollectionNamesAsync()).ToListAsync();
-                            foreach (var p in preferred)
-                                if (existing.Contains(p)) return p;
-                            return "Scores";
-                        }
-
-                        var colName = await PickScoresCollectionAsync();
-                        var col = _db.GetCollection<BsonDocument>(colName);
-
-                        var filter = Builders<BsonDocument>.Filter.And(
-                            Builders<BsonDocument>.Filter.Eq("EventId", eventIdQ),
-                            Builders<BsonDocument>.Filter.Eq("JudgeId", judgeIdQ),
-                            Builders<BsonDocument>.Filter.Eq("ContestantId", contestantIdQ)
-                        );
-
-                        var proj = Builders<BsonDocument>.Projection
-                            .Include("PhaseId")
-                            .Include("SegmentId")
-                            .Include("CriteriaId")
-                            .Include("RawValue")
-                            .Include("MaxValue")
-                            .Include("CreatedAt")
-                            .Include("UpdatedAt");
-
-                        var list = await col.Find(filter).Project(proj).Sort(Builders<BsonDocument>.Sort.Ascending("CreatedAt")).ToListAsync();
-
-                        // Return as-is (BsonDocument converts naturally to JSON)
-                        await JsonAsync(res, list);
+                            phaseId = s.PhaseId ?? "",
+                            segmentId = s.SegmentId ?? "",
+                            criteriaId = s.CriteriaId ?? "",
+                            rawValue = s.RawValue,
+                            maxValue = s.MaxValue
+                        }));
                         return;
                     }
                     catch (Exception ex)
@@ -625,68 +612,7 @@ namespace NexScore.Infrastructure
                     }
                 }
 
-                if (path.Equals("/api/judge-scores", StringComparison.OrdinalIgnoreCase) && req.HttpMethod == "GET")
-                {
-                    try
-                    {
-                        var eventIdQ = req.QueryString["eventId"];
-                        var judgeIdQ = req.QueryString["judgeId"];
-                        var contestantIdQ = req.QueryString["contestantId"];
-                        if (string.IsNullOrWhiteSpace(eventIdQ) || string.IsNullOrWhiteSpace(judgeIdQ) || string.IsNullOrWhiteSpace(contestantIdQ))
-                        {
-                            BadRequest(res, "eventId, judgeId, contestantId required");
-                            return;
-                        }
-
-                        var scoresCol = _db.GetCollection<ScoreEntry>("Scores"); // adjust if needed
-                        var list = await scoresCol
-                            .Find(s => s.EventId == eventIdQ && s.JudgeId == judgeIdQ && s.ContestantId == contestantIdQ)
-                            .SortBy(s => s.CreatedAt)
-                            .ToListAsync();
-
-                        await JsonAsync(res, list);
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        res.StatusCode = 500;
-                        await JsonAsync(res, new { error = "judge-scores failed", message = ex.Message });
-                        return;
-                    }
-                }
-
-                // RESTORE SCORES FOR ONE CONTESTANT
-                if (path.Equals("/api/judge-scores", StringComparison.OrdinalIgnoreCase))
-                {
-                    string eventId = req.QueryString["eventId"];
-                    string judgeIdQ = req.QueryString["judgeId"];
-                    string contestantId = req.QueryString["contestantId"];
-
-                    if (string.IsNullOrWhiteSpace(eventId) ||
-                        string.IsNullOrWhiteSpace(judgeIdQ) ||
-                        string.IsNullOrWhiteSpace(contestantId))
-                    {
-                        BadRequest(res, "eventId & judgeId & contestantId required");
-                        return;
-                    }
-
-                    var scoresCol = _db.GetCollection<ScoreEntry>("Scores");
-                    var list = await scoresCol.Find(s =>
-                        s.EventId == eventId &&
-                        s.JudgeId == judgeIdQ &&
-                        s.ContestantId == contestantId).ToListAsync();
-
-                    await JsonAsync(res, list.Select(s => new
-                    {
-                        s.CriteriaId,
-                        s.RawValue,
-                        s.MaxValue,
-                        s.PhaseId,
-                        s.SegmentId
-                    }));
-                    return;
-                }
-
+                // JUDGE ALL SCORES
                 if (path.Equals("/api/judge-all-scores", StringComparison.OrdinalIgnoreCase))
                 {
                     string eventIdQ = req.QueryString["eventId"];
@@ -698,7 +624,8 @@ namespace NexScore.Infrastructure
                     }
                     var scoresCol = _db.GetCollection<ScoreEntry>("Scores");
                     var list = await scoresCol.Find(s => s.EventId == eventIdQ && s.JudgeId == judgeIdQ).ToListAsync();
-                    await JsonAsync(res, list.Select(s => new {
+                    await JsonAsync(res, list.Select(s => new
+                    {
                         s.ContestantId,
                         s.CriteriaId,
                         s.RawValue,
@@ -751,278 +678,6 @@ namespace NexScore.Infrastructure
                     {
                         Error(res, "photo read failed: " + ex.Message);
                     }
-                    return;
-                }
-                if (path.Equals("/api/judge-progress", StringComparison.OrdinalIgnoreCase) && req.HttpMethod == "GET")
-                {
-                    try
-                    {
-                        string eventIdQ = req.QueryString["eventId"];
-                        string judgeIdQ = req.QueryString["judgeId"];
-                        if (string.IsNullOrWhiteSpace(eventIdQ) || string.IsNullOrWhiteSpace(judgeIdQ))
-                        {
-                            BadRequest(res, "eventId and judgeId are required");
-                            return;
-                        }
-
-                        var scoresCol = _db.GetCollection<ScoreEntry>("Scores"); // adjust collection name if different
-                        var structCol = _db.GetCollection<EventStructureModel>("EventStructures");
-
-                        // Fetch this judge's scores for the event
-                        var judgeScores = await scoresCol
-                            .Find(s => s.EventId == eventIdQ && s.JudgeId == judgeIdQ)
-                            .ToListAsync();
-
-                        // Early exit: no scores yet
-                        if (judgeScores.Count == 0)
-                        {
-                            await JsonAsync(res, Array.Empty<object>());
-                            return;
-                        }
-
-                        // Load structure (optional; we’ll fallback if missing)
-                        var structure = await structCol.Find(s => s.EventId == eventIdQ).FirstOrDefaultAsync();
-
-                        // Build quick lookup maps from structure (if available)
-                        // Phase key style expected: "P{seq}" or "IND-{sanitizedName}" (same as your client)
-                        var phaseMap = new Dictionary<string, PhaseModel>(StringComparer.OrdinalIgnoreCase);
-                        var segMap = new Dictionary<(string phaseKey, int segSeq), SegmentModel>();
-                        var critWeightMap = new Dictionary<(string phaseKey, int segSeq, string critNameLower), decimal>();
-
-                        if (structure?.Phases != null)
-                        {
-                            string Sanitize(string? name) =>
-                                string.IsNullOrWhiteSpace(name) ? "phase" : name.Trim().Replace(" ", "_").ToLowerInvariant();
-
-                            foreach (var p in structure.Phases)
-                            {
-                                string pKey = p.Sequence.HasValue ? ("P" + p.Sequence.Value) : ("IND-" + Sanitize(p.Name));
-                                phaseMap[pKey] = p;
-
-                                if (p.Segments != null)
-                                {
-                                    foreach (var sgm in p.Segments)
-                                    {
-                                        segMap[(pKey, sgm.Sequence)] = sgm;
-
-                                        if (sgm.Criteria != null)
-                                        {
-                                            foreach (var cr in sgm.Criteria)
-                                            {
-                                                var key = (pKey, sgm.Sequence, (cr.Name ?? "").Trim().ToLowerInvariant());
-                                                critWeightMap[key] = cr.Weight;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // Helper: parse segment integer from "S{n}"
-                        static int ParseSegSeq(string? segId)
-                        {
-                            if (string.IsNullOrWhiteSpace(segId)) return -1;
-                            if (segId.StartsWith("S", StringComparison.OrdinalIgnoreCase))
-                            {
-                                if (int.TryParse(segId.Substring(1), out var n)) return n;
-                            }
-                            // fallback if caller sent just a number or something else
-                            if (int.TryParse(segId, out var direct)) return direct;
-                            return -1;
-                        }
-
-                        // Helper: get criteria name (lower) from CriteriaId if needed (format often "P1::1:criteria")
-                        static string ExtractCritNameLower(string criteriaId)
-                        {
-                            if (string.IsNullOrEmpty(criteriaId)) return "";
-                            var last = criteriaId.Split(':').LastOrDefault() ?? criteriaId;
-                            return last.Trim().ToLowerInvariant();
-                        }
-
-                        // Compute totals per contestant
-                        var result = judgeScores
-                            .GroupBy(s => s.ContestantId)
-                            .Select(g =>
-                            {
-                                double weightedSum = 0.0;
-                                double independentSum = 0.0;
-                                int countNoStruct = 0;
-                                double sumNoStruct = 0.0;
-
-                                foreach (var s in g)
-                                {
-                                    // Normalize score (0..1)
-                                    double max = (s.MaxValue > 0) ? s.MaxValue : 100.0;
-                                    double norm = Math.Max(0.0, Math.Min(1.0, s.RawValue / max));
-
-                                    // If no structure, just accumulate to fallback
-                                    if (structure?.Phases == null || phaseMap.Count == 0)
-                                    {
-                                        sumNoStruct += norm;
-                                        countNoStruct++;
-                                        continue;
-                                    }
-
-                                    // With structure, try to weight properly
-                                    string pKey = s.PhaseId ?? "";
-                                    phaseMap.TryGetValue(pKey, out var phase);
-
-                                    // If unknown phase, fallback accumulate
-                                    if (phase == null)
-                                    {
-                                        sumNoStruct += norm;
-                                        countNoStruct++;
-                                        continue;
-                                    }
-
-                                    bool isIndependent = phase.IsIndependent;
-
-                                    if (isIndependent)
-                                    {
-                                        // Independent phases: add raw fraction directly (consistent with your Results separation)
-                                        independentSum += norm;
-                                        continue;
-                                    }
-
-                                    // Main (weighted) phases
-                                    decimal pW = phase.Weight; // already stored as 0..100 in model
-                                    int segSeq = ParseSegSeq(s.SegmentId);
-                                    segMap.TryGetValue((pKey, segSeq), out var seg);
-
-                                    decimal sW = seg?.Weight ?? 0m; // 0 if missing
-                                    string critNameLower = ExtractCritNameLower(s.CriteriaId ?? "");
-                                    critWeightMap.TryGetValue((pKey, segSeq, critNameLower), out var cW);
-
-                                    // Weights are % in DB; convert to fractions
-                                    double pF = (double)(pW / 100m);
-                                    double sF = (double)(sW / 100m);
-                                    double cF = (double)((cW > 0m ? cW : 0m) / 100m);
-
-                                    // If any piece missing, fallback gracefully:
-                                    // - If we have phase weight but segment/criteria missing, still use phase weight only.
-                                    // - If everything missing, fallback accumulate (unweighted).
-                                    double weight =
-                                        (pF > 0 && sF > 0 && cF > 0) ? (pF * sF * cF) :
-                                        (pF > 0 && sF > 0 && cF == 0) ? (pF * sF) :
-                                        (pF > 0 && sF == 0 && cF == 0) ? pF :
-                                        0.0;
-
-                                    if (weight > 0.0)
-                                    {
-                                        weightedSum += norm * weight;
-                                    }
-                                    else
-                                    {
-                                        // fallback into "no structure" bucket so it still counts
-                                        sumNoStruct += norm;
-                                        countNoStruct++;
-                                    }
-                                }
-
-                                // Combine totals:
-                                // - weightedSum is already in fraction (<= 1 if the structure is coherent).
-                                // - independentSum is sum of raw fractions from independent phases.
-                                // - noStruct fallback: average of normalized scores (so it doesn't blow up with many criteria)
-                                double fallbackAvg = (countNoStruct > 0) ? (sumNoStruct / countNoStruct) : 0.0;
-
-                                // Final total fraction:
-                                double total = weightedSum + independentSum + fallbackAvg;
-
-                                // Keep within [0, 1.0 + independent], but clamp hard to 1.0 if you prefer.
-                                // Here we allow >1 if you have independent phases added on top; you can clamp if desired:
-                                if (total < 0) total = 0;
-                                // total = Math.Min(total, 1.0); // uncomment to clamp
-
-                                return new
-                                {
-                                    contestantId = g.Key,
-                                    totalFraction = total
-                                };
-                            })
-                            .OrderByDescending(x => x.totalFraction)
-                            .ToList();
-
-#if DEBUG
-                        // Optional: return as-is
-#endif
-                        await JsonAsync(res, result);
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        // Surface the exception to help diagnose instead of a blank 500
-                        res.StatusCode = 500;
-                        await JsonAsync(res, new { error = "judge-progress failed", message = ex.Message, stack = ex.StackTrace });
-                        return;
-                    }
-                }
-                // Event banner streaming endpoint
-                if (path.Equals("/api/event-banner", StringComparison.OrdinalIgnoreCase))
-                {
-                    string eventIdQ = req.QueryString["eventId"];
-                    if (string.IsNullOrWhiteSpace(eventIdQ))
-                    {
-                        BadRequest(res, "eventId required");
-                        return;
-                    }
-                    var eventsCol = _db.GetCollection<EventModel>("Events");
-                    var evtDoc = await eventsCol.Find(e => e.Id == eventIdQ).FirstOrDefaultAsync();
-                    if (evtDoc == null || string.IsNullOrWhiteSpace(evtDoc.BannerPath) || !System.IO.File.Exists(evtDoc.BannerPath))
-                    {
-                        // Return 1x1 transparent PNG if missing
-                        byte[] placeholder = Convert.FromBase64String(
-                            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABDQottAAAAABJRU5ErkJggg==");
-                        res.ContentType = "image/png";
-                        res.ContentLength64 = placeholder.Length;
-                        await res.OutputStream.WriteAsync(placeholder, 0, placeholder.Length);
-                        res.OutputStream.Close();
-                        return;
-                    }
-                    try
-                    {
-                        var ext = System.IO.Path.GetExtension(evtDoc.BannerPath).ToLowerInvariant();
-                        res.ContentType = ext switch
-                        {
-                            ".jpg" or ".jpeg" => "image/jpeg",
-                            ".png" => "image/png",
-                            ".gif" => "image/gif",
-                            _ => "application/octet-stream"
-                        };
-                        byte[] imgBytes = await System.IO.File.ReadAllBytesAsync(evtDoc.BannerPath);
-                        res.ContentLength64 = imgBytes.Length;
-                        await res.OutputStream.WriteAsync(imgBytes, 0, imgBytes.Length);
-                        res.OutputStream.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        Error(res, "banner read failed: " + ex.Message);
-                    }
-                    return;
-                }
-
-                // GET criteria-level scores for a single judge + contestant
-                if (path.Equals("/api/judge-scores", StringComparison.OrdinalIgnoreCase) && req.HttpMethod == "GET")
-                {
-                    var eventIdQ = req.QueryString["eventId"];
-                    var judgeIdQ = req.QueryString["judgeId"];
-                    var contestantIdQ = req.QueryString["contestantId"];
-
-                    if (string.IsNullOrWhiteSpace(eventIdQ) ||
-                        string.IsNullOrWhiteSpace(judgeIdQ) ||
-                        string.IsNullOrWhiteSpace(contestantIdQ))
-                    {
-                        BadRequest(res, "eventId, judgeId, contestantId required");
-                        return;
-                    }
-
-                    var col = _db.GetCollection<ScoreEntry>("Scores"); // adjust if your collection name differs
-                    var list = await col.Find(s => s.EventId == eventIdQ
-                                                && s.JudgeId == judgeIdQ
-                                                && s.ContestantId == contestantIdQ)
-                                        .SortBy(s => s.CreatedAt)
-                                        .ToListAsync();
-
-                    await JsonAsync(res, list);
                     return;
                 }
 
@@ -1130,7 +785,7 @@ namespace NexScore.Infrastructure
 
         public void Dispose() => Stop();
 
-        // DTOs
+        // DTOs for internal API use
         private class ScoreEntryDto
         {
             public string EventId { get; set; } = default!;
@@ -1142,12 +797,14 @@ namespace NexScore.Infrastructure
             public double RawValue { get; set; }
             public double MaxValue { get; set; } = 100;
         }
+
         private class JudgeLoginDto
         {
             public string EventId { get; set; } = default!;
             public string JudgeId { get; set; } = default!;
             public string? Pin { get; set; }
         }
+
         private class LiveStateDto
         {
             public string EventId { get; set; } = default!;
@@ -1155,6 +812,7 @@ namespace NexScore.Infrastructure
             public string? SegmentKey { get; set; }
             public string? ContestantId { get; set; }
         }
+
         public class LiveState
         {
             public string EventId { get; set; } = default!;
@@ -1163,16 +821,19 @@ namespace NexScore.Infrastructure
             public string? ContestantId { get; set; }
             public DateTime UpdatedAt { get; set; }
         }
+
         private class JudgeHeartbeatDto
         {
             public string EventId { get; set; } = default!;
             public string JudgeId { get; set; } = default!;
         }
+
         private class UpdateActiveRequest
         {
             public string EventId { get; set; } = default!;
             public List<UpdateActiveItem>? Updates { get; set; }
         }
+
         private class UpdateActiveItem
         {
             public string ContestantId { get; set; } = default!;

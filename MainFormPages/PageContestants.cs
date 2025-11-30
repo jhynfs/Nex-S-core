@@ -221,16 +221,17 @@ html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lex
                     string rep = (c.Representing ?? "").Trim();
                     string gender = (c.Gender ?? "").Trim();
                     string age = c.Age.HasValue ? c.Age.Value.ToString() : "";
-                    string photo = (c.PhotoPath ?? "").Trim();
                     bool active = c.IsActive;
+                    string photo = (c.PhotoPath ?? "").Trim();
+                    string fileName = Path.GetFileName(photo);
+                    string expectedPath = !string.IsNullOrEmpty(fileName)
+                        ? Path.Combine(portraitsFolder, fileName)
+                        : "";
                     string photoHtml;
                     try
                     {
-                        if (!string.IsNullOrEmpty(photo) &&
-                            File.Exists(photo) &&
-                            photo.StartsWith(portraitsFolder, StringComparison.OrdinalIgnoreCase))
+                        if (!string.IsNullOrEmpty(fileName) && File.Exists(expectedPath))
                         {
-                            var fileName = Path.GetFileName(photo);
                             var url = "https://appassets/" + Uri.EscapeDataString(fileName);
                             photoHtml = $"<img src=\"{url}\" alt=\"photo\">";
                         }

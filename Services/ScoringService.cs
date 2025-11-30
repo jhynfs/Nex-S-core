@@ -31,6 +31,10 @@ namespace NexScore.Services
 
         public async Task RecomputeContestantAsync(string eventId, string contestantId)
         {
+            // Ensure ids are always strings
+            contestantId = contestantId.ToString();
+            eventId = eventId.ToString();
+
             var structure = await EventStructures.Find(s => s.EventId == eventId).FirstOrDefaultAsync();
             if (structure?.Phases == null || structure.Phases.Count == 0) return;
 
@@ -67,7 +71,7 @@ namespace NexScore.Services
 
                 if (phase.IsIndependent)
                 {
-                    indepScores[BuildPhaseId(phase)] = phaseScore; // store raw independent
+                    indepScores[BuildPhaseId(phase)] = phaseScore;
                 }
                 else
                 {
@@ -78,7 +82,9 @@ namespace NexScore.Services
                 }
             }
 
+            // Ensure ids are always strings
             var filter = Builders<AggregatedScore>.Filter.Where(a => a.EventId == eventId && a.ContestantId == contestantId);
+
             var existing = await AggregatedScores.Find(filter).FirstOrDefaultAsync();
             if (existing == null)
             {
@@ -88,7 +94,8 @@ namespace NexScore.Services
                     ContestantId = contestantId
                 };
             }
-
+            existing.EventId = eventId;
+            existing.ContestantId = contestantId;
             existing.EventScore = eventScore;
             existing.PhaseScores = phaseScores;
             existing.IndependentPhaseScores = indepScores;
@@ -100,6 +107,7 @@ namespace NexScore.Services
 
         public async Task RecomputeRanksAsync(string eventId)
         {
+            eventId = eventId.ToString();
             var list = await AggregatedScores.Find(a => a.EventId == eventId).ToListAsync();
             var ordered = list
                 .OrderByDescending(a => a.EventScore)
@@ -124,6 +132,7 @@ namespace NexScore.Services
 
         public async Task<object> GetLeaderboardAsync(string eventId)
         {
+            eventId = eventId.ToString();
             var agg = await AggregatedScores.Find(a => a.EventId == eventId).SortBy(a => a.Rank).ToListAsync();
             return agg.Select(a => new
             {

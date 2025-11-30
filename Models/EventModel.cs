@@ -177,16 +177,12 @@ namespace NexScore.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonRepresentation(BsonType.ObjectId)]
         public string EventId { get; set; } = default!;
-
-        [BsonRepresentation(BsonType.ObjectId)]
         public string ContestantId { get; set; } = default!;
-
         public double EventScore { get; set; }
         public Dictionary<string, double> PhaseScores { get; set; } = new();
         public Dictionary<string, double> IndependentPhaseScores { get; set; } = new();
-        public DateTime ComputedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ComputedAt { get; set; }
         public int Rank { get; set; }
         public string? TieBreakInfo { get; set; }
     }
