@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* DEFAULT DARK MODE PALETTE */
+            /* HIGH CONTRAST DARK MODE PALETTE */
             --bg: #020617;
             --panel: #0f172a;
             --panel2: #1e293b;
@@ -21,7 +21,7 @@
             --warn: #facc15;
             --text: #ffffff;
             --text-muted: #cbd5e1;
-            --text-header: #ffffff; /* White text on dark banner */
+            --text-header: #ffffff;
             --shadow-header: 0 2px 4px rgba(0,0,0,0.8);
             /* SIZING */
             --banner-height: 180px;
@@ -42,19 +42,19 @@
             --fs-input-score: 24px;
         }
 
-        /* LIGHT MODE PALETTE OVERRIDES */
+        /* LIGHT MODE OVERRIDES */
         body.light-mode {
-            --bg: #f8fafc; /* Slate 50 */
-            --panel: #ffffff; /* White */
-            --panel2: #f1f5f9; /* Slate 100 */
-            --accent: #0ea5e9; /* Sky 500 */
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --panel2: #f1f5f9;
+            --accent: #0ea5e9;
             --accent-text: #ffffff;
-            --border: #cbd5e1; /* Slate 300 */
+            --border: #cbd5e1;
             --input-bg: #ffffff;
             --input-text: #0f172a;
-            --text: #0f172a; /* Slate 900 */
-            --text-muted: #64748b; /* Slate 500 */
-            --text-header: #0f172a; /* Dark text for light background */
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-header: #0f172a;
             --shadow-header: none;
         }
 
@@ -69,7 +69,8 @@
             background: var(--bg);
             color: var(--text);
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             line-height: 1.6;
             transition: background 0.3s, color 0.3s;
         }
@@ -156,7 +157,6 @@
             left: 0;
             right: 0;
             height: var(--banner-height);
-            /* Gradient adapts to bg color at bottom */
             background: linear-gradient(to bottom, rgba(0,0,0, 0.5), rgba(0,0,0, 0.2) 60%, var(--bg) 100%);
             z-index: 1;
             pointer-events: none;
@@ -201,7 +201,6 @@
             display: inline-block;
         }
 
-        /* THEME TOGGLE BUTTON (Top Right) */
         .theme-toggle-btn {
             position: absolute;
             top: 20px;
@@ -313,7 +312,7 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            color: #cbd5e1; /* Always light text in black box */
+            color: #cbd5e1;
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -523,12 +522,11 @@
 
                 .scores-actions button:hover {
                     border-color: var(--accent);
-                    filter: brightness(0.95); /* Works for both light/dark */
+                    filter: brightness(0.95);
                 }
 
-                /* PRINT BUTTON STYLE */
                 .scores-actions button.btn-print {
-                    background: #8b5cf6; /* Violet */
+                    background: #8b5cf6;
                     color: #fff;
                     border-color: #7c3aed;
                 }
@@ -570,7 +568,6 @@
             border-bottom: none;
         }
 
-        /* Alternate row colors */
         tbody tr:nth-child(even) {
             background-color: rgba(125, 125, 125, 0.05);
         }
@@ -611,43 +608,98 @@
                 border-color: var(--accent);
             }
 
-        /* --- PRINT MEDIA QUERY --- */
+        /* PRINT STYLES - ADMIN SCORECARD STYLE */
+        .print-container {
+            display: none;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
             }
 
-            .scores-section, .scores-section * {
+            .print-container, .print-container * {
                 visibility: visible;
             }
 
-            .scores-section {
+            .print-container {
+                display: block;
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
-                margin: 0;
-                padding: 0;
-                border: none;
-                background: white !important;
-                color: black !important;
+                background: white;
+                color: black;
+                font-size: 11pt;
+                padding: 20px;
             }
 
-            .scores-actions {
-                display: none !important;
-            }
-            /* Reset colors for printing */
-            th, td {
-                color: black !important;
-                border-color: #ccc !important;
+                .print-container h1 {
+                    font-size: 24pt;
+                    margin: 0 0 10px;
+                    color: black;
+                }
+
+                .print-container h2 {
+                    font-size: 14pt;
+                    margin: 0 0 20px;
+                    font-weight: normal;
+                    color: black;
+                }
+
+            /* Main Admin Table Style */
+            .admin-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
             }
 
-            th {
-                background: #eee !important;
+                .admin-table th, .admin-table td {
+                    border-bottom: 1px solid #ccc;
+                    padding: 10px 8px;
+                    text-align: left;
+                    vertical-align: top;
+                }
+
+                .admin-table th {
+                    background-color: #f0f0f0;
+                    font-weight: bold;
+                    border-top: 1px solid #000;
+                    border-bottom: 2px solid #000;
+                }
+
+                .admin-table tr:last-child td {
+                    border-bottom: 2px solid #000;
+                }
+
+            /* Sub Table (Details) Style */
+            .sub-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 5px;
+                font-size: 10pt;
             }
+
+                .sub-table th, .sub-table td {
+                    border: none;
+                    border-bottom: 1px solid #eee;
+                    padding: 4px 6px;
+                    color: #333;
+                }
+
+                .sub-table th {
+                    font-weight: 600;
+                    color: #000;
+                    text-transform: uppercase;
+                    font-size: 9pt;
+                }
+
+                .sub-table td.score-cell {
+                    font-weight: bold;
+                    text-align: right;
+                }
         }
 
-        /* --- RESPONSIVE --- */
         @media (max-width: 900px) {
             .sidebar {
                 display: none;
@@ -686,16 +738,19 @@
         <div id="candidateList"></div>
     </div>
 
+    <div id="printArea" class="print-container"></div>
+
     <div class="main">
         <button id="btnToggleTheme" class="theme-toggle-btn" title="Toggle Theme">☀️</button>
-
         <div class="banner-bg" id="bannerBg" style="display:none;"></div>
         <div class="banner-overlay" id="bannerOverlay" style="display:none;"></div>
+
         <div class="header">
             <h1 id="eventTitle">Event: —</h1>
             <div id="judgeLine" class="judge-line">Judge: —</div>
             <div id="idWarning" class="warn" style="display:none;">Missing judge identity.</div>
         </div>
+
         <div class="content">
             <div class="phase-nav">
                 <button id="btnPrevPhase" class="phase-btn">&#9664;</button>
@@ -751,33 +806,14 @@
         (function () {
             // Theme Logic
             const btnToggleTheme = document.getElementById('btnToggleTheme');
-
-            function updateThemeIcon(isLight) {
-                // If Light Mode is active, show Moon (to switch to Dark).
-                // If Dark Mode is active, show Sun (to switch to Light).
-                btnToggleTheme.textContent = isLight ? '🌙' : '☀️';
-            }
-
-            // Init theme
+            function updateThemeIcon(isLight) { btnToggleTheme.textContent = isLight ? '🌙' : '☀️'; }
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                updateThemeIcon(true);
-            } else {
-                updateThemeIcon(false);
-            }
-
+            if (savedTheme === 'light') { document.body.classList.add('light-mode'); updateThemeIcon(true); } else { updateThemeIcon(false); }
             btnToggleTheme.onclick = () => {
                 document.body.classList.toggle('light-mode');
                 const isLight = document.body.classList.contains('light-mode');
                 localStorage.setItem('theme', isLight ? 'light' : 'dark');
                 updateThemeIcon(isLight);
-            };
-
-            // Print Logic
-            const btnPrint = document.getElementById('btnPrint');
-            btnPrint.onclick = () => {
-                window.print();
             };
 
             const qs = new URLSearchParams(location.search);
@@ -814,22 +850,24 @@
             const btnRestoreLocal = document.getElementById('btnRestoreLocal');
             const btnClearLocal = document.getElementById('btnClearLocal');
             const btnReloadRemote = document.getElementById('btnReloadRemote');
+            const printArea = document.getElementById('printArea');
 
             // State
             let judges = [], contestants = [], structure = { phases: [] };
             let phaseSegments = [];
             let currentIndex = 0;
             let activeContestantId = null;
-            let scoreCache = {};       // remote cache { contestantId: { criteriaKey: value } }
-            let dirtySet = new Set();  // criteria keys changed locally but not confirmed
-            let inFlight = new Set();  // criteria keys currently saving
+            let scoreCache = {};
+            let dirtySet = new Set();
+            let inFlight = new Set();
+            let judgeDisplayName = '';
+            let rankedData = []; // Store ranking from refreshScoresTable
 
             // Helpers
             async function api(path, opts = {}) {
                 const r = await fetch(path, opts);
                 let data;
                 try { data = await r.json(); } catch { data = null; }
-                // treat 2xx as ok, also accept 409 as interpreted success by server logic
                 if (!r.ok && r.status !== 409) {
                     const msg = data && (data.message || data.error) ? (data.message || data.error) : (r.status + ' ' + r.statusText);
                     throw new Error(msg);
@@ -856,12 +894,6 @@
                 return isNaN(num) ? null : num;
             }
 
-            function clearLocalForContestant(contestantId) {
-                Object.keys(localStorage)
-                    .filter(k => k.startsWith(`score:${eventId}:${judgeId}:${contestantId}:`))
-                    .forEach(k => localStorage.removeItem(k));
-            }
-
             function updateProgress() {
                 if (!activeContestantId) { criteriaProgress.textContent = '0 / 0 saved'; return; }
                 const cards = [...criteriaGrid.querySelectorAll('.crit-card')];
@@ -873,6 +905,79 @@
                 });
                 criteriaProgress.textContent = `${saved} / ${total} saved`;
             }
+
+            // --- ADMIN-STYLE PRINT FUNCTION ---
+            document.getElementById('btnPrint').onclick = async () => {
+                // Ensure latest scores are loaded
+                await refreshScoresTable(); // Updates rankedData
+
+                let html = `<h1>${judgeDisplayName || 'Judge'}</h1>`;
+                html += `<h2>${eventTitle.textContent.replace('Event: ', '')}</h2>`;
+
+                // MAIN TABLE - Replicating Admin Scorecard Format
+                html += `<table class="admin-table">`;
+                html += `<thead><tr>
+                                <th style="width:50px;">Rank</th>
+                                <th style="width:50px;">No.</th>
+                                <th style="width:200px;">Contestant</th>
+                                <th style="width:80px;">Total %</th>
+                                <th>Details</th>
+                             </tr></thead><tbody>`;
+
+                // If no ranked data, fallback to regular list
+                let listToPrint = rankedData.length > 0 ? rankedData : contestants.map(c => ({ contestantId: c.id, totalFraction: 0 }));
+
+                let rank = 1;
+                listToPrint.forEach(item => {
+                    const c = contestants.find(x => x.id === item.contestantId);
+                    if (!c) return;
+
+                    const pct = (Number(item.totalFraction || 0) * 100).toFixed(3);
+                    const cScores = scoreCache[c.id] || {};
+
+                    html += `<tr>`;
+                    html += `<td>${rank++}</td>`;
+                    html += `<td>${c.number}</td>`;
+                    html += `<td><b>${escapeHtml(c.fullName)}</b></td>`;
+                    html += `<td>${pct}</td>`;
+
+                    // NESTED DETAILS TABLE
+                    html += `<td><table class="sub-table">`;
+                    html += `<thead><tr><th>Phase</th><th>Segment</th><th>Criteria</th><th style="text-align:right;">Score</th></tr></thead><tbody>`;
+
+                    phaseSegments.forEach(ps => {
+                        const phName = ps.phase.name || 'Phase';
+                        const segName = ps.segment.name || 'Segment';
+                        (ps.segment.criteria || []).forEach(crit => {
+                            const key = buildCriteriaKey(ps.phase.key, ps.segment.sequence, crit.name);
+                            let val = cScores[key];
+                            if (val == null) val = getLocal(c.id, key); // Fallback to local
+
+                            html += `<tr>`;
+                            html += `<td>${escapeHtml(phName)}</td>`;
+                            html += `<td>${escapeHtml(segName)}</td>`;
+                            html += `<td>${escapeHtml(crit.name)}</td>`;
+                            html += `<td class="score-cell">${val != null ? val : '-'}</td>`;
+                            html += `</tr>`;
+                        });
+                    });
+
+                    html += `</tbody></table></td>`;
+                    html += `</tr>`;
+                });
+
+                html += `</tbody></table>`;
+
+                // Signature
+                html += `<div style="margin-top: 50px; page-break-inside: avoid;">
+                                <div style="border-top: 1px solid black; width: 300px; padding-top: 5px;">
+                                    <b>Signature:</b> ${judgeDisplayName}
+                                </div>
+                             </div>`;
+
+                printArea.innerHTML = html;
+                window.print();
+            };
 
             async function loadEvent() {
                 try {
@@ -911,7 +1016,15 @@
                         (j.judgeId || j.JudgeId) === judgeId ||
                         (j.id || j.Id) === judgeId
                     );
-                    judgeLine.textContent = j ? 'Judge: ' + (j.name || j.Name || '(Unnamed)') : 'Judge: (Unknown)';
+
+                    if (j) {
+                        const title = j.Title || j.title || '';
+                        const name = j.Name || j.name || '(Unnamed)';
+                        judgeDisplayName = `${title ? title + ' ' : ''}${name}`;
+                        judgeLine.textContent = `Judge: ${judgeDisplayName}`;
+                    } else {
+                        judgeLine.textContent = 'Judge: (Unknown)';
+                    }
                 } catch {
                     judgeLine.textContent = 'Judge: ' + judgeId;
                 }
@@ -1068,21 +1181,20 @@
                     card.className = 'crit-card';
                     card.dataset.ckey = criteriaKey;
                     card.innerHTML = `
-                                        <h4>${escapeHtml(cr.name || 'Unnamed')}</h4>
-                                        <div class="crit-weight">Weight: ${cr.weight}%</div>
-                                        <input type="number" class="crit-input" placeholder="0-100" min="0" max="100" step="0.1">
-                                        <div style="display:flex; gap:8px;">
-                                          <button class="crit-submit">Save</button>
-                                          <button class="crit-retry" style="display:none;">Retry</button>
-                                        </div>
-                                        <div class="crit-status"></div>
-                                    `;
+                                <h4>${escapeHtml(cr.name || 'Unnamed')}</h4>
+                                <div class="crit-weight">Weight: ${cr.weight}%</div>
+                                <input type="number" class="crit-input" placeholder="0-100" min="0" max="100" step="0.1">
+                                <div style="display:flex; gap:8px;">
+                                  <button class="crit-submit">Save</button>
+                                  <button class="crit-retry" style="display:none;">Retry</button>
+                                </div>
+                                <div class="crit-status"></div>
+                            `;
                     const input = card.querySelector('.crit-input');
                     const btnSave = card.querySelector('.crit-submit');
                     const btnRetry = card.querySelector('.crit-retry');
                     const status = card.querySelector('.crit-status');
 
-                    // Local change tracking
                     input.addEventListener('input', () => {
                         if (inFlight.has(criteriaKey)) return;
                         status.textContent = 'Changed (not saved)';
@@ -1107,9 +1219,9 @@
                             EventId: eventId,
                             ContestantId: activeContestantId,
                             JudgeId: judgeId,
-                            PhaseId: phase.key,          // original case for server
+                            PhaseId: phase.key,
                             SegmentId: 'S' + seg.sequence,
-                            CriteriaId: criteriaKey,     // canonical lowercase id
+                            CriteriaId: criteriaKey,
                             RawValue: val,
                             MaxValue: 100
                         };
@@ -1126,7 +1238,6 @@
                                 body: JSON.stringify(dto)
                             });
 
-                            // Interpret server outcome
                             let success = ok;
                             if (!success && data) {
                                 const txt = JSON.stringify(data).toLowerCase();
@@ -1134,25 +1245,20 @@
                                     success = true;
                                 }
                             }
-                            if (!success && (code === 409)) success = true; // overwrite treated as success
+                            if (!success && (code === 409)) success = true;
 
-                            // If server reported failure but the score exists (race/secondary error), verify and treat as success.
                             if (!success) {
-                                // reload remote judge scores for this judge and contestant to verify persistence
                                 try {
-                                    await preloadScores(); // updates scoreCache
+                                    await preloadScores();
                                     const persisted = scoreCache[activeContestantId] && (scoreCache[activeContestantId][criteriaKey] != null);
                                     if (persisted && Number(scoreCache[activeContestantId][criteriaKey]) === val) {
                                         success = true;
                                     }
-                                } catch (e) {
-                                    // ignore; success remains false
-                                }
+                                } catch (e) { }
                             }
 
                             if (!success) throw new Error('Failed');
 
-                            // Update caches
                             if (!scoreCache[activeContestantId]) scoreCache[activeContestantId] = {};
                             scoreCache[activeContestantId][criteriaKey] = val;
                             saveLocal(activeContestantId, criteriaKey, val);
@@ -1161,16 +1267,13 @@
                             status.className = 'crit-status ok';
                             dirtySet.delete(criteriaKey);
                             updateProgress();
-                            refreshScoresTable(); // update ranking table
+                            refreshScoresTable();
 
-                            // Notify host container (WebView2) so embedded scorecards and results can refresh
                             try {
                                 if (window.chrome && window.chrome.webview && typeof window.chrome.webview.postMessage === 'function') {
                                     window.chrome.webview.postMessage({ type: 'score-saved', eventId, judgeId, contestantId: activeContestantId, criteriaKey });
                                 }
-                            } catch (e) {
-                                // not running in host or postMessage not available; ignore
-                            }
+                            } catch (e) { }
                         } catch (err) {
                             status.textContent = 'Error - not saved';
                             status.className = 'crit-status err';
@@ -1183,7 +1286,6 @@
 
                     btnSave.onclick = doSave;
                     btnRetry.onclick = doSave;
-
                     criteriaGrid.appendChild(card);
                 });
             }
@@ -1195,7 +1297,6 @@
                     (all || []).forEach(s => {
                         const cId = s.contestantId || s.ContestantId;
                         let critId = (s.criteriaId || s.CriteriaId || '').toLowerCase();
-                        // Normalize entire criteriaId to canonical form (phase part lowercased)
                         const parts = critId.split('::');
                         if (parts.length === 2) {
                             parts[0] = parts[0].toLowerCase();
@@ -1204,7 +1305,6 @@
                         const raw = s.rawValue != null ? s.rawValue : s.RawValue;
                         if (!scoreCache[cId]) scoreCache[cId] = {};
                         scoreCache[cId][critId] = raw;
-                        // Also record to local for persistence offline
                         saveLocal(cId, critId, raw);
                     });
                 } catch { }
@@ -1226,7 +1326,6 @@
                         if (contestantMap[criteriaKey] != null) value = contestantMap[criteriaKey];
                     }
                     if (value == null && from !== 'remote') {
-                        // try local storage
                         value = getLocal(activeContestantId, criteriaKey);
                     }
                     if (value != null) {
@@ -1235,7 +1334,8 @@
                         status.className = 'crit-status ok';
                         dirtySet.delete(criteriaKey);
                     } else {
-                        // keep blank but indicate not yet scored
+                        // FIX: Clear value if no score found
+                        input.value = '';
                         status.textContent = 'No score yet';
                         status.className = 'crit-status';
                     }
@@ -1247,6 +1347,8 @@
                 try {
                     const { data: rows } = await api(`/api/judge-progress?eventId=${encodeURIComponent(eventId)}&judgeId=${encodeURIComponent(judgeId)}`);
                     scoresBody.innerHTML = '';
+                    rankedData = rows || []; // Store data for printing
+
                     let rank = 1;
                     (rows || []).forEach(r => {
                         const c = contestants.find(x => x.id === r.contestantId);
@@ -1264,18 +1366,14 @@
 
             btnRefreshScores.onclick = refreshScoresTable;
             btnForceSync.onclick = async () => {
-                // Force re-pull remote scores and re-apply to current contestant
                 await preloadScores();
                 restoreScoresForCurrent('remote');
                 refreshScoresTable();
             };
-            btnRestoreLocal.onclick = () => {
-                restoreScoresForCurrent('local');
-            };
+            btnRestoreLocal.onclick = () => { restoreScoresForCurrent('local'); };
             btnClearLocal.onclick = () => {
                 if (!activeContestantId) return;
                 if (!confirm('Clear locally stored (unsent) scores for this contestant on this judge?')) return;
-                // Remove local entries ONLY for this contestant
                 Object.keys(localStorage)
                     .filter(k => k.startsWith(`score:${eventId}:${judgeId}:${activeContestantId}:`))
                     .forEach(k => localStorage.removeItem(k));
@@ -1290,28 +1388,22 @@
                 return (s || '').replace(/[&<>"']/g, c => ({
                     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'
                 }[c]));
-
             }
 
-            // Listen for host messages (useful when running in WebView2 host)
             try {
                 if (window.chrome && window.chrome.webview && window.chrome.webview.addEventListener) {
                     window.chrome.webview.addEventListener('message', ev => {
                         const d = ev.data;
                         if (!d || !d.type) return;
-                        // Host can request a reload of remote data
                         if (d.type === 'reloadRemote') {
                             preloadScores().then(() => { restoreScoresForCurrent('remote'); refreshScoresTable(); });
                         }
-                        // Host can request a force refresh of our score table
                         if (d.type === 'refreshScores') {
                             refreshScoresTable();
                         }
                     });
                 }
-            } catch (e) {
-                // ignore if not available
-            }
+            } catch (e) { }
 
             (async function init() {
                 await loadEvent();
@@ -1319,13 +1411,10 @@
                 await loadStructure();
                 await loadContestants();
                 await preloadScores();
-                updatePhaseUI();           // builds criteria cards
-                restoreScoresForCurrent(); // fill with remote/local
+                updatePhaseUI();
+                restoreScoresForCurrent();
                 await refreshScoresTable();
-
-                // small auto-refresh so UI reflects changes done elsewhere (optional)
                 setInterval(async () => {
-                    // If there are no unsaved changes, poll remote every 8s
                     if (dirtySet.size === 0 && inFlight.size === 0) {
                         await preloadScores();
                         restoreScoresForCurrent('remote');

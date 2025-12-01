@@ -129,25 +129,24 @@ namespace NexScore.MainFormPages
 
         private static string GetPortraitsFolder(string? eventName)
         {
-            var baseFolder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "NexScore", "Portraits");
-            if (string.IsNullOrWhiteSpace(eventName))
-                return baseFolder;
-            return Path.Combine(baseFolder, eventName);
+            return NexScore.Helpers.PathHelpers.ContestantPhotosFolder;
         }
 
         private async Task MapEventAssetsAsync(EventModel evt)
         {
             if (_web?.CoreWebView2 == null) return;
-
             string folder = GetPortraitsFolder(evt.EventName);
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
             if (!string.Equals(folder, _mappedEventFolder, StringComparison.OrdinalIgnoreCase))
             {
                 _web.CoreWebView2.SetVirtualHostNameToFolderMapping(
-                    "appassets",
-                    Directory.Exists(folder) ? folder : GetPortraitsFolder(null),
-                    CoreWebView2HostResourceAccessKind.Allow);
+            "appassets",
+            folder,
+            CoreWebView2HostResourceAccessKind.Allow);
+
                 _mappedEventFolder = folder;
             }
         }
@@ -259,8 +258,8 @@ html,body{{margin:0;padding:0;background:{bg};color:{colorText};font-family:'Lex
                     string photo = (c.PhotoPath ?? "").Trim();
                     string fileName = Path.GetFileName(photo);
                     string expectedPath = !string.IsNullOrEmpty(fileName)
-                        ? Path.Combine(portraitsFolder, fileName)
-                        : "";
+        ? Path.Combine(portraitsFolder, fileName)
+        : "";
                     string photoHtml;
                     try
                     {

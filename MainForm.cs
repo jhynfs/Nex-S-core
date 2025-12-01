@@ -19,7 +19,6 @@ namespace NexScore
         private PageJudges judgesPage;
         private PageResults resultsPage;
         private PageScorecards scorePage;
-        private PageLogs logsPage;
 
 
         private Label _lblAdminError;
@@ -57,7 +56,6 @@ namespace NexScore
             judgesPage = new PageJudges();
             resultsPage = new PageResults();
             scorePage = new PageScorecards();
-            logsPage = new PageLogs();
 
             // --- Sidebar setup ---
             pnlSidebar.BackColor = sidebarBg;
@@ -267,12 +265,6 @@ namespace NexScore
         {
             SetActiveButton((Button)sender);
             LoadPage(scorePage);
-        }
-
-        private void btnLogs_Click(object sender, EventArgs e)
-        {
-            SetActiveButton((Button)sender);
-            LoadPage(logsPage);
         }
 
         private void MainForm_Resize_AutoSidebar(object sender, EventArgs e)

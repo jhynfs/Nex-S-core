@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using NexScore.Models;
 using NexScore.Services;
+using NexScore.Helpers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -636,6 +637,57 @@ namespace NexScore.Infrastructure
                     return;
                 }
 
+                // Event Banner streaming endpoint
+                // EVENT BANNER ENDPOINT
+                if (path.Equals("/api/event-banner", StringComparison.OrdinalIgnoreCase))
+                {
+                    string eventId = req.QueryString["eventId"];
+                    if (string.IsNullOrWhiteSpace(eventId))
+                    {
+                        BadRequest(res, "eventId required");
+                        return;
+                    }
+
+                    var eventsCol = _db.GetCollection<EventModel>("Events");
+                    var evt = await eventsCol.Find(e => e.Id == eventId).FirstOrDefaultAsync();
+
+                    string fullPath = NexScore.Helpers.PathHelpers.AbsoluteFromRelative(evt?.BannerPath);
+
+                    if (evt == null || string.IsNullOrWhiteSpace(fullPath) || !System.IO.File.Exists(fullPath))
+                    {
+                        byte[] placeholder = Convert.FromBase64String(
+                            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABDQottAAAAABJRU5ErkJggg==");
+                        res.ContentType = "image/png";
+                        res.ContentLength64 = placeholder.Length;
+                        await res.OutputStream.WriteAsync(placeholder, 0, placeholder.Length);
+                        res.OutputStream.Close();
+                        return;
+                    }
+
+                    try
+                    {
+                        var ext = System.IO.Path.GetExtension(fullPath).ToLowerInvariant();
+                        res.ContentType = ext switch
+                        {
+                            ".jpg" or ".jpeg" => "image/jpeg",
+                            ".png" => "image/png",
+                            ".gif" => "image/gif",
+                            ".bmp" => "image/bmp",
+                            _ => "application/octet-stream"
+                        };
+
+                        byte[] imgBytes = await System.IO.File.ReadAllBytesAsync(fullPath);
+                        res.ContentLength64 = imgBytes.Length;
+                        await res.OutputStream.WriteAsync(imgBytes, 0, imgBytes.Length);
+                        res.OutputStream.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        Error(res, "banner read failed: " + ex.Message);
+                    }
+                    return;
+                }
+
                 // Contestant photo streaming endpoint
                 if (path.Equals("/api/contestant-photo", StringComparison.OrdinalIgnoreCase))
                 {
@@ -646,11 +698,14 @@ namespace NexScore.Infrastructure
                         BadRequest(res, "eventId & contestantId required");
                         return;
                     }
+
                     var contestantsCol = _db.GetCollection<ContestantModel>("Contestants");
                     var c = await contestantsCol.Find(x => x.EventId == eventIdQ && x.Id == contestantIdQ).FirstOrDefaultAsync();
-                    if (c == null || string.IsNullOrWhiteSpace(c.PhotoPath) || !System.IO.File.Exists(c.PhotoPath))
+
+                    string fullPath = PathHelpers.AbsoluteFromRelative(c?.PhotoPath);
+
+                    if (c == null || string.IsNullOrWhiteSpace(fullPath) || !System.IO.File.Exists(fullPath))
                     {
-                        // Return 1x1 transparent PNG when missing
                         byte[] placeholder = Convert.FromBase64String(
                             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABDQottAAAAABJRU5ErkJggg==");
                         res.ContentType = "image/png";
@@ -659,9 +714,10 @@ namespace NexScore.Infrastructure
                         res.OutputStream.Close();
                         return;
                     }
+
                     try
                     {
-                        var ext = System.IO.Path.GetExtension(c.PhotoPath).ToLowerInvariant();
+                        var ext = System.IO.Path.GetExtension(fullPath).ToLowerInvariant();
                         res.ContentType = ext switch
                         {
                             ".jpg" or ".jpeg" => "image/jpeg",
@@ -669,7 +725,8 @@ namespace NexScore.Infrastructure
                             ".gif" => "image/gif",
                             _ => "application/octet-stream"
                         };
-                        byte[] imgBytes = await System.IO.File.ReadAllBytesAsync(c.PhotoPath);
+
+                        byte[] imgBytes = await System.IO.File.ReadAllBytesAsync(fullPath);
                         res.ContentLength64 = imgBytes.Length;
                         await res.OutputStream.WriteAsync(imgBytes, 0, imgBytes.Length);
                         res.OutputStream.Close();

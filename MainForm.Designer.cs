@@ -38,8 +38,6 @@
             btnDashboard = new Button();
             Separator2 = new Panel();
             pnlSidebar = new Panel();
-            btnLogs = new Button();
-            Separator9 = new Panel();
             _adminPanel = new Panel();
             _btnSaveAdminBaseUrl = new Button();
             _btnUseMyIp = new Button();
@@ -167,8 +165,6 @@
             // pnlSidebar
             // 
             pnlSidebar.BackColor = Color.FromArgb(23, 23, 23);
-            pnlSidebar.Controls.Add(btnLogs);
-            pnlSidebar.Controls.Add(Separator9);
             pnlSidebar.Controls.Add(_adminPanel);
             pnlSidebar.Controls.Add(btnScorecards);
             pnlSidebar.Controls.Add(Separator8);
@@ -192,37 +188,6 @@
             pnlSidebar.Padding = new Padding(5);
             pnlSidebar.Size = new Size(380, 1041);
             pnlSidebar.TabIndex = 0;
-            // 
-            // btnLogs
-            // 
-            btnLogs.AutoSize = true;
-            btnLogs.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            btnLogs.BackColor = Color.FromArgb(55, 53, 105);
-            btnLogs.Dock = DockStyle.Top;
-            btnLogs.FlatAppearance.BorderSize = 0;
-            btnLogs.FlatStyle = FlatStyle.Flat;
-            btnLogs.Font = new Font("Lexend Deca SemiBold", 20F, FontStyle.Bold);
-            btnLogs.ForeColor = Color.FromArgb(247, 246, 237);
-            btnLogs.Image = Properties.Resources.bxs_file;
-            btnLogs.ImageAlign = ContentAlignment.MiddleLeft;
-            btnLogs.Location = new Point(5, 493);
-            btnLogs.Name = "btnLogs";
-            btnLogs.Padding = new Padding(5, 0, 5, 0);
-            btnLogs.Size = new Size(370, 53);
-            btnLogs.TabIndex = 29;
-            btnLogs.Tag = "Logs";
-            btnLogs.Text = "Logs";
-            btnLogs.UseVisualStyleBackColor = false;
-            btnLogs.Click += btnLogs_Click;
-            // 
-            // Separator9
-            // 
-            Separator9.BackColor = Color.FromArgb(23, 23, 23);
-            Separator9.Dock = DockStyle.Top;
-            Separator9.Location = new Point(5, 488);
-            Separator9.Name = "Separator9";
-            Separator9.Size = new Size(370, 5);
-            Separator9.TabIndex = 28;
             // 
             // _adminPanel
             // 
@@ -511,7 +476,5 @@
         private Button _btnSaveAdminBaseUrl;
         private PictureBox logoShort;
         private PictureBox logoLong;
-        private Button btnLogs;
-        private Panel Separator9;
     }
 }

@@ -323,22 +323,22 @@ namespace NexScore
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
                 string folder = PathHelpers.ContestantPhotosFolder;
                 Directory.CreateDirectory(folder);
 
                 string safeName = $"{PathHelpers.MakeSafeFilename(acc.FullName)}_{acc.Number}";
                 string fileName = $"{safeName}.jpg";
+
                 string absPath = Path.Combine(folder, fileName);
                 string tempPath = Path.Combine(folder, $"{safeName}_{Guid.NewGuid():N}.tmp.jpg");
+
                 img.Save(tempPath, System.Drawing.Imaging.ImageFormat.Jpeg);
 
-                if (File.Exists(absPath))
-                    File.Delete(absPath);
-
+                if (File.Exists(absPath)) File.Delete(absPath);
                 File.Move(tempPath, absPath);
 
                 string relPhotoPath = Path.Combine("Contestants", fileName).Replace('\\', '/');
+
                 acc.SetPhoto(relPhotoPath);
             }
             catch (Exception ex)
