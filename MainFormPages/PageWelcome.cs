@@ -11,7 +11,6 @@ namespace NexScore
     {
         private EventModel? _currentEvent;
         public Panel pnlNoEvent => _pnlNoEvent;
-        public Panel pnlEvent => _pnlEvent;
         public PageWelcome()
         {
             InitializeComponent();
@@ -20,10 +19,8 @@ namespace NexScore
             this.Margin = new Padding(0);
 
             _pnlNoEvent.Dock = DockStyle.Fill;
-            _pnlEvent.Dock = DockStyle.Fill;
 
             _pnlNoEvent.Margin = new Padding(0);
-            _pnlEvent.Margin = new Padding(0);
 
             RefreshDashboard();
         }
@@ -67,12 +64,10 @@ namespace NexScore
                     }
 
                     _pnlNoEvent.Visible = false;
-                    _pnlEvent.Visible = false;
                 }
                 else
                 {
                     _pnlNoEvent.Visible = true;
-                    _pnlEvent.Visible = false;
                 }
             }
         }
@@ -80,7 +75,6 @@ namespace NexScore
         public void RefreshDashboard()
         {
             _pnlNoEvent.Visible = true;
-            _pnlEvent.Visible = false;
         }
 
         private static void HideButtonByName(Form host, string name)

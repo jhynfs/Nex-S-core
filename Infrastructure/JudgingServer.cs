@@ -483,7 +483,6 @@ namespace NexScore.Infrastructure
 
                     await scores.UpdateOneAsync(keyFilter, update, new UpdateOptions { IsUpsert = true });
 
-                    // Robust: catch aggregation errors so judge UI never shows backend 500
                     try
                     {
                         await _scoring.RecomputeContestantAsync(dto.EventId, dto.ContestantId);
@@ -510,27 +509,25 @@ namespace NexScore.Infrastructure
                             return;
                         }
 
-                        // Pick a scores collection that exists
                         async Task<string> PickScoresCollectionAsync()
                         {
                             var preferred = new[] { "Scores", "ScoreEntries", "JudgeScores" };
                             var existing = await (await _db.ListCollectionNamesAsync()).ToListAsync();
                             foreach (var p in preferred)
                                 if (existing.Contains(p)) return p;
-                            // Fallback to "Scores" even if not listed (driver will allow creating it on the fly)
+                            
                             return "Scores";
                         }
 
                         var colName = await PickScoresCollectionAsync();
                         var col = _db.GetCollection<BsonDocument>(colName);
 
-                        // Filter (expect EventId and JudgeId stored as strings; sample shows string fields)
+                        
                         var filter = Builders<BsonDocument>.Filter.And(
                             Builders<BsonDocument>.Filter.Eq("EventId", eventIdQ),
                             Builders<BsonDocument>.Filter.Eq("JudgeId", judgeIdQ)
                         );
 
-                        // Project only fields we need; missing fields are handled safely below
                         var proj = Builders<BsonDocument>.Projection
                             .Include("ContestantId")
                             .Include("RawValue")
@@ -538,7 +535,6 @@ namespace NexScore.Infrastructure
 
                         var docs = await col.Find(filter).Project(proj).ToListAsync();
 
-                        // Group by contestant and compute average normalized score
                         var totals = docs
                             .GroupBy(d => d.TryGetValue("ContestantId", out var v) ? v.AsString : "")
                             .Where(g => !string.IsNullOrWhiteSpace(g.Key))
@@ -575,7 +571,7 @@ namespace NexScore.Infrastructure
                     }
                 }
 
-                // JUDGE SCORES: "View Criteria" and restore individually (ONLY ONE BLOCK, no conflicts)
+                // JUDGE SCORES: "View Criteria"
                 if (path.Equals("/api/judge-scores", StringComparison.OrdinalIgnoreCase) && req.HttpMethod == "GET")
                 {
                     try
@@ -636,8 +632,6 @@ namespace NexScore.Infrastructure
                     }));
                     return;
                 }
-
-                // Event Banner streaming endpoint
                 // EVENT BANNER ENDPOINT
                 if (path.Equals("/api/event-banner", StringComparison.OrdinalIgnoreCase))
                 {
@@ -688,7 +682,7 @@ namespace NexScore.Infrastructure
                     return;
                 }
 
-                // Contestant photo streaming endpoint
+                // CONTESTANT PHOTO ENDPOINT
                 if (path.Equals("/api/contestant-photo", StringComparison.OrdinalIgnoreCase))
                 {
                     string eventIdQ = req.QueryString["eventId"];

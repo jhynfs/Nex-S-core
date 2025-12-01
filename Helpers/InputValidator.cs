@@ -19,16 +19,6 @@ namespace NexScore.Helpers
             return true;
         }
 
-        public static bool ValidateWholeNumber(TextBox textBox)
-        {
-            if (!WholeNumberPattern.IsMatch(textBox.Text))
-            {
-                MessageBox.Show("Please enter a valid whole number.", "Invalid Input");
-                return false;
-            }
-            return true;
-        }
-
         public static bool ValidateDecimal(TextBox textBox, bool allowZero = false)
         {
             if (!DecimalPattern.IsMatch(textBox.Text))

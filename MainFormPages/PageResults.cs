@@ -19,7 +19,6 @@ namespace NexScore.MainFormPages
         private bool _loading;
         private System.Windows.Forms.Timer? _refreshTimer;
 
-        // Top bar controls
         private Panel? _topBar;
         private Label? _lblTitle;
         private Label? _lblEvent;
@@ -28,11 +27,9 @@ namespace NexScore.MainFormPages
         private ComboBox? _cboFilter;
         private Label? _lblUpdated;
 
-        // For print phase selection
         private List<string>? _lastPhaseKeys;
         private Dictionary<string, string>? _lastPhaseNames;
 
-        // Filter mode: all / active / elim
         private string _filterMode = "active";
 
         public PageResults()
@@ -196,7 +193,6 @@ namespace NexScore.MainFormPages
             _topBar.BringToFront();
         }
 
-        // NEW: Listen for print-complete messages
         private void WebView_WebMessageReceived(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e)
         {
             var msg = e.TryGetWebMessageAsString();
@@ -227,7 +223,6 @@ namespace NexScore.MainFormPages
                 s.AreDevToolsEnabled = false;
                 s.IsZoomControlEnabled = false;
 
-                // Attach the print-complete listener
                 _web.CoreWebView2.WebMessageReceived -= WebView_WebMessageReceived;
                 _web.CoreWebView2.WebMessageReceived += WebView_WebMessageReceived;
             }
@@ -303,16 +298,13 @@ namespace NexScore.MainFormPages
             {
                 UseWaitCursor = true;
 
-                // Event label
                 var evt = await Database.Events.Find(e => e.Id == eventId).FirstOrDefaultAsync();
                 _lblEvent!.Text = "Event: " + (evt?.EventName ?? evt?.EventId ?? eventId);
 
-                // Try to load AggregatedScores first (if present)
                 var aggregated = await Database.AggregatedScores
                     .Find(a => a.EventId == eventId)
                     .ToListAsync();
 
-                // Load structure + contestants + raw scores always (needed for fallback or phase names)
                 var structure = await Database.EventStructures
                     .Find(s => s.EventId == eventId)
                     .FirstOrDefaultAsync();
@@ -372,7 +364,6 @@ namespace NexScore.MainFormPages
 
                 var orderedPhases = BuildPhaseOrder(structure, rowsFiltered);
 
-                // SAVE phase key info for printing
                 _lastPhaseNames = phaseNames;
                 _lastPhaseKeys = orderedPhases.ToList();
 
@@ -393,14 +384,11 @@ namespace NexScore.MainFormPages
             }
         }
 
-
-// -------- Aggregation Fallback Logic --------
-private List<AggregatedScore> ComputeAggregatesClientSide(
+        private List<AggregatedScore> ComputeAggregatesClientSide(
             string eventId,
             List<ScoreEntry> rawScores,
             EventStructureModel? structure)
         {
-            // Build phase classification: main vs independent
             var phaseMeta = new Dictionary<string, (bool independent, decimal weight)>(StringComparer.OrdinalIgnoreCase);
             if (structure?.Phases != null)
             {
@@ -411,7 +399,6 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
                 }
             }
 
-            // Group scores by (contestant, phase)
             var byContestantPhase = rawScores
                 .GroupBy(s => s.ContestantId)
                 .ToDictionary(
@@ -421,7 +408,6 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
                               pg => pg.Key,
                               pg =>
                               {
-                                  // Normalize each criterion
                                   var fracs = pg.Select(sc =>
                                   {
                                       double max = sc.MaxValue > 0 ? sc.MaxValue : 100;
@@ -441,7 +427,7 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
             foreach (var cEntry in byContestantPhase)
             {
                 string contestantId = cEntry.Key;
-                var phaseScoresRaw = cEntry.Value; // phaseId -> average raw fraction (0..1)
+                var phaseScoresRaw = cEntry.Value;
 
                 var mainPhaseWeightedFractions = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
                 var independentPhaseFractions = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
@@ -460,13 +446,11 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
                     {
                         if (meta.independent)
                         {
-                            // Add raw fraction directly
                             independentPhaseFractions[phaseId] = rawFraction;
-                            eventScore += rawFraction; // independent phases additive
+                            eventScore += rawFraction; 
                         }
                         else
                         {
-                            // Weighted main phase: weight% * raw
                             double weightFrac = (double)(meta.weight / 100m);
                             double weightedValue = rawFraction * weightFrac;
                             mainPhaseWeightedFractions[phaseId] = weightedValue;
@@ -475,13 +459,11 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
                     }
                     else
                     {
-                        // If phaseMeta missing (no structure): treat as raw additive (still show)
                         independentPhaseFractions[phaseId] = rawFraction;
                         eventScore += rawFraction;
                     }
                 }
 
-                // Build aggregated score
                 var agg = new AggregatedScore
                 {
                     EventId = eventId,
@@ -495,7 +477,6 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
                 aggregates.Add(agg);
             }
 
-            // Assign ranks by descending EventScore
             int rank = 1;
             foreach (var a in aggregates.OrderByDescending(a => a.EventScore))
                 a.Rank = rank++;
@@ -503,7 +484,6 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
             return aggregates;
         }
 
-        // -------- Helpers for names & weights --------
         private static Dictionary<string, string> BuildPhaseNames(EventStructureModel? s)
         {
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -523,7 +503,7 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
             if (s?.Phases == null) return map;
             foreach (var p in s.Phases)
             {
-                if (p.IsIndependent) continue; // treat independent separately
+                if (p.IsIndependent) continue;
                 string key = p.Sequence.HasValue ? "P" + p.Sequence.Value : "IND-" + SanitizePhaseName(p.Name);
                 double frac = (double)(p.Weight / 100m);
                 map[key] = frac;
@@ -544,7 +524,6 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
             }
             else
             {
-                // Infer from data
                 list = rowsFiltered
                     .SelectMany(r => r.RawPhasePerf.Keys)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -557,7 +536,6 @@ private List<AggregatedScore> ComputeAggregatesClientSide(
         private static string SanitizePhaseName(string? name) =>
             string.IsNullOrWhiteSpace(name) ? "phase" : name.Trim().Replace(" ", "_").ToLowerInvariant();
 
-        // -------- HTML builder --------
         private static string BuildHtml(
             List<ResultRow> rowsFiltered,
             List<ResultRow> rowsAll,

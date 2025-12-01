@@ -70,7 +70,7 @@ namespace NexScore.MainFormPages.DashboardForms
                 {
                     var ctl = new EventListItemControl(evt);
                     ctl.Selected += HandleItemSelected;
-                    ctl.Activated += HandleItemActivated; // Double-click opens
+                    ctl.Activated += HandleItemActivated;
                     _itemControls.Add(ctl);
                     _flowPanelEvents.Controls.Add(ctl);
                 }
@@ -95,11 +95,10 @@ namespace NexScore.MainFormPages.DashboardForms
             btnSelectEvent.Enabled = _selectedEvent != null;
         }
 
-        // Double-click callback
         private void HandleItemActivated(EventListItemControl clicked)
         {
-            HandleItemSelected(clicked); // ensure selection
-            ConfirmSelectedEvent();       // open immediately
+            HandleItemSelected(clicked);
+            ConfirmSelectedEvent();
         }
 
         private void BtnSelectEvent_Click(object? sender, EventArgs e)

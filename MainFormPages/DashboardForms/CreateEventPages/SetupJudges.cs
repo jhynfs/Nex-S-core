@@ -31,7 +31,6 @@ namespace NexScore.CreateEventPages
             btnAddJudge.Click += (_, __) =>
             {
                 var judge = CreateJudgeControl();
-                // Insert new judge just below the top spacer, so existing items keep order
                 _flowMainJ.Controls.Add(judge);
                 _flowMainJ.Controls.SetChildIndex(judge, _flowMainJ.Controls.IndexOf(pnlSpaceAboveJ) + 1);
                 RefreshJudgeNumbers();
@@ -48,7 +47,7 @@ namespace NexScore.CreateEventPages
                 _isSavedOnce = true;
                 btnSaveJudges.Text = "update";
                 _toolTipJudges.SetToolTip(btnSaveJudges, "Update judges");
-                // Ensure Add Judge stays visible in edit mode
+                
                 btnAddJudge.Visible = true;
                 btnAddJudge.Enabled = true;
             }
@@ -69,7 +68,7 @@ namespace NexScore.CreateEventPages
                 ValidateSingleJudgeName(ctrl.txtJudgeName);
                 ValidateJudgesPage();
             };
-            // Title optional; you can add validation later if needed
+            
             return ctrl;
         }
 
@@ -137,7 +136,6 @@ namespace NexScore.CreateEventPages
         {
             CurrentEventId = eventId;
 
-            // Rebuild the FlowLayout: keep spacer panels + add button, then existing judges
             _flowMainJ.SuspendLayout();
             _flowMainJ.Controls.Clear();
             _flowMainJ.Controls.Add(pnlSpaceAboveJ);
@@ -154,9 +152,8 @@ namespace NexScore.CreateEventPages
                 var ctrl = CreateJudgeControl();
                 ctrl.txtJudgeName.Text = string.IsNullOrWhiteSpace(j.Name) ? NamePlaceholder : j.Name;
                 ctrl.txtJudgeTitle.Text = string.IsNullOrWhiteSpace(j.Title) ? TitlePlaceholder : j.Title;
-                ctrl.Tag = j; // keep existing model if needed
+                ctrl.Tag = j;
                 _flowMainJ.Controls.Add(ctrl);
-                // Move just under top spacer (so new ones always appear at top when added)
                 _flowMainJ.Controls.SetChildIndex(ctrl, _flowMainJ.Controls.IndexOf(pnlSpaceAboveJ) + 1);
             }
 
@@ -219,7 +216,7 @@ namespace NexScore.CreateEventPages
                 string judgeId;
                 if (existingByName.TryGetValue(name, out var existing))
                 {
-                    judgeId = existing.JudgeId; // preserve so links remain valid
+                    judgeId = existing.JudgeId;
                 }
                 else
                 {

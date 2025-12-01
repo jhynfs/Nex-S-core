@@ -13,10 +13,8 @@ namespace NexScore.Helpers
 
             tb.Tag = placeholder;
 
-            // Apply placeholder initially
             ApplyPlaceholder(tb, EventArgs.Empty);
 
-            // Attach new handlers
             tb.GotFocus += RemovePlaceholder;
             tb.LostFocus += ApplyPlaceholder;
         }

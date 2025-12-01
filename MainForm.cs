@@ -44,7 +44,6 @@ namespace NexScore
 
             pnlMainContent.BackColor = sidebarBg;
 
-            // --- Load dashboard once ---
             dashboardPage = new PageWelcome();
             LoadPage(dashboardPage);
             SetActiveButton(btnDashboard);
@@ -66,7 +65,6 @@ namespace NexScore
             RoundifyButton(btnMenu, 8);
             btnMenu.Resize += (s, e) => RoundifyButton(btnMenu, 8);
 
-            // Make pages resize automatically with pnlMainContent
             pnlMainContent.Resize += (s, e) =>
             {
                 foreach (Control page in pnlMainContent.Controls)
@@ -77,13 +75,11 @@ namespace NexScore
 
             _txtAdminBaseUrl.Text = SettingsService.LoadAdminBaseUrl("http://localhost:5100");
 
-            // Small helper to write to the error label if present
             void SetAdminError(string msg)
             {
                 if (_lblAdminError != null) _lblAdminError.Text = msg ?? "";
             }
 
-            // Validation as you type
             _txtAdminBaseUrl.TextChanged += (s, e2) =>
             {
                 if (NetUtil.TryNormalizeAdminBaseUrl(_txtAdminBaseUrl.Text, out var _, out var err, 5100))
@@ -113,7 +109,7 @@ namespace NexScore
                     return;
                 }
                 SettingsService.SaveAdminBaseUrl(norm);
-                _txtAdminBaseUrl.Text = norm;   // reflect normalization
+                _txtAdminBaseUrl.Text = norm;
                 SetAdminError("Saved.");
             };
             this.Resize += MainForm_Resize_AutoSidebar;
@@ -158,7 +154,7 @@ namespace NexScore
                     btn.Text = "";
         }
 
-        // ---------------- Sidebar Setup ----------------
+        #region sidebar setup
         private void InitializeSidebar()
         {
             pnlSidebar.Width = isCollapsed ? 60 : 380;
@@ -179,7 +175,9 @@ namespace NexScore
             }
         }
 
-        // ---------------- Rounded Buttons ----------------
+        #endregion
+
+        // Rounded Buttons
         private void RoundifyButton(Button btn, int radius)
         {
             GraphicsPath path = new GraphicsPath();
@@ -191,7 +189,7 @@ namespace NexScore
             btn.Region = new Region(path);
         }
 
-        // ---------------- Sidebar Button Hover/Click ----------------
+        //Sidebar Button Hover/Click
         private void StyleSidebarButton(Button btn)
         {
             btn.MouseEnter += (s, e) => { if (btn != activeButton) btn.BackColor = hoverColor; };
@@ -215,16 +213,14 @@ namespace NexScore
             activeButton = btn;
         }
 
-        // ---------------- Load Pages ----------------
         public void LoadPage(UserControl page)
         {
             pnlMainContent.Controls.Clear();
-            page.Dock = DockStyle.Fill;    // snug fit
-            page.Margin = new Padding(0);  // remove gaps
+            page.Dock = DockStyle.Fill; 
+            page.Margin = new Padding(0);
             pnlMainContent.Controls.Add(page);
         }
 
-        // ---------------- Navigation Buttons ----------------
         private void btnDashboard_Click(object sender, EventArgs e)
         {
             SetActiveButton((Button)sender);
@@ -273,7 +269,6 @@ namespace NexScore
             {
                 if (!isCollapsed)
                 {
-                    // Collapse if not already
                     CollapseSidebarAuto();
                 }
             }
@@ -281,14 +276,12 @@ namespace NexScore
             {
                 if (isCollapsed)
                 {
-                    // Expand if not already
                     ExpandSidebarAuto();
                 }
             }
         }
         private void CollapseSidebarAuto()
         {
-            // Set only if not already collapsed.
             if (!isCollapsed)
             {
                 pnlSidebar.Width = 60;

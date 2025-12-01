@@ -16,7 +16,6 @@ namespace NexScore.CreateEventPages.SetupCriteriaControls
 
             _btnRemoveCriteria.Click += (s, e) =>
             {
-                // Capture ancestors BEFORE removal
                 var segment = FindAncestor<SegmentControl>();
                 PhaseControl? phase = null;
                 if (segment != null)
@@ -24,24 +23,19 @@ namespace NexScore.CreateEventPages.SetupCriteriaControls
 
                 var setup = FindSetupCriteria();
 
-                // Remove self from parent flow
                 var parent = this.Parent;
                 parent?.Controls.Remove(this);
 
-                // Update totals in proper order
                 segment?.UpdateSegmentTotalWeightLabel();
                 phase?.UpdatePhaseTotalWeightLabel();
                 setup?.UpdateEventTotalWeightLabel();
 
-                // Re-run uniqueness + page validation
                 setup?.RevalidateUniquenessForUI();
                 setup?.ValidateCriteriaPage();
 
-                // Dispose last
                 this.Dispose();
             };
 
-            // PLACEHOLDER
             PlaceholderHelper.SetPlaceholder(_txtCriteriaName, "(e.g. Execution & Difficulty, Elegance & Poise)");
             PlaceholderHelper.SetPlaceholder(_txtCriteriaWeight, "1-100%");
         }

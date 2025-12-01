@@ -42,11 +42,10 @@ namespace NexScore
             _isEditMode = isEditMode;
             CurrentEventId = eventId;
 
-            // Default creation state: disabled until saved progressively
             btnAddCriteria.Enabled = false;
             btnAddJudges.Enabled = false;
             btnAddContestants.Enabled = false;
-            btnDone.Enabled = false; // enabled after contestants save, or immediately in edit mode
+            btnDone.Enabled = false;
 
             pnlEventSetup.Dock = DockStyle.Fill;
 
@@ -60,7 +59,6 @@ namespace NexScore
             setupJudgesPage.CurrentEventId = eventId;
             setupContestantsPage.CurrentEventId = eventId;
 
-            // Force "Update" UI on all pages in edit mode
             if (_isEditMode)
             {
                 setupDetailsPage.SetEditMode(true);
@@ -118,7 +116,6 @@ namespace NexScore
                 setupContestantsPage.CurrentEventId = id;
             };
 
-            // Edit mode: unlock all sections and preload data
             if (_isEditMode)
             {
                 btnAddCriteria.Enabled = true;
@@ -135,7 +132,6 @@ namespace NexScore
                 }
             }
 
-            // IMPORTANT: ensure resources are cleaned before disposal to avoid ObjectDisposedException
             this.FormClosing += CreateEventForm_FormClosing;
 
             ValidateEventDetails();
@@ -143,9 +139,7 @@ namespace NexScore
 
         private void CreateEventForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Gracefully shut down timers/tooltips in child pages
             setupContestantsPage?.PrepareForClose();
-            // If other pages later have timers/tooltips, add similar calls here.
         }
 
         #region UI Styling
@@ -178,7 +172,6 @@ namespace NexScore
         {
             if (sender is not Button clickedButton) return;
 
-            // In edit mode, allow free navigation without gating checks
             if (!_isEditMode)
             {
                 // Details -> Criteria
@@ -233,7 +226,6 @@ namespace NexScore
                 }
             }
 
-            // Load pages (shared)
             if (clickedButton == btnDetails) LoadPage(setupDetailsPage);
             else if (clickedButton == btnAddCriteria) LoadPage(setupCriteriaPage);
             else if (clickedButton == btnAddJudges) LoadPage(setupJudgesPage);
@@ -298,10 +290,8 @@ namespace NexScore
 
         #endregion
 
-        // CHANGED: make async and set AppSession.CurrentEvent so other pages auto-refresh
         private async void btnDone_Click(object sender, EventArgs e)
         {
-            // Basic guard: ensure we have an event ID
             if (string.IsNullOrWhiteSpace(CurrentEventId))
             {
                 MessageBox.Show("Event ID is missing. Please ensure event details are saved.",
@@ -314,11 +304,9 @@ namespace NexScore
                 Directory.CreateDirectory(eventsFolder);
                 string currentEventFile = Path.Combine(eventsFolder, "current_event.json");
 
-                // Minimal JSON payload; expand if you need more metadata.
                 string json = $"{{\"eventId\":\"{CurrentEventId}\"}}";
                 File.WriteAllText(currentEventFile, json);
 
-                // NEW: publish current event so Pages (Criteria, Judges, Contestants, Results) refresh immediately
                 try
                 {
                     var evt = await Database.Events
@@ -332,7 +320,7 @@ namespace NexScore
                 }
                 catch
                 {
-                    // Swallow to not block finalization if DB fetch fails; selection can still happen manually.
+                   
                 }
 
                 this.DialogResult = DialogResult.OK;
@@ -349,7 +337,6 @@ namespace NexScore
         {
             try
             {
-                // Fetch the EventModel first (basic details)
                 var evt = await Database.Events
                     .Find(e => e.Id == documentId)
                     .FirstOrDefaultAsync();
@@ -361,30 +348,24 @@ namespace NexScore
                     return;
                 }
 
-                // Apply IDs to all pages
                 setupDetailsPage.CurrentEventId = documentId;
                 setupCriteriaPage.CurrentEventId = documentId;
                 setupJudgesPage.CurrentEventId = documentId;
                 setupContestantsPage.CurrentEventId = documentId;
 
-                // 1) Details
                 await setupDetailsPage.LoadExistingEventAsync(documentId);
                 setupDetailsPage.IsSaved = true;
                 setupDetailsPage.SetEditMode(true);
 
-                // 2) Criteria/Structure
                 await setupCriteriaPage.LoadEventStructureAsync(documentId);
                 setupCriteriaPage.SetEditMode(true);
 
-                // 3) Judges
                 setupJudgesPage.LoadJudgesForEvent(documentId);
                 setupJudgesPage.SetEditMode(true);
 
-                // 4) Contestants
                 await setupContestantsPage.LoadContestantsForEventAsync(documentId);
                 setupContestantsPage.SetEditMode(true);
 
-                // Enable all buttons in edit mode
                 btnAddCriteria.Enabled = true;
                 btnAddJudges.Enabled = true;
                 btnAddContestants.Enabled = true;
@@ -396,11 +377,5 @@ namespace NexScore
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-    }
-
-    // Optional shared interface to standardize loading across pages
-    public interface IEventDataLoader
-    {
-        Task LoadEventAsync(string eventId);
     }
 }

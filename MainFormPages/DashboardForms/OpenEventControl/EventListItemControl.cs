@@ -10,16 +10,12 @@ namespace NexScore.MainFormPages.DashboardForms.OpenEventControl
         public EventModel? Event { get; private set; }
         public bool IsSelected { get; private set; }
 
-        // Single-click selection
         public event Action<EventListItemControl>? Selected;
-        // Double-click activation (open immediately)
         public event Action<EventListItemControl>? Activated;
 
         public EventListItemControl()
         {
             InitializeComponent();
-
-            // Ensure this control can raise double-click
             this.SetStyle(ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
 
             WireClickRelay();
@@ -48,20 +44,15 @@ namespace NexScore.MainFormPages.DashboardForms.OpenEventControl
 
         private void WireClickRelay()
         {
-            // Single-click: select only
             void RelaySelect() => Selected?.Invoke(this);
-            // Double-click: select then activate
             void RelayActivate()
             {
                 Selected?.Invoke(this);
                 Activated?.Invoke(this);
             }
-
-            // Parent surface
             this.Click += (_, __) => RelaySelect();
             this.MouseDoubleClick += (_, __) => RelayActivate();
 
-            // Child controls: make sure they also relay both
             _icon.Click += (_, __) => RelaySelect();
             _icon.MouseDoubleClick += (_, __) => RelayActivate();
 

@@ -11,8 +11,8 @@ namespace NexScore.Models
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("eventId")]
-        [BsonRepresentation(BsonType.ObjectId)] // store as ObjectId in Mongo, use string in C#
-        public string EventId { get; set; }  // link to EventModel.Id
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string EventId { get; set; }
 
         [BsonElement("phases")]
         public List<PhaseModel> Phases { get; set; } = new List<PhaseModel>();

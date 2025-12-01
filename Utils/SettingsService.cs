@@ -20,7 +20,7 @@ namespace NexScore.Utils
                     if (!string.IsNullOrWhiteSpace(txt)) return txt.TrimEnd('/');
                 }
             }
-            catch { /* ignore and use fallback */ }
+            catch {  }
             return fallback;
         }
 
@@ -35,7 +35,6 @@ namespace NexScore.Utils
             }
             catch
             {
-                // You can log this if you have a logger
             }
         }
     }

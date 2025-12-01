@@ -43,9 +43,6 @@
     <Compile Update="MainFormPages\PageCriteria.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="MainFormPages\PageLogs.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="MainFormPages\PageWelcome.cs">
       <SubType>UserControl</SubType>
     </Compile>

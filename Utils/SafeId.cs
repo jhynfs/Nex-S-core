@@ -6,7 +6,6 @@ namespace NexScore.Utils
 {
     public static class SafeId
     {
-        // Ambiguity-safe alphabet (no 0/O or 1/l/I)
         private const string Alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 
         public static string NewId(int length = 10)
@@ -20,7 +19,6 @@ namespace NexScore.Utils
 
             for (int i = 0; i < length; i++)
             {
-                // Map 0-255 to alphabet length
                 int idx = bytes[i] % Alphabet.Length;
                 sb.Append(Alphabet[idx]);
             }

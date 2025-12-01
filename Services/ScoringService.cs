@@ -31,7 +31,6 @@ namespace NexScore.Services
 
         public async Task RecomputeContestantAsync(string eventId, string contestantId)
         {
-            // Ensure ids are always strings
             contestantId = contestantId.ToString();
             eventId = eventId.ToString();
 
@@ -60,7 +59,7 @@ namespace NexScore.Services
 
                         double avgRaw = critEntries.Average(e => e.RawValue);
                         double max = critEntries.First().MaxValue;
-                        double normalized = max <= 0 ? 0 : (avgRaw / max);           // 0..1
+                        double normalized = max <= 0 ? 0 : (avgRaw / max);
                         double weightCrit = (double)crit.Weight / 100.0;
                         segScore += normalized * weightCrit;
                     }
@@ -82,7 +81,6 @@ namespace NexScore.Services
                 }
             }
 
-            // Ensure ids are always strings
             var filter = Builders<AggregatedScore>.Filter.Where(a => a.EventId == eventId && a.ContestantId == contestantId);
 
             var existing = await AggregatedScores.Find(filter).FirstOrDefaultAsync();

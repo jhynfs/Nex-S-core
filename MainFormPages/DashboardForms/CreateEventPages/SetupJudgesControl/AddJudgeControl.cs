@@ -13,16 +13,14 @@ namespace NexScore.CreateEventPages.SetupJudgesControl
 
         public event Action<AddJudgeControl>? DeleteRequested;
 
-        // Must match SetupJudges placeholders exactly
         private const string NamePlaceholder = "Judge's Full Name";
-        private const string TitlePlaceholder = "Title/Position: e.g., Dr., Ms., Engr. (Optional)";
+        private const string TitlePlaceholder = "e.g., Dr., Ms., Engr. (Optional)";
 
         public AddJudgeControl()
         {
             InitializeComponent();
             _txtJudgeNo.ReadOnly = true;
 
-            // Placeholder setup using existing helper
             TextboxHelper.SetPlaceholder(_txtJudgeName, NamePlaceholder);
             TextboxHelper.SetPlaceholder(_txtJudgeTitle, TitlePlaceholder);
 

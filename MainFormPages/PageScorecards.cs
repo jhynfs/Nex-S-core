@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing; // Added for Color, Point, Font
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
@@ -14,10 +14,8 @@ namespace NexScore.MainFormPages
 {
     public partial class PageScorecards : UserControl
     {
-        // --- Added UI Fields ---
         private Panel _topBar;
         private Label _lblTitle;
-        // -----------------------
 
         private WebView2? _web;
         private bool _isLoading;
@@ -29,10 +27,7 @@ namespace NexScore.MainFormPages
         public PageScorecards()
         {
             InitializeComponent();
-
-            // --- Initialize Top Bar ---
             InitializeTopBar();
-            // --------------------------
 
             this.Load += async (_, __) =>
             {
@@ -74,7 +69,6 @@ namespace NexScore.MainFormPages
             };
         }
 
-        // --- New Helper Method ---
         private void InitializeTopBar()
         {
             _topBar = new Panel
@@ -96,14 +90,10 @@ namespace NexScore.MainFormPages
 
             _topBar.Controls.Add(_lblTitle);
 
-            // Add the top bar to the UserControl
             this.Controls.Add(_topBar);
 
-            // Important: BringToFront ensures the DockStyle.Top takes precedence 
-            // and pushes the pnlMainScorecards down.
             _topBar.BringToFront();
         }
-        // -------------------------
 
         private async Task EnsureWebAsync()
         {
@@ -144,20 +134,13 @@ namespace NexScore.MainFormPages
             }
         }
 
-        // ... [Rest of the file remains exactly the same] ...
-        // (CoreWebView2_WebMessageReceived, CoreWebView2_NavigationCompleted, 
-        // SafeSendInitAsync, InitForEventAsync, SendInitializationMessageAsync,
-        // BuildEmbeddedScorecardsHtml, StartAutoRefresh, StopAutoRefresh)
-
         private void CoreWebView2_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
-            // ... (Existing implementation) ...
             try
             {
                 var msg = e.TryGetWebMessageAsString();
                 if (string.IsNullOrWhiteSpace(msg)) return;
 
-                // Try to parse JSON and inspect 'type'
                 string? msgType = null;
                 try
                 {
@@ -167,7 +150,7 @@ namespace NexScore.MainFormPages
                 }
                 catch
                 {
-                    // fallback to string contains (legacy)
+                  
                 }
 
                 if (string.Equals(msgType, "ready", StringComparison.OrdinalIgnoreCase) || msg.Contains("\"type\":\"ready\""))
@@ -183,7 +166,6 @@ namespace NexScore.MainFormPages
                 {
                     System.Diagnostics.Debug.WriteLine("[Scorecards] Received score-saved from embedded judge UI: " + msg);
 
-                    // Ask the embedded scorecards HTML to reload its content
                     try
                     {
                         if (_web?.CoreWebView2 != null)
@@ -198,7 +180,6 @@ namespace NexScore.MainFormPages
                         System.Diagnostics.Debug.WriteLine("[Scorecards] Failed to post reloadAll: " + ex);
                     }
 
-                    // Also send a lightweight init to ensure judges list is fresh (if needed)
                     _ = SafeSendInitAsync();
                 }
             }

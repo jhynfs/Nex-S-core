@@ -13,7 +13,7 @@ namespace NexScore.Helpers
         public const int TargetHeight = 400;
         public const double TargetAspect = 4.0;
 
-        public const double AspectTolerance = 0.005; // 0.5%
+        public const double AspectTolerance = 0.005;
 
         public static bool IsFourToOne(int width, int height, double tolerance = 0.0)
         {

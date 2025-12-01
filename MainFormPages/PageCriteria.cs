@@ -7,7 +7,7 @@ using NexScore;
 using NexScore.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing; // Added
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,10 +18,8 @@ namespace NexScore.MainFormPages
 {
     public partial class PageCriteria : UserControl
     {
-        // --- UI Fields ---
         private Panel _topBar;
         private Label _lblTitle;
-        // -----------------
 
         private bool _isLoading;
         private string? _lastEventId;
@@ -30,10 +28,7 @@ namespace NexScore.MainFormPages
         public PageCriteria()
         {
             InitializeComponent();
-
-            // --- Init Top Bar ---
             InitializeTopBar();
-            // --------------------
 
             this.Load += async (_, __) =>
             {
@@ -191,7 +186,7 @@ namespace NexScore.MainFormPages
             {
                 if (!item.IsBsonDocument) continue;
                 try { list.Add(BsonSerializer.Deserialize<PhaseModel>(item.AsBsonDocument)); }
-                catch { /* skip malformed */ }
+                catch {  }
             }
             return list;
         }

@@ -27,7 +27,6 @@ namespace NexScore
         {
             InitializeComponent();
 
-            // --- Set placeholder text ---
             txtPin.Text = "Enter new PIN";
             txtRePin.Text = "Confirm PIN";
             txtLoginPin.Text = "PIN";
@@ -36,7 +35,6 @@ namespace NexScore
             txtRePin.ForeColor = Color.Gray;
             txtLoginPin.ForeColor = Color.Gray;
 
-            // --- Attach event handlers ---
             txtPin.Enter += TextBox_Enter;
             txtPin.Leave += TextBox_Leave;
 
@@ -46,13 +44,11 @@ namespace NexScore
             txtLoginPin.Enter += TextBox_Enter;
             txtLoginPin.Leave += TextBox_Leave;
 
-            // --- Restricts Digits Only ---
             txtPin.KeyPress += DigitOnly_KeyPress;
             txtRePin.KeyPress += DigitOnly_KeyPress;
             txtLoginPin.KeyPress += DigitOnly_KeyPress;
 
 
-            // --- Initial eye visual states ---
             isPasswordVisible = false;
 
             btn_EnterShow.Visible = false; // blue eye hidden
@@ -64,15 +60,12 @@ namespace NexScore
             btn_NewShow2.Visible = false;  // blue hidden
             btn_NewHide2.Visible = true;   // black shown
 
-            // --- Make sure all password boxes start unmasked only if placeholder text ---
             txtPin.UseSystemPasswordChar = false;
             txtRePin.UseSystemPasswordChar = false;
             txtLoginPin.UseSystemPasswordChar = false;
 
-            // --- Enter button for login ---
             this.AcceptButton = btnLogin;
 
-            // --- Minimum size to prevent resizing issues ---
             this.MinimumSize = new Size(820, 480);
 
             LoadAdmin();
@@ -143,7 +136,7 @@ namespace NexScore
             if (SecurityHelper.HashString(input.Trim()) == _admin.RecoveryCodeHash)
             {
                 MessageBox.Show("Recovery successful! You can now set a new PIN.");
-                _adminCollection.DeleteMany(_ => true); // --- clears old record ---
+                _adminCollection.DeleteMany(_ => true);
                 _admin = null;
                 pnlLogIn.Visible = false;
                 pnlSetup.Visible = true;
@@ -192,7 +185,6 @@ namespace NexScore
 
             MessageBox.Show($"✅ PIN setup successful!\n\nYour recovery code:\n{recoveryCode}\n\nPlease save this somewhere safe — it’s your only way to reset access.");
 
-            // --- Switch to login view ---
             _admin = newAdmin;
             pnlSetup.Visible = false;
             pnlLogIn.Visible = true;
@@ -219,7 +211,6 @@ namespace NexScore
                 tb.ForeColor = Color.Black;
             }
 
-            // --- Reapply the current show/hide state ---
             UpdatePasswordVisibility();
             UpdateSignupVisibility();
 
@@ -248,13 +239,11 @@ namespace NexScore
                 tb.ForeColor = Color.Gray;
             }
 
-            // --- Ensure eye buttons reflect the current state
             UpdatePasswordVisibility();
             UpdateSignupVisibility();
 
         }
 
-        // --- First textbox (Enter new PIN) ---
         private void btn_NewHide1_Click(object sender, EventArgs e)
         {
             isNewPinVisible = true;
@@ -267,7 +256,6 @@ namespace NexScore
             UpdateSignupVisibility(updateSecond: false);
         }
 
-        // --- Second textbox (Confirm PIN) ---
         private void btn_NewHide2_Click(object sender, EventArgs e)
         {
             isConfirmPinVisible = true;
@@ -296,7 +284,6 @@ namespace NexScore
 
         private void UpdateSignupVisibility(bool updateFirst = true, bool updateSecond = true)
         {
-            // For first textbox
             if (updateFirst)
             {
                 bool hasPlaceholder = txtPin.ForeColor == Color.Gray || txtPin.Text == "Enter new PIN";
@@ -309,7 +296,6 @@ namespace NexScore
                 btn_NewHide1.Visible = !isNewPinVisible;
             }
 
-            // For second textbox
             if (updateSecond)
             {
                 bool hasPlaceholder = txtRePin.ForeColor == Color.Gray || txtRePin.Text == "Confirm PIN";
@@ -325,11 +311,9 @@ namespace NexScore
 
         private void UpdatePasswordVisibility()
         {
-            // --- Only for login textbox ---
             if (txtLoginPin.ForeColor != Color.Gray)
                 txtLoginPin.UseSystemPasswordChar = !isPasswordVisible;
 
-            // --- Toggle the eyes for login textbox only ---
             btn_EnterShow.Visible = isPasswordVisible;
             btn_EnterHide.Visible = !isPasswordVisible;
         }

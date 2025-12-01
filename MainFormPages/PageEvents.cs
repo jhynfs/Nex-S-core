@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using NexScore.Models;
 using System;
-using System.Drawing; // Added
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -10,10 +10,8 @@ namespace NexScore
 {
     public partial class PageEvents : UserControl
     {
-        // --- UI Fields ---
         private Panel _topBar;
         private Label _lblTitle;
-        // -----------------
 
         private EventModel? _currentEvent;
 
@@ -23,10 +21,7 @@ namespace NexScore
         public PageEvents()
         {
             InitializeComponent();
-
-            // --- Init Top Bar ---
             InitializeTopBar();
-            // --------------------
 
             ConfigureNonSelectableTextBox(_txtDescriptionHere);
             ConfigureNonSelectableTextBox(_txtVenueHere);

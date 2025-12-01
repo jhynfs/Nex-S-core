@@ -41,8 +41,6 @@ namespace NexScore
                     setup.ValidateCriteriaPage();
                 }
             };
-
-            // PLACEHOLDER
             PlaceholderHelper.SetPlaceholder(_txtPhaseName, "(e.g. Talent Portion, Coronation)");
             PlaceholderHelper.SetPlaceholder(_txtPhaseWeight, "1-100%");
 
@@ -51,7 +49,6 @@ namespace NexScore
             txtPhaseName.TextChanged += (s, e) =>
                 FindSetupCriteria()?.ValidateNameDuplicates(txtPhaseName);
 
-            // Update event total AND this phase's label color vs phase weight
             txtPhaseWeight.TextChanged += (s, e) =>
             {
                 UpdatePhaseTotalWeightLabel();
@@ -113,7 +110,6 @@ namespace NexScore
                         }
                     }
 
-                    // Reflect new weight constraints immediately
                     UpdatePhaseTotalWeightLabel();
                     setup.UpdateEventTotalWeightLabel();
                     setup.ValidateCriteriaPage();
@@ -165,7 +161,6 @@ namespace NexScore
                 seg.txtSegmentNo.Text = num++.ToString();
         }
 
-        // Compare sum of segment weights against the phase weight (or 100 for independent)
         public void UpdatePhaseTotalWeightLabel()
         {
             decimal sumSegments = flowSegment.Controls.OfType<SegmentControl>()

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing; // Added
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,10 +16,8 @@ namespace NexScore.MainFormPages
 {
     public partial class PageContestants : UserControl
     {
-        // --- UI Fields ---
         private Panel _topBar;
         private Label _lblTitle;
-        // -----------------
 
         private WebView2? _web;
         private bool _isLoading;
@@ -28,10 +26,7 @@ namespace NexScore.MainFormPages
         public PageContestants()
         {
             InitializeComponent();
-
-            // --- Init Top Bar ---
             InitializeTopBar();
-            // --------------------
 
             this.Load += async (_, __) =>
             {

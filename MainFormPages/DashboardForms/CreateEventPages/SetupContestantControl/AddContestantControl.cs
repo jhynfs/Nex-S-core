@@ -156,7 +156,7 @@ namespace NexScore.CreateEventPages.SetupContestantControls
             }
             catch
             {
-                // ignore if cannot load
+                
             }
         }
 

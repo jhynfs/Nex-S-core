@@ -8,8 +8,6 @@ namespace NexScore.Utils
 {
     public static class NetUtil
     {
-        // Validate and normalize admin base URL.
-        // Accepts: 192.168.1.10, 192.168.1.10:5000, http://192.168.1.10, https://192.168.1.10:8443
         public static bool TryNormalizeAdminBaseUrl(string input, out string normalized, out string error, int defaultPort = 5000)
         {
             normalized = "";
@@ -23,7 +21,6 @@ namespace NexScore.Utils
 
             var s = input.Trim();
 
-            // If scheme missing, default to http
             if (!s.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
                 !s.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
@@ -36,7 +33,6 @@ namespace NexScore.Utils
                 return false;
             }
 
-            // Require IPv4 host (per your requirement)
             if (!IPAddress.TryParse(uri.Host, out var ip))
             {
                 error = "Host must be an IPv4 address.";
@@ -49,7 +45,6 @@ namespace NexScore.Utils
                 return false;
             }
 
-            // Reject link-local 169.254.x.x
             var bytes = ip.GetAddressBytes();
             if (bytes[0] == 169 && bytes[1] == 254)
             {
@@ -64,7 +59,6 @@ namespace NexScore.Utils
             return true;
         }
 
-        // Get all local IPv4 addresses that are up and likely usable on LAN
         public static List<IPAddress> GetLocalIPv4Candidates(bool privateOnly = true)
         {
             var list = new List<IPAddress>();
@@ -79,11 +73,11 @@ namespace NexScore.Utils
                 foreach (var ua in ipProps.UnicastAddresses)
                 {
                     var ip = ua.Address;
-                    if (ip.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) continue; // IPv4 only
+                    if (ip.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) continue;
                     if (IPAddress.IsLoopback(ip)) continue;
 
                     if (privateOnly && !IsPrivateIPv4(ip)) continue;
-                    // Exclude link-local 169.254.x.x
+                    
                     var b = ip.GetAddressBytes();
                     if (b[0] == 169 && b[1] == 254) continue;
 
@@ -100,7 +94,6 @@ namespace NexScore.Utils
 
         public static string? GetDefaultLocalIPv4()
         {
-            // Heuristic: prefer 192.168.x.x then 10.x.x.x then 172.16-31.x.x
             var ips = GetLocalIPv4Candidates(true);
             string? pick(params Func<IPAddress, bool>[] preds)
             {
@@ -122,9 +115,9 @@ namespace NexScore.Utils
         private static bool IsPrivateIPv4(IPAddress ip)
         {
             var b = ip.GetAddressBytes();
-            if (b[0] == 10) return true; // 10.0.0.0/8
-            if (b[0] == 172 && b[1] >= 16 && b[1] <= 31) return true; // 172.16.0.0 - 172.31.255.255
-            if (b[0] == 192 && b[1] == 168) return true; // 192.168.0.0/16
+            if (b[0] == 10) return true; 
+            if (b[0] == 172 && b[1] >= 16 && b[1] <= 31) return true;
+            if (b[0] == 192 && b[1] == 168) return true;
             return false;
         }
     }

@@ -11,7 +11,7 @@ namespace NexScore.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-        public string EventId { get; set; } // Human code (not used for linking in your current scoring)
+        public string EventId { get; set; }
 
         [BsonElement("eventName")]
         public string EventName { get; set; }
@@ -144,10 +144,6 @@ namespace NexScore.Models
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 
-    // Transitional ScoreEntry mapping:
-    // _id stored as ObjectId (sample doc shows this)
-    // EventId / ContestantId stored as simple string (sample doc shows uppercase field names with values that LOOK like ObjectId strings)
-    // We DO NOT force them to ObjectId right now to avoid filter misses if stored as strings.
     [BsonIgnoreExtraElements]
     public class ScoreEntry
     {
@@ -155,7 +151,6 @@ namespace NexScore.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        // Stored field name is "EventId" (uppercase) because you did not annotate with [BsonElement]
         public string EventId { get; set; } = default!;
 
         public string ContestantId { get; set; } = default!;
