@@ -28,10 +28,16 @@
             lblContestType = new Label();
             btnAddContestant = new Button();
             pnlSpaceBelowC = new Panel();
+            _pnlFemale = new Panel();
+            _lblFemale = new Label();
+            _pnlMale = new Panel();
+            _lblMale = new Label();
             btnSaveContestants = new Button();
             tblLayoutMainC.SuspendLayout();
             _flowMainC.SuspendLayout();
             pnlSpaceAboveC.SuspendLayout();
+            _pnlFemale.SuspendLayout();
+            _pnlMale.SuspendLayout();
             SuspendLayout();
             // 
             // tblLayoutMainC
@@ -54,6 +60,8 @@
             // 
             _flowMainC.AutoScroll = true;
             _flowMainC.Controls.Add(pnlSpaceAboveC);
+            _flowMainC.Controls.Add(_pnlFemale);
+            _flowMainC.Controls.Add(_pnlMale);
             _flowMainC.Controls.Add(btnAddContestant);
             _flowMainC.Controls.Add(pnlSpaceBelowC);
             _flowMainC.FlowDirection = FlowDirection.TopDown;
@@ -100,7 +108,7 @@
             btnAddContestant.FlatStyle = FlatStyle.Popup;
             btnAddContestant.Font = new Font("Lexend Deca", 12F);
             btnAddContestant.ForeColor = Color.FromArgb(247, 246, 237);
-            btnAddContestant.Location = new Point(28, 82);
+            btnAddContestant.Location = new Point(28, 158);
             btnAddContestant.Name = "btnAddContestant";
             btnAddContestant.Size = new Size(749, 35);
             btnAddContestant.TabIndex = 1;
@@ -110,10 +118,54 @@
             // pnlSpaceBelowC
             // 
             pnlSpaceBelowC.Dock = DockStyle.Bottom;
-            pnlSpaceBelowC.Location = new Point(28, 123);
+            pnlSpaceBelowC.Location = new Point(28, 199);
             pnlSpaceBelowC.Name = "pnlSpaceBelowC";
             pnlSpaceBelowC.Size = new Size(749, 41);
             pnlSpaceBelowC.TabIndex = 2;
+            // 
+            // _pnlFemale
+            // 
+            _pnlFemale.Controls.Add(_lblFemale);
+            _pnlFemale.Dock = DockStyle.Top;
+            _pnlFemale.Location = new Point(28, 82);
+            _pnlFemale.Name = "_pnlFemale";
+            _pnlFemale.Size = new Size(749, 32);
+            _pnlFemale.TabIndex = 3;
+            // 
+            // _lblFemale
+            // 
+            _lblFemale.Anchor = AnchorStyles.None;
+            _lblFemale.AutoSize = true;
+            _lblFemale.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            _lblFemale.ForeColor = Color.FromArgb(247, 246, 237);
+            _lblFemale.Location = new Point(343, 4);
+            _lblFemale.Name = "_lblFemale";
+            _lblFemale.Size = new Size(70, 25);
+            _lblFemale.TabIndex = 3;
+            _lblFemale.Text = "Female";
+            _lblFemale.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // _pnlMale
+            // 
+            _pnlMale.Controls.Add(_lblMale);
+            _pnlMale.Dock = DockStyle.Top;
+            _pnlMale.Location = new Point(28, 120);
+            _pnlMale.Name = "_pnlMale";
+            _pnlMale.Size = new Size(749, 32);
+            _pnlMale.TabIndex = 4;
+            // 
+            // _lblMale
+            // 
+            _lblMale.Anchor = AnchorStyles.None;
+            _lblMale.AutoSize = true;
+            _lblMale.Font = new Font("Lexend Deca SemiBold", 12F, FontStyle.Bold);
+            _lblMale.ForeColor = Color.FromArgb(247, 246, 237);
+            _lblMale.Location = new Point(353, 4);
+            _lblMale.Name = "_lblMale";
+            _lblMale.Size = new Size(50, 25);
+            _lblMale.TabIndex = 2;
+            _lblMale.Text = "Male";
+            _lblMale.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // btnSaveContestants
             // 
@@ -142,6 +194,10 @@
             _flowMainC.ResumeLayout(false);
             pnlSpaceAboveC.ResumeLayout(false);
             pnlSpaceAboveC.PerformLayout();
+            _pnlFemale.ResumeLayout(false);
+            _pnlFemale.PerformLayout();
+            _pnlMale.ResumeLayout(false);
+            _pnlMale.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -155,5 +211,11 @@
         private Panel pnlSpaceBelowC;
         private ComboBox cbContestType;
         private Label lblContestType;
+        private CheckBox _chkSeparate;
+        private Panel _pnlFemale;
+        private Panel _pnlMale;
+        private Label label1;
+        private Label _lblMale;
+        private Label _lblFemale;
     }
 }
