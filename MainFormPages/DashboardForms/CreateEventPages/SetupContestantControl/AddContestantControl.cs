@@ -11,6 +11,7 @@ namespace NexScore.CreateEventPages.SetupContestantControls
     {
         public event EventHandler RemoveRequested;
         public event EventHandler AddPhotoRequested;
+        public event EventHandler GenderChanged;
 
         private readonly Dictionary<TextBox, string> _placeholders = new();
 
@@ -71,12 +72,42 @@ namespace NexScore.CreateEventPages.SetupContestantControls
                 if (!char.IsDigit(e.KeyChar))
                     e.Handled = true;
             };
+
+            _cbGender.SelectedIndexChanged += (s, e) => GenderChanged?.Invoke(this, EventArgs.Empty);
+            _cbGender.TextChanged += (s, e) =>
+            {
+                if (_cbGender.DropDownStyle == ComboBoxStyle.DropDown)
+                    GenderChanged?.Invoke(this, EventArgs.Empty);
+            };
         }
 
         private void ConfigureDefaults()
         {
+            this.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            this.AutoSize = false;
+            this.AutoSizeMode = AutoSizeMode.GrowOnly;
+            this.Margin = new Padding(6);
+            this.Padding = new Padding(6);
+
+            this.MinimumSize = new Size(320, 212);
+            this.Size = new Size(749, 212);
+            this.Height = 212;
+
             _txtConNo.ReadOnly = true;
             _txtAdvocacy.Multiline = true;
+            _txtAdvocacy.ScrollBars = ScrollBars.Vertical;
+
+            _txtFullName.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            _txtRep.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            _txtAge.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            _txtAdvocacy.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            _cbGender.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+
+            picPortrait.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+
+            // lblReqGen is hidden by default; shown only when contest type is Mixed
+            if (lblReqGen != null)
+                lblReqGen.Visible = false;
         }
 
         public int Number => int.TryParse(_txtConNo.Text, out var n) ? n : 0;
@@ -95,7 +126,7 @@ namespace NexScore.CreateEventPages.SetupContestantControls
                     var t = _cbGender.Text?.Trim();
                     return string.IsNullOrWhiteSpace(t) ? null : t;
                 }
-                if (_cbGender.Enabled && _cbGender.SelectedItem != null)
+                if (_cbGender.Enabled && _cbGender.SelectedIndex >= 0 && _cbGender.SelectedItem != null)
                     return _cbGender.SelectedItem.ToString();
                 if (!_cbGender.Enabled && _cbGender.Items.Count == 1)
                     return _cbGender.Items[0].ToString();
@@ -112,26 +143,37 @@ namespace NexScore.CreateEventPages.SetupContestantControls
             _cbGender.SelectedIndex = 0;
             _cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
             _cbGender.Enabled = false;
+
+            SetReqGenderVisible(false);
         }
 
-        public void ConfigureGenderMixed()
+        public void ConfigureGenderMixedNoDefault()
         {
             _cbGender.Enabled = true;
-            _cbGender.Text = "Gender";
             _cbGender.Items.Clear();
             _cbGender.Items.AddRange(new object[] { "Male", "Female" });
-            _cbGender.SelectedIndex = 0;
             _cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
+            _cbGender.SelectedIndex = -1; // no default selection
+            _cbGender.Text = "Select gender"; // hint text
+
+            SetReqGenderVisible(true);
         }
 
         public void ConfigureGenderOpen()
         {
             _cbGender.Enabled = true;
-            _cbGender.Text = "Gender";
             _cbGender.Items.Clear();
             _cbGender.Items.AddRange(new object[] { "Female", "Male", "Non-binary", "Other:" });
-            _cbGender.SelectedIndex = 0;
             _cbGender.DropDownStyle = ComboBoxStyle.DropDown;
+            _cbGender.SelectedIndex = -1;
+            _cbGender.Text = "Gender";
+
+            SetReqGenderVisible(false);
+        }
+
+        public void SetReqGenderVisible(bool visible)
+        {
+            try { if (lblReqGen != null) lblReqGen.Visible = visible; } catch { }
         }
 
         public void SetPhoto(string relativePath)
@@ -149,14 +191,14 @@ namespace NexScore.CreateEventPages.SetupContestantControls
                     old.Dispose();
                 }
                 using (var fs = new FileStream(absolutePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (var temp = Image.FromStream(fs))
+                using (var temp = System.Drawing.Image.FromStream(fs))
                 {
                     picPortrait.Image = new Bitmap(temp);
                 }
             }
             catch
             {
-                
+                // ignore image load failures
             }
         }
 

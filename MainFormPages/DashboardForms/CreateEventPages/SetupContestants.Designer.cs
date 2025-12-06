@@ -27,11 +27,11 @@
             cbContestType = new ComboBox();
             lblContestType = new Label();
             btnAddContestant = new Button();
-            pnlSpaceBelowC = new Panel();
             _pnlFemale = new Panel();
             _lblFemale = new Label();
             _pnlMale = new Panel();
             _lblMale = new Label();
+            pnlSpaceBelowC = new Panel();
             btnSaveContestants = new Button();
             tblLayoutMainC.SuspendLayout();
             _flowMainC.SuspendLayout();
@@ -60,9 +60,9 @@
             // 
             _flowMainC.AutoScroll = true;
             _flowMainC.Controls.Add(pnlSpaceAboveC);
+            _flowMainC.Controls.Add(btnAddContestant);
             _flowMainC.Controls.Add(_pnlFemale);
             _flowMainC.Controls.Add(_pnlMale);
-            _flowMainC.Controls.Add(btnAddContestant);
             _flowMainC.Controls.Add(pnlSpaceBelowC);
             _flowMainC.FlowDirection = FlowDirection.TopDown;
             _flowMainC.Location = new Point(3, 3);
@@ -108,26 +108,19 @@
             btnAddContestant.FlatStyle = FlatStyle.Popup;
             btnAddContestant.Font = new Font("Lexend Deca", 12F);
             btnAddContestant.ForeColor = Color.FromArgb(247, 246, 237);
-            btnAddContestant.Location = new Point(28, 158);
+            btnAddContestant.Location = new Point(28, 82);
             btnAddContestant.Name = "btnAddContestant";
             btnAddContestant.Size = new Size(749, 35);
             btnAddContestant.TabIndex = 1;
             btnAddContestant.Text = "+ Add Contestant";
             btnAddContestant.UseVisualStyleBackColor = false;
             // 
-            // pnlSpaceBelowC
-            // 
-            pnlSpaceBelowC.Dock = DockStyle.Bottom;
-            pnlSpaceBelowC.Location = new Point(28, 199);
-            pnlSpaceBelowC.Name = "pnlSpaceBelowC";
-            pnlSpaceBelowC.Size = new Size(749, 41);
-            pnlSpaceBelowC.TabIndex = 2;
-            // 
             // _pnlFemale
             // 
+            _pnlFemale.BackColor = Color.DimGray;
             _pnlFemale.Controls.Add(_lblFemale);
             _pnlFemale.Dock = DockStyle.Top;
-            _pnlFemale.Location = new Point(28, 82);
+            _pnlFemale.Location = new Point(28, 123);
             _pnlFemale.Name = "_pnlFemale";
             _pnlFemale.Size = new Size(749, 32);
             _pnlFemale.TabIndex = 3;
@@ -147,9 +140,10 @@
             // 
             // _pnlMale
             // 
+            _pnlMale.BackColor = Color.DimGray;
             _pnlMale.Controls.Add(_lblMale);
             _pnlMale.Dock = DockStyle.Top;
-            _pnlMale.Location = new Point(28, 120);
+            _pnlMale.Location = new Point(28, 161);
             _pnlMale.Name = "_pnlMale";
             _pnlMale.Size = new Size(749, 32);
             _pnlMale.TabIndex = 4;
@@ -166,6 +160,14 @@
             _lblMale.TabIndex = 2;
             _lblMale.Text = "Male";
             _lblMale.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // pnlSpaceBelowC
+            // 
+            pnlSpaceBelowC.Dock = DockStyle.Bottom;
+            pnlSpaceBelowC.Location = new Point(28, 199);
+            pnlSpaceBelowC.Name = "pnlSpaceBelowC";
+            pnlSpaceBelowC.Size = new Size(749, 41);
+            pnlSpaceBelowC.TabIndex = 2;
             // 
             // btnSaveContestants
             // 

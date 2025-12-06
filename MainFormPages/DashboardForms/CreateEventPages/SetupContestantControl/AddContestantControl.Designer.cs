@@ -31,6 +31,7 @@
             picPortrait = new PictureBox();
             lblConNo = new Label();
             pnlAddContestants = new Panel();
+            _cbGender = new ComboBox();
             lblReqRep = new Label();
             lblReqFullName = new Label();
             btnRemoveCon = new PictureBox();
@@ -41,11 +42,11 @@
             lblRepresenting = new Label();
             lblGender = new Label();
             _txtAge = new TextBox();
-            _cbGender = new ComboBox();
             _txtFullName = new TextBox();
             lblAge = new Label();
             lblFullName = new Label();
             _txtConNo = new TextBox();
+            lblReqGen = new Label();
             ((System.ComponentModel.ISupportInitialize)picPortrait).BeginInit();
             pnlAddContestants.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)btnRemoveCon).BeginInit();
@@ -77,6 +78,7 @@
             // pnlAddContestants
             // 
             pnlAddContestants.BackColor = Color.Transparent;
+            pnlAddContestants.Controls.Add(lblReqGen);
             pnlAddContestants.Controls.Add(_cbGender);
             pnlAddContestants.Controls.Add(lblReqRep);
             pnlAddContestants.Controls.Add(lblReqFullName);
@@ -99,6 +101,16 @@
             pnlAddContestants.Name = "pnlAddContestants";
             pnlAddContestants.Size = new Size(749, 212);
             pnlAddContestants.TabIndex = 2;
+            // 
+            // _cbGender
+            // 
+            _cbGender.Font = new Font("Lexend Deca Medium", 7.5F, FontStyle.Bold);
+            _cbGender.FormattingEnabled = true;
+            _cbGender.Location = new Point(563, 91);
+            _cbGender.Margin = new Padding(3, 0, 3, 0);
+            _cbGender.Name = "_cbGender";
+            _cbGender.Size = new Size(132, 24);
+            _cbGender.TabIndex = 7;
             // 
             // lblReqRep
             // 
@@ -203,16 +215,6 @@
             _txtAge.TabIndex = 8;
             _txtAge.TextAlign = HorizontalAlignment.Center;
             // 
-            // _cbGender
-            // 
-            _cbGender.Font = new Font("Lexend Deca Medium", 7.5F, FontStyle.Bold);
-            _cbGender.FormattingEnabled = true;
-            _cbGender.Location = new Point(563, 91);
-            _cbGender.Margin = new Padding(3, 0, 3, 0);
-            _cbGender.Name = "_cbGender";
-            _cbGender.Size = new Size(121, 24);
-            _cbGender.TabIndex = 7;
-            // 
             // _txtFullName
             // 
             _txtFullName.Font = new Font("Lexend Deca Medium", 12F, FontStyle.Bold);
@@ -252,6 +254,17 @@
             _txtConNo.TabIndex = 2;
             _txtConNo.TextAlign = HorizontalAlignment.Center;
             // 
+            // lblReqGen
+            // 
+            lblReqGen.AutoSize = true;
+            lblReqGen.Font = new Font("Lexend Deca", 7F);
+            lblReqGen.ForeColor = Color.Salmon;
+            lblReqGen.Location = new Point(628, 69);
+            lblReqGen.Name = "lblReqGen";
+            lblReqGen.Size = new Size(59, 16);
+            lblReqGen.TabIndex = 19;
+            lblReqGen.Text = "(Required)";
+            // 
             // AddContestantControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -289,5 +302,6 @@
         private PictureBox btnRemoveCon;
         private Label lblReqFullName;
         private Label lblReqRep;
+        private Label lblReqGen;
     }
 }

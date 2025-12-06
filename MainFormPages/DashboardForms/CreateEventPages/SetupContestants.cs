@@ -47,7 +47,13 @@ namespace NexScore
             cbContestType.Items.Clear();
             cbContestType.Items.AddRange(new object[] { "Male", "Female", "Mixed", "Open" });
             cbContestType.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbContestType.SelectedIndexChanged += (s, e) => ApplyGenderModeToAll();
+            cbContestType.SelectedIndexChanged += (s, e) =>
+            {
+                ApplyLayoutForContestType();
+                ApplyGenderModeToAll();
+                RenumberContestants();
+                ResizeAllContestantControlsToFlowWidth();
+            };
 
             btnAddContestant.Click += BtnAddContestant_Click;
             btnSaveContestants.Click += BtnSaveContestants_Click;
@@ -63,6 +69,11 @@ namespace NexScore
             };
 
             _errorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
+
+            if (_flowMainC != null)
+                _flowMainC.SizeChanged += (s, e) => ResizeAllContestantControlsToFlowWidth();
+
+            ApplyLayoutForContestType();
         }
 
         public void PrepareForClose()
@@ -140,12 +151,7 @@ namespace NexScore
             CurrentEventId = eventId;
             await EnsureEventNameAsync();
 
-            var existingDynamic = _flowMainC.Controls.OfType<AddContestantControl>().ToList();
-            foreach (var c in existingDynamic)
-            {
-                _flowMainC.Controls.Remove(c);
-                c.Dispose();
-            }
+            ClearAllContestantControls();
 
             var contestantsCol = Database.GetCollection<ContestantModel>("Contestants");
             var existingContestants = await contestantsCol
@@ -153,13 +159,19 @@ namespace NexScore
                 .SortBy(c => c.Number)
                 .ToListAsync();
 
+            var mode = cbContestType.SelectedItem?.ToString();
+
             foreach (var c in existingContestants)
             {
                 var ctrl = CreateContestantControl();
                 ctrl.SetNumber(c.Number);
                 ctrl.FullNameTextBox.Text = c.FullName;
                 ctrl.RepresentingTextBox.Text = c.Representing;
-                ctrl.ConfigureGenderOpen();
+
+                if (mode == "Mixed") ctrl.ConfigureGenderMixedNoDefault();
+                else if (mode == "Male" || mode == "Female") ctrl.ConfigureGenderFixed(mode);
+                else ctrl.ConfigureGenderOpen();
+
                 if (c.Age.HasValue)
                     ctrl.AgeTextBox.Text = c.Age.Value.ToString();
                 ctrl.SetPhoto(c.PhotoPath ?? "");
@@ -175,7 +187,7 @@ namespace NexScore
                 if (!string.IsNullOrWhiteSpace(ctrl.AgeTextBox.Text))
                     MarkTouched(ctrl.AgeTextBox);
 
-                InsertContestantControlAtQueueEnd(ctrl);
+                InsertContestantControl(ctrl, mode);
             }
 
             RenumberContestants();
@@ -195,6 +207,7 @@ namespace NexScore
 
             ApplyGenderModeToAll();
             ValidateAll();
+            ResizeAllContestantControlsToFlowWidth();
         }
         #endregion
 
@@ -207,10 +220,13 @@ namespace NexScore
                 return;
             }
 
+            var mode = cbContestType.SelectedItem?.ToString();
             var ctrl = CreateContestantControl();
-            InsertContestantControlAtQueueEnd(ctrl);
+
+            InsertContestantControl(ctrl, mode);
             RenumberContestants();
             ApplyGenderMode(ctrl);
+            ResizeContestantToFlowWidth(ctrl);
         }
 
         private AddContestantControl CreateContestantControl()
@@ -218,6 +234,8 @@ namespace NexScore
             var ctrl = new AddContestantControl();
             ctrl.RemoveRequested += Ctrl_RemoveRequested;
             ctrl.AddPhotoRequested += Ctrl_AddPhotoRequestedAsync;
+            ctrl.GenderChanged += Ctrl_GenderChanged;
+
             ctrl.FullNameTextBox.TextChanged += (s, e) =>
             {
                 if (!ctrl.IsPlaceholder(ctrl.FullNameTextBox))
@@ -242,6 +260,11 @@ namespace NexScore
                     MarkTouched(ctrl.AdvocacyTextBox);
             };
 
+            ctrl.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            ctrl.AutoSize = false;
+            ctrl.Height = 212;
+            ctrl.Margin = new Padding(6);
+
             return ctrl;
         }
 
@@ -257,27 +280,117 @@ namespace NexScore
             _validateTimer.Start();
         }
 
-        private void InsertContestantControlAtQueueEnd(AddContestantControl ctrl)
+        private void InsertContestantControl(AddContestantControl ctrl, string? mode)
         {
-            int bottomIndex = _flowMainC.Controls.IndexOf(pnlSpaceBelowC);
-            if (bottomIndex < 0)
-                _flowMainC.Controls.Add(ctrl);
+            if (_flowMainC == null)
+                return;
+
+            if (string.Equals(mode, "Mixed", StringComparison.OrdinalIgnoreCase))
+            {
+                // No default gender -> place under pnlSpaceAboveC until selected
+                var gender = NormalizeGender(ctrl.Gender);
+                bool hasGender = gender == "Male" || gender == "Female";
+
+                if (!hasGender)
+                {
+                    int sepIndexGeneral = GetControlIndex(_flowMainC, pnlSpaceAboveC);
+                    if (sepIndexGeneral < 0)
+                    {
+                        _flowMainC.Controls.Add(ctrl);
+                    }
+                    else
+                    {
+                        _flowMainC.Controls.Add(ctrl);
+                        _flowMainC.Controls.SetChildIndex(ctrl, sepIndexGeneral + 1);
+                    }
+                }
+                else
+                {
+                    Control sep = gender == "Female" ? _pnlFemale : _pnlMale;
+                    int sepIndex = GetControlIndex(_flowMainC, sep);
+                    if (sepIndex < 0)
+                    {
+                        _flowMainC.Controls.Add(ctrl);
+                    }
+                    else
+                    {
+                        _flowMainC.Controls.Add(ctrl);
+                        _flowMainC.Controls.SetChildIndex(ctrl, sepIndex + 1);
+                    }
+                }
+            }
             else
             {
-                _flowMainC.Controls.Add(ctrl);
-                _flowMainC.Controls.SetChildIndex(ctrl, bottomIndex);
+                int sepIndex = GetControlIndex(_flowMainC, pnlSpaceAboveC);
+                if (sepIndex < 0)
+                {
+                    _flowMainC.Controls.Add(ctrl);
+                }
+                else
+                {
+                    _flowMainC.Controls.Add(ctrl);
+                    _flowMainC.Controls.SetChildIndex(ctrl, sepIndex + 1);
+                }
             }
+        }
+
+        private int GetControlIndex(Control container, Control child)
+        {
+            if (container == null || child == null) return -1;
+            return container.Controls.IndexOf(child);
         }
 
         private void Ctrl_RemoveRequested(object sender, EventArgs e)
         {
             if (sender is AddContestantControl acc)
             {
-                _flowMainC.Controls.Remove(acc);
+                var parent = acc.Parent;
+                parent?.Controls.Remove(acc);
                 acc.Dispose();
                 RenumberContestants();
                 DebouncedValidate();
+                ResizeAllContestantControlsToFlowWidth();
             }
+        }
+
+        private void Ctrl_GenderChanged(object sender, EventArgs e)
+        {
+            if (_flowMainC == null) return;
+            if (sender is not AddContestantControl acc) return;
+
+            var mode = cbContestType.SelectedItem?.ToString();
+
+            // If not Mixed, ignore
+            if (!string.Equals(mode, "Mixed", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            // Remove from current spot
+            var parent = acc.Parent;
+            parent?.Controls.Remove(acc);
+
+            var gender = NormalizeGender(acc.Gender);
+            bool hasGender = gender == "Male" || gender == "Female";
+
+            if (!hasGender)
+            {
+                // Put back under pnlSpaceAboveC until gender selected
+                int sepIndexGeneral = GetControlIndex(_flowMainC, pnlSpaceAboveC);
+                _flowMainC.Controls.Add(acc);
+                if (sepIndexGeneral >= 0)
+                    _flowMainC.Controls.SetChildIndex(acc, sepIndexGeneral + 1);
+            }
+            else
+            {
+                Control sep = gender == "Female" ? _pnlFemale : _pnlMale;
+                int sepIndex = GetControlIndex(_flowMainC, sep);
+                _flowMainC.Controls.Add(acc);
+                if (sepIndex >= 0)
+                    _flowMainC.Controls.SetChildIndex(acc, sepIndex + 1);
+            }
+
+            RenumberContestants();
+            DebouncedValidate();
+            ResizeContestantToFlowWidth(acc);
         }
         #endregion
 
@@ -349,15 +462,77 @@ namespace NexScore
         }
         #endregion
 
-        #region Validation
-        private IEnumerable<AddContestantControl> GetContestantControls() =>
-            _flowMainC.Controls.OfType<AddContestantControl>();
+        #region Validation and Numbering
+        private IEnumerable<AddContestantControl> GetContestantControls()
+        {
+            if (_flowMainC == null) return Enumerable.Empty<AddContestantControl>();
+            return _flowMainC.Controls.OfType<AddContestantControl>();
+        }
+
+        private void ClearAllContestantControls()
+        {
+            if (_flowMainC != null)
+            {
+                var existing = _flowMainC.Controls.OfType<AddContestantControl>().ToList();
+                foreach (var x in existing)
+                {
+                    _flowMainC.Controls.Remove(x);
+                    x.Dispose();
+                }
+            }
+        }
 
         private void RenumberContestants()
         {
-            int n = 1;
-            foreach (var c in GetContestantControls())
-                c.SetNumber(n++);
+            var mode = cbContestType.SelectedItem?.ToString();
+
+            if (!string.Equals(mode, "Mixed", StringComparison.OrdinalIgnoreCase))
+            {
+                int n = 1;
+                foreach (var c in GetContestantControls())
+                    c.SetNumber(n++);
+                return;
+            }
+
+            if (_flowMainC == null) return;
+
+            int male = 1;
+            int female = 1;
+            bool inMale = false;
+            bool inFemale = false;
+
+            foreach (Control ctrl in _flowMainC.Controls)
+            {
+                if (ctrl == _pnlMale)
+                {
+                    inMale = true;
+                    inFemale = false;
+                    continue;
+                }
+                if (ctrl == _pnlFemale)
+                {
+                    inFemale = true;
+                    inMale = false;
+                    continue;
+                }
+                if (ctrl == pnlSpaceAboveC)
+                {
+                    // general section before choosing gender
+                    inMale = false;
+                    inFemale = false;
+                    continue;
+                }
+
+                if (ctrl is AddContestantControl acc)
+                {
+                    if (inMale)
+                        acc.SetNumber(male++);
+                    else if (inFemale)
+                        acc.SetNumber(female++);
+                    else
+                        acc.SetNumber(male++); // general section uses male counter for display continuity
+                }
+            }
         }
 
         private void ApplyGenderModeToAll()
@@ -373,17 +548,30 @@ namespace NexScore
             {
                 case "Male":
                     ctrl.ConfigureGenderFixed("Male");
+                    ctrl.SetReqGenderVisible(false);
                     break;
                 case "Female":
                     ctrl.ConfigureGenderFixed("Female");
+                    ctrl.SetReqGenderVisible(false);
                     break;
                 case "Mixed":
-                    ctrl.ConfigureGenderMixed();
+                    ctrl.ConfigureGenderMixedNoDefault();
+                    ctrl.SetReqGenderVisible(true);
                     break;
                 case "Open":
                     ctrl.ConfigureGenderOpen();
+                    ctrl.SetReqGenderVisible(false);
                     break;
             }
+        }
+
+        private string NormalizeGender(string? gender)
+        {
+            if (string.IsNullOrWhiteSpace(gender)) return null;
+            var g = gender.Trim();
+            if (g.Equals("Male", StringComparison.OrdinalIgnoreCase)) return "Male";
+            if (g.Equals("Female", StringComparison.OrdinalIgnoreCase)) return "Female";
+            return null;
         }
 
         private bool IsTouched(TextBox tb) => _touched.Contains(tb);
@@ -441,60 +629,22 @@ namespace NexScore
                 }
             }
         }
+        #endregion
 
-        private bool IsValidForSave(out string message)
+        #region Width helpers
+        private void ResizeAllContestantControlsToFlowWidth()
         {
-            message = "";
-            var list = GetContestantControls().ToList();
-            if (list.Count == 0)
-            {
-                message = "No contestants added.";
-                return false;
-            }
+            if (_flowMainC == null) return;
+            int usable = Math.Max(100, _flowMainC.ClientSize.Width - 12);
+            foreach (var acc in _flowMainC.Controls.OfType<AddContestantControl>())
+                ResizeContestantToFlowWidth(acc, usable);
+        }
 
-            if (list.Any(c => string.IsNullOrWhiteSpace(c.FullName)))
-            {
-                message = "Full Name is required for all contestants.";
-                return false;
-            }
-            if (list.Any(c => string.IsNullOrWhiteSpace(c.Representing)))
-            {
-                message = "Representing is required for all contestants.";
-                return false;
-            }
-
-            foreach (var c in list)
-            {
-                var fullErr = _errorProvider.GetError(c.FullNameTextBox);
-                var repErr = _errorProvider.GetError(c.RepresentingTextBox);
-                var ageErr = _errorProvider.GetError(c.AgeTextBox);
-
-                if (!string.IsNullOrEmpty(fullErr) && fullErr != "Duplicate name & representing")
-                    return false;
-                if (!string.IsNullOrEmpty(repErr) && repErr != "Duplicate name & representing")
-                    return false;
-                if (!string.IsNullOrEmpty(ageErr))
-                    return false;
-            }
-
-            bool hasDupes = list
-                .Where(c => !string.IsNullOrWhiteSpace(c.FullName) && !string.IsNullOrWhiteSpace(c.Representing))
-                .Select(c => $"{c.FullName.ToLowerInvariant()}||{c.Representing.ToLowerInvariant()}")
-                .GroupBy(k => k)
-                .Any(g => g.Count() > 1);
-            if (hasDupes)
-            {
-                message = "Resolve duplicates (Full Name + Representing).";
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(CurrentEventId))
-            {
-                message = "Event ID missing.";
-                return false;
-            }
-
-            return true;
+        private void ResizeContestantToFlowWidth(AddContestantControl acc, int? widthOverride = null)
+        {
+            if (_flowMainC == null || acc == null) return;
+            int usable = widthOverride ?? Math.Max(100, _flowMainC.ClientSize.Width - 12);
+            acc.Width = usable;
         }
         #endregion
 
@@ -581,6 +731,74 @@ namespace NexScore
                 }
                 ContestantsSaved?.Invoke(false);
             }
+        }
+
+        private bool IsValidForSave(out string message)
+        {
+            message = "";
+            var list = GetContestantControls().ToList();
+            if (list.Count == 0)
+            {
+                message = "No contestants added.";
+                return false;
+            }
+
+            if (list.Any(c => string.IsNullOrWhiteSpace(c.FullName)))
+            {
+                message = "Full Name is required for all contestants.";
+                return false;
+            }
+            if (list.Any(c => string.IsNullOrWhiteSpace(c.Representing)))
+            {
+                message = "Representing is required for all contestants.";
+                return false;
+            }
+
+            foreach (var c in list)
+            {
+                var fullErr = _errorProvider.GetError(c.FullNameTextBox);
+                var repErr = _errorProvider.GetError(c.RepresentingTextBox);
+                var ageErr = _errorProvider.GetError(c.AgeTextBox);
+
+                if (!string.IsNullOrEmpty(fullErr) && fullErr != "Duplicate name & representing")
+                    return false;
+                if (!string.IsNullOrEmpty(repErr) && repErr != "Duplicate name & representing")
+                    return false;
+                if (!string.IsNullOrEmpty(ageErr))
+                    return false;
+            }
+
+            bool hasDupes = list
+                .Where(c => !string.IsNullOrWhiteSpace(c.FullName) && !string.IsNullOrWhiteSpace(c.Representing))
+                .Select(c => $"{c.FullName.ToLowerInvariant()}||{c.Representing.ToLowerInvariant()}")
+                .GroupBy(k => k)
+                .Any(g => g.Count() > 1);
+            if (hasDupes)
+            {
+                message = "Resolve duplicates (Full Name + Representing).";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(CurrentEventId))
+            {
+                message = "Event ID missing.";
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region Layout helpers
+        private void ApplyLayoutForContestType()
+        {
+            var mode = cbContestType.SelectedItem?.ToString();
+            bool mixed = string.Equals(mode, "Mixed", StringComparison.OrdinalIgnoreCase);
+
+            if (_pnlMale != null) _pnlMale.Visible = mixed;
+            if (_pnlFemale != null) _pnlFemale.Visible = mixed;
+
+            // lblReqGen visibility handled per control in ApplyGenderMode
         }
         #endregion
     }

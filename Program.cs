@@ -19,7 +19,7 @@ namespace NexScoreAdmin
                 staticRoot
             );
             server.Start(5100);
-            Application.Run(new NexScore.LogInForm());
+            Application.Run(new NexScore.MainForm());
 
         }
     }
